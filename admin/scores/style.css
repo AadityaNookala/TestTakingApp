@@ -1,0 +1,63 @@
+/* Colors to Use */
+/*#2C3531  background*/
+/*#116466 background*/
+/* #D9B08C buttons*/
+/* #FFCB9A text*/
+/* #D1E8E2 buttons*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+body {
+  background-image: radial-gradient(circle at center, #116466, #2c3531);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  height: 100%;
+  font-size: 2rem;
+}
+
+.col-3,
+.col-3 {
+  color: #ffcb9a;
+  border: 2px solid #116466;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row {
+  height: 10rem;
+}
+
+.details {
+  color: #ffcb9a;
+  background-color: #2c3531;
+  border: none;
+  padding: 1rem;
+}
+
+.container-header {
+  text-align: center;
+  font-size: 5rem;
+  color: #d1e8e2;
+  background-color: #116466;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+}
+
+.hidden {
+  display: none;
+}

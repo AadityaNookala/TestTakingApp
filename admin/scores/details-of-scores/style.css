@@ -1,0 +1,57 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+body {
+  background-image: radial-gradient(circle at center, #116466, #2c3531);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  height: 100%;
+  font-size: 2rem;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.container-header {
+  text-align: center;
+  font-size: 5rem;
+  color: #d1e8e2;
+  background-color: #116466;
+}
+
+.col-6 {
+  color: #ffcb9a;
+  border: 2px solid #116466;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mistake {
+  display: flex;
+  justify-content: center;
+}
+
+.mistake-details {
+  color: #ffcb9a;
+  background-color: #2c3531;
+  border: none;
+  padding: 1rem;
+  margin-top: 2rem;
+}

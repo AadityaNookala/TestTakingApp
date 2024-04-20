@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add word and sentence</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="spinner">
+    <div class="spinner-border text-info" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  <div class="container">
+    <div class="header">
+      <h1 class="heading">Spellings</h1>
+      <button class="add">Add a new word and sentence</button>
+    </div>
+
+    <div class="modal" id="myModal" role="dialog">
+      <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content" lang="en">
+          <div class="modal-header">
+            <h4 class="modal-title">Which content do you want to highlight?</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" type="button" lang="en">
+
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-default" data-bs-dismiss="modal">Save</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="contains mt-3">
+    <form>
+      <div class="row header">
+        <div class="col-1">#</div>
+        <div class="col-7">
+          Sentence
+        </div>
+
+      </div>
+    </form>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+
+  <script src="script.js" type="module"></script>
+</body>
+
+</html>
