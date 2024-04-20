@@ -1,7 +1,7 @@
 "use strict";
 
 import { baseUrl, sendAPI } from "../config.js";
-import Sortable from "./sortablejs/modular/sortable.core.esm.js";
+import Sortable from "../sortablejs/modular/sortable.core.esm.js";
 const addNewTestsCategory = document.querySelector(".add-new-test-category");
 const categoriesContainer = document.querySelector(".categories-container");
 const addNewUser = document.querySelector(".add-new-user");
