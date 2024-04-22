@@ -55,14 +55,14 @@ data.forEach((el) => {
         const punctuationRegex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~“”‘’]/g;
         let punctuations = element[index].match(punctuationRegex);
         punctuations = punctuations ? punctuations.join("") : "";
-        element[index] = `<span class="highlight-column"> ${element[
+        element[index] = `<span class="highlight-column">${element[
           index
-        ].replace(/([^\w\s])/g, "")} </span>${punctuations}`;
+        ].replace(/([^\w\s])/g, "")}</span>${punctuations}`;
         if (index !== 0) {
           element[index - 1] += "&nbsp";
         }
       });
-      element = element.join("  ");
+      element = element.join(" ");
     }
     console.log(element);
     html += `<div class="col-4">${element}</div>`;
