@@ -20,9 +20,13 @@ const testName = decodeURIComponent(
   url.split("?")[1].split("+")[url.split("?")[1].split("+").length - 1].trim()
 );
 
-const data = (
-  await sendAPI("GET", `${baseUrl}/score/getMistakes/${userName}/${testName}`)
-).data;
+const eveything = await sendAPI(
+  "GET",
+  `${baseUrl}/score/getMistakes/${userName}/${testName}`
+);
+
+const data = eveything.data;
+const test = eveything.test;
 
 containerHeader.insertAdjacentHTML(
   "beforeend",
@@ -43,7 +47,24 @@ Object.keys(data[0]).forEach((el) => {
 container.insertAdjacentHTML("beforeend", `<div class="row">${str}</div>`);
 data.forEach((el) => {
   let html = ``;
-  Object.values(el).forEach((element) => {
+  const indexes = test.indexes[test.sentences.indexOf(Object.values(el)[1])];
+  Object.values(el).forEach((element, i) => {
+    if (i !== 2) {
+      element = element.split(" ");
+      indexes.forEach((index) => {
+        const punctuationRegex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~“”‘’]/g;
+        let punctuations = element[index].match(punctuationRegex);
+        punctuations = punctuations ? punctuations.join("") : "";
+        element[index] = `<span class="highlight-column"> ${element[
+          index
+        ].replace(/([^\w\s])/g, "")} </span>${punctuations}`;
+        if (index !== 0) {
+          element[index - 1] += "&nbsp";
+        }
+      });
+      element = element.join("  ");
+    }
+    console.log(element);
     html += `<div class="col-4">${element}</div>`;
   });
   container.insertAdjacentHTML("beforeend", `<div class="row">${html}</div>`);

@@ -729,8 +729,14 @@ app.get("/score/getMistakes/:userName/:testName", async (req, res) => {
         }
         let mistakenSentence = actualSentence.slice();
         const split = mistakenSentence.split(" ");
-        el.mistakenWords.forEach((_, j) => {
-          split[test.indexes[element][j]] = el.mistakenWords[k][j];
+        el.mistakenWords[k].forEach((_, j) => {
+          const punctuationRegex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~“”‘’]/g;
+          const punctuations = actualSentence
+            .split(" ")
+            [test.indexes[k][j]].match(punctuationRegex);
+          split[test.indexes[element][j]] = `${el.mistakenWords[k][j]}${
+            punctuations ? punctuations.join("") : ""
+          }`;
         });
         mistakenSentence = split.flat().join(" ");
         arr.push({
@@ -743,6 +749,7 @@ app.get("/score/getMistakes/:userName/:testName", async (req, res) => {
     res.status(200).json({
       status: "success",
       data: arr,
+      test,
     });
   } catch (err) {
     res.status(400).json({

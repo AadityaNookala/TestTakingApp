@@ -42,3 +42,8 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+.highlight-column {
+  background-color: #d1e8e2;
+  color: #116466;
+}
