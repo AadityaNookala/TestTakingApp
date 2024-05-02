@@ -4,14 +4,10 @@
   "description": "Spellings App",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "compile:sass": "node-sass sass/main.scss css/style.css -w"
+    "start": "nodemon app.js"
   },
   "author": "Jonas",
   "license": "ISC",
-  "devDependencies": {
-    "node-sass": "^9.0.0"
-  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

@@ -118,7 +118,7 @@ const showWords = async function () {
   const category = (
     await sendAPI(
       "GET",
-      `${baseUrl}/categories/isclone/${
+      `${baseUrl}/categories/clone/${
         window.location.href.split("?")[1].split("+")[1]
       }`
     )

@@ -12,6 +12,7 @@ const overlay = document.querySelector(".overlay");
 const defaultDroppingSpanValue =
   "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 let randomTest;
+
 if (length === 1) {
   randomTest = (
     await sendAPI("GET", `${baseUrl}/random/${urlDecoded.split("+")[0]}`)
@@ -35,6 +36,9 @@ if (length === 1) {
     heading.textContent = `${urlDecoded.split("+")[2]} test`;
   }
 }
+const meanings = (
+  await sendAPI("GET", `${baseUrl}/categories/${randomTest.testName}`)
+).data.meanings;
 const words = [];
 let sentenceRandom = randomTest.sentences.map((sentence, i) => [sentence, i]);
 let indexRandom = randomTest.indexes.slice();
@@ -215,9 +219,6 @@ fixed.addEventListener("click", async function (e) {
 <div class="spinner"><div class="spinner-border text-info hidden" role="status">
 <span class="visually-hidden">Loading...</span>
 </div></div>`;
-  const meanings = (
-    await sendAPI("GET", `${baseUrl}/categories/${randomTest.testName}`)
-  ).data.meanings;
   if (!meanings) return;
   const closeModalButton = document.querySelector(".btn--close-modal");
 
