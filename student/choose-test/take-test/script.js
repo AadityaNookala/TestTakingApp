@@ -233,7 +233,6 @@ fixed.addEventListener("click", async function (e) {
   const meaning = (
     await sendAPI("GET", `${baseUrl}/word-meaning/${word.textContent.trim()}`)
   ).data;
-
   document.querySelector(".modal__header").innerHTML = word.textContent.trim();
   const modalForm = document.querySelector(".modal__form");
   let html = "";

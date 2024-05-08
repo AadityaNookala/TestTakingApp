@@ -5,7 +5,7 @@ app.use(cors());
 app.use(express.json());
 const router = express.Router();
 const scoreController = require("../controllers/scoreController");
-router.route("/score").patch(scoreController.createOrUpdateScore);
+router.route("/").patch(scoreController.createOrUpdateScore);
 router.route("/:userName").get(scoreController.resultsNeededForFirstScorePage);
 router
   .route("/:userName/:testName")

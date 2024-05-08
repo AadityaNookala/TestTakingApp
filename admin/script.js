@@ -644,7 +644,7 @@ categoriesContainer.addEventListener("click", async function (e) {
     }
     await sendAPI(
       "POST",
-      `${baseUrl}/update/clone/${
+      `${baseUrl}/update/clone/updateTestCategory/${
         cloneButton.closest(".test-categories-showing").dataset.categoryName
       }`,
       {

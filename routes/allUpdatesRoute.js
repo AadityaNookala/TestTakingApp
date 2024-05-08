@@ -6,14 +6,16 @@ app.use(express.json());
 const router = express.Router();
 const allUpdateController = require("../controllers/allUpdatesController");
 router.route("/:word").get(allUpdateController.getMeaning);
-router.route("/:userName").get(allUpdateController.randomTest);
+router.route("/random/:userName").get(allUpdateController.randomTest);
 router
   .route("/:oldTestName/:categoryName")
   .patch(allUpdateController.editTestName);
 router
-  .route("/:oldTestCategoryName")
+  .route("/update/:oldTestCategoryName")
   .patch(allUpdateController.editTestCategoryName);
-router.route("/:oldCategoryName").post(allUpdateController.clone);
-router.route("/remove-clues").post(allUpdateController.removeClues);
+router
+  .route("/updateTestCategory/:oldCategoryName")
+  .post(allUpdateController.clone);
+router.route("/").post(allUpdateController.removeClues);
 
 module.exports = router;
