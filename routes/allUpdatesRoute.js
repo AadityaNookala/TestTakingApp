@@ -8,7 +8,7 @@ const allUpdateController = require("../controllers/allUpdatesController");
 router.route("/:word").get(allUpdateController.getMeaning);
 router.route("/random/:userName").get(allUpdateController.randomTest);
 router
-  .route("/:oldTestName/:categoryName")
+  .route("/update/:oldTestName/:categoryName")
   .patch(allUpdateController.editTestName);
 router
   .route("/update/:oldTestCategoryName")
