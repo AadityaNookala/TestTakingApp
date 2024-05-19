@@ -3,6 +3,7 @@
 import { baseUrl, sendAPI } from "../config.js";
 import Sortable from "../sortablejs/modular/sortable.core.esm.js";
 class App {
+  testCa;
   constructor() {
     (async () => {
       this.addNewTestsCategory = document.querySelector(
@@ -198,6 +199,8 @@ class App {
       url = urlSplit.join("?");
       window.open(url, "__blank");
     } else if (addNewTestButton) {
+      const allTestCategories = (await sendAPI("GET", `${baseUrl}/categories`))
+        .data.data;
       addNewTestButton
         .closest(".test-categories-showing")
         .querySelector(".tests-container")
@@ -209,7 +212,7 @@ class App {
       const nextElement = parentElement.querySelector(".tests-container");
       nextElement.classList.remove("hidden");
       parentElement.querySelector(".show-button").textContent = "-";
-      const foundObject = this.testCategories.find(
+      const foundObject = allTestCategories.find(
         (testCategory) =>
           testCategory.categoryName === parentElement.dataset.categoryName
       );
@@ -247,7 +250,7 @@ class App {
         const value = testInput.value.trim();
         let flag = false;
         let category;
-        testCategories.forEach((el) => {
+        allTestCategories.forEach((el) => {
           let flag2 = false;
           for (let i = 0; i < el.tests.length; i++) {
             if (el.tests[i].toLowerCase() === value.toLowerCase()) {
@@ -293,7 +296,7 @@ class App {
           tests.innerHTML = value;
           button.remove();
           userData.every((element) => {
-            if (element.testCategories.includes(testCategoryName)) {
+            if (element.allTestCategories.includes(testCategoryName)) {
               usersContainer
                 .querySelectorAll(".user-name")
                 .forEach((userName) => {
