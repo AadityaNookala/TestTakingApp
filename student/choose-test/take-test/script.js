@@ -248,13 +248,13 @@ class App {
       },
     });
   }
-  async getMeaning() {
+  async getMeaning(e) {
     this.meanings = (
       await sendAPI("GET", `${baseUrl}/categories/${this.randomTest.testName}`)
     ).data.meanings;
     const word = e.target.closest(".word");
     if (!word) return;
-    modal.innerHTML = `
+    this.modal.innerHTML = `
       <button class="btn--close-modal">×</button>
       <h2 class="modal__header"></h2>
       <div class="modal__form">
@@ -263,12 +263,12 @@ class App {
     <div class="spinner"><div class="spinner-border text-info hidden" role="status">
     <span class="visually-hidden">Loading...</span>
     </div></div>`;
-    if (!meanings) return;
+    if (!this.meanings) return;
     const closeModalButton = document.querySelector(".btn--close-modal");
 
-    modal.classList.remove("hidden");
-    overlay.classList.remove("hidden");
-    modal.insertAdjacentHTML(
+    this.modal.classList.remove("hidden");
+    this.overlay.classList.remove("hidden");
+    this.modal.insertAdjacentHTML(
       "beforeend",
       `<div class="spinner"><div class="spinner-border text-info" role="status">
       <span class="visually-hidden">Loading...</span>
@@ -314,14 +314,14 @@ class App {
         `;
     });
     modalForm.innerHTML = html;
-    modal.querySelector(".spinner-border").classList.add("hidden");
-    closeModalButton.addEventListener("click", closeModal);
+    this.modal.querySelector(".spinner-border").classList.add("hidden");
+    closeModalButton.addEventListener("click", this.closeModal);
 
-    overlay.addEventListener("click", closeModal);
+    this.overlay.addEventListener("click", this.closeModal);
   }
   closeModal() {
-    overlay.classList.add("hidden");
-    modal.classList.add("hidden");
+    this.overlay.classList.add("hidden");
+    this.modal.classList.add("hidden");
   }
 
   fixedDragstart(e) {
