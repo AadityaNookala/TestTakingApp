@@ -249,6 +249,8 @@ class App {
     });
   }
   async getMeaning(e) {
+    this.modal = document.querySelector(".my-modal");
+    this.overlay = document.querySelector(".overlay");
     this.meanings = (
       await sendAPI("GET", `${baseUrl}/categories/${this.randomTest.testName}`)
     ).data.meanings;
@@ -320,6 +322,8 @@ class App {
     this.overlay.addEventListener("click", this.closeModal);
   }
   closeModal() {
+    this.modal = document.querySelector(".my-modal");
+    this.overlay = document.querySelector(".overlay");
     this.overlay.classList.add("hidden");
     this.modal.classList.add("hidden");
   }
