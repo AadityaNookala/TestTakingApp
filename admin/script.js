@@ -209,7 +209,7 @@ class App {
       const nextElement = parentElement.querySelector(".tests-container");
       nextElement.classList.remove("hidden");
       parentElement.querySelector(".show-button").textContent = "-";
-      const foundObject = testCategories.find(
+      const foundObject = this.testCategories.find(
         (testCategory) =>
           testCategory.categoryName === parentElement.dataset.categoryName
       );
