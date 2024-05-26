@@ -93,7 +93,7 @@ class App {
     this.addNewUser
       .closest(".users-showing")
       .querySelector(".show-button").textContent = "-";
-    usersContainer.insertAdjacentHTML(
+    this.usersContainer.insertAdjacentHTML(
       "beforeend",
       `<div class="user"><div class="categories-showing mt-4">
       <button class="show-button">+</button>
@@ -297,7 +297,7 @@ class App {
           button.remove();
           userData.every((element) => {
             if (element.allTestCategories.includes(testCategoryName)) {
-              usersContainer
+              this.usersContainer
                 .querySelectorAll(".user-name")
                 .forEach((userName) => {
                   userName
@@ -629,31 +629,33 @@ class App {
       let flag = 0;
       userData.every((element) => {
         if (element.testCategories.includes(testCategoryName)) {
-          usersContainer.querySelectorAll(".user-name").forEach((userName) => {
-            userName
-              .closest(".user")
-              .querySelector(".categories-container-users")
-              .querySelectorAll(".test-categories-showing")
-              .forEach((element2) => {
-                if (element2.dataset.categoryName === testCategoryName) {
-                  element2
-                    .querySelector(".tests-container")
-                    .querySelectorAll(".row")
-                    .forEach((el) => {
-                      if (!el.classList.contains("heading-row")) {
-                        if (
-                          el.querySelector(".number").textContent.trim() ===
-                          testNumber
-                        ) {
-                          el.querySelector(".test").innerHTML = newTestName;
-                          return;
+          this.usersContainer
+            .querySelectorAll(".user-name")
+            .forEach((userName) => {
+              userName
+                .closest(".user")
+                .querySelector(".categories-container-users")
+                .querySelectorAll(".test-categories-showing")
+                .forEach((element2) => {
+                  if (element2.dataset.categoryName === testCategoryName) {
+                    element2
+                      .querySelector(".tests-container")
+                      .querySelectorAll(".row")
+                      .forEach((el) => {
+                        if (!el.classList.contains("heading-row")) {
+                          if (
+                            el.querySelector(".number").textContent.trim() ===
+                            testNumber
+                          ) {
+                            el.querySelector(".test").innerHTML = newTestName;
+                            return;
+                          }
                         }
-                      }
-                    });
-                  flag = 1;
-                }
-              });
-          });
+                      });
+                    flag = 1;
+                  }
+                });
+            });
         }
         if (flag) {
           return;
