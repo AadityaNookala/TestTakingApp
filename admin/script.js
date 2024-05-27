@@ -334,11 +334,11 @@ class App {
     }
   }
   async addNewTestCategory() {
-    categoriesContainer.classList.remove("hidden");
-    categoriesContainer.previousElementSibling.querySelector(
+    this.categoriesContainer.classList.remove("hidden");
+    this.categoriesContainer.previousElementSibling.querySelector(
       ".show-button"
     ).textContent = "-";
-    categoriesContainer.insertAdjacentHTML(
+    this.categoriesContainer.insertAdjacentHTML(
       "beforeend",
       `<div class="categories-showing mt-4">
       <a class="show-button">+</a>
@@ -594,6 +594,7 @@ class App {
   }
   editTestName(e) {
     if (!e.target.closest(".edit")) return;
+    this.usersContainer = document.querySelector(".users-container");
     const test = e.target.closest(".row").querySelector(".test");
     const testNumber = e.target
       .closest(".row")
@@ -627,9 +628,11 @@ class App {
       cancel.remove();
       const userData = (await sendAPI("GET", `${baseUrl}/user`)).data.data;
       let flag = 0;
+      console.log();
       userData.every((element) => {
         if (element.testCategories.includes(testCategoryName)) {
-          this.usersContainer
+          document
+            .querySelector(".users-container")
             .querySelectorAll(".user-name")
             .forEach((userName) => {
               userName
@@ -677,7 +680,7 @@ class App {
         }`
       )
     ).data.meanings;
-    categoriesContainer.insertAdjacentHTML(
+    this.categoriesContainer.insertAdjacentHTML(
       "beforeend",
       `<div class="categories-showing mt-4">
     <a class="show-button">+</a>

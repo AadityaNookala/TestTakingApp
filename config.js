@@ -1,6 +1,6 @@
-// export const baseUrl = "http://127.0.0.1:8000";
-export const baseUrl =
-  "https://ipwbrd8dlf.execute-api.us-east-1.amazonaws.com/dev";
+export const baseUrl = "http://127.0.0.1:8000";
+// export const baseUrl =
+// "https://ipwbrd8dlf.execute-api.us-east-1.amazonaws.com/dev";
 export const arrOfPuncs = [
   ",",
   ".",

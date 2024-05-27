@@ -317,7 +317,6 @@ exports.removeClues = async (req, res) => {
         actualIndexes.push(indexes);
         actualSentences.push(str.trim());
       });
-      console.log(actualSentences);
       let newTestName;
       if (oldCategory.withMeanings) {
         newTestName = `${oldCategory.tests[i]} NoCluesDictionary`;
@@ -333,7 +332,7 @@ exports.removeClues = async (req, res) => {
     });
     await categoriesData.findOneAndUpdate(
       { categoryName: req.body.newCategoryName },
-      { $set: { tests: categoryTests } }
+      { $set: { tests: categoryTests, isClone: true } }
     );
     res.status(200).json({
       status: "success",
