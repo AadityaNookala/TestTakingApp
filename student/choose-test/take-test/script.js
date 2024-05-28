@@ -1,6 +1,11 @@
 "use strict";
 
-import { baseUrl, sendAPI, arrOfPuncs } from "../../../config.js";
+import {
+  baseUrl,
+  sendAPI,
+  arrOfPuncs,
+  baseUrlScheduler,
+} from "../../../config.js";
 
 class App {
   constructor() {
@@ -17,6 +22,7 @@ class App {
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
       this.words = [];
       this.idOfSentence;
+      this.allMeanings = {};
       await this.getRandomTest();
       this.renderSentences();
       this.check.addEventListener("click", this.checkAnswers.bind(this));
@@ -227,16 +233,24 @@ class App {
         }
       });
     });
-    this.sentences.insertAdjacentHTML(
-      "beforeend",
-      `<div class="score">Score: ${score}/${noOfWords}</div>`
-    );
-    this.check.remove();
     const date = new Date();
     const dateMonthDayYear =
       date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
     const testName = this.randomTest.testName;
     const userName = window.location.href.split("?")[1].split("+")[0];
+    const categoryName = decodeURI(this.url.split("?")[1].split("+")[1]);
+    const newTestName = (
+      await sendAPI(
+        "GET",
+        `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
+      )
+    ).returnedData;
+    const nextTask = (
+      await sendAPI(
+        "GET",
+        `${baseUrl}/categories/getNextTask/${newTestName}/${categoryName}`
+      )
+    ).data.nextTask;
     await sendAPI("PATCH", `${baseUrl}/score`, {
       userName: userName,
       testName: testName,
@@ -247,6 +261,19 @@ class App {
         score,
       },
     });
+    score = `${score}/${noOfWords}`;
+    await sendAPI("POST", `${baseUrlScheduler}/integrate-spellings-app`, {
+      score,
+      testName,
+      categoryName,
+      nextTask,
+      userName,
+    });
+    this.sentences.insertAdjacentHTML(
+      "beforeend",
+      `<div class="score">Score: ${score}</div>`
+    );
+    this.check.remove();
   }
   async getMeaning(e) {
     this.modal = document.querySelector(".my-modal");
@@ -256,66 +283,70 @@ class App {
     ).data.meanings;
     const word = e.target.closest(".word");
     if (!word) return;
-    this.modal.innerHTML = `
-      <button class="btn--close-modal">×</button>
-      <h2 class="modal__header"></h2>
-      <div class="modal__form">
-      <div class="meaning mt-5">
-      </div>
-    <div class="spinner"><div class="spinner-border text-info hidden" role="status">
-    <span class="visually-hidden">Loading...</span>
-    </div></div>`;
-    if (!this.meanings) return;
-    const closeModalButton = document.querySelector(".btn--close-modal");
 
+    const closeModalButton = document.querySelector(".btn--close-modal");
+    const actualWord = word.textContent.trim();
+    this.modal.innerHTML = `
+        <button class="btn--close-modal">×</button>
+        <h2 class="modal__header"></h2>
+        <div class="modal__form"></div>
+        <div class="meaning mt-5">
+        </div>
+      <div class="spinner"><div class="spinner-border text-info" role="status">
+      <span class="visually-hidden">Loading...</span>
+      </div></div>`;
+    document.querySelector(".modal__header").innerHTML = actualWord;
     this.modal.classList.remove("hidden");
     this.overlay.classList.remove("hidden");
-    this.modal.insertAdjacentHTML(
-      "beforeend",
-      `<div class="spinner"><div class="spinner-border text-info" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div></div>`
-    );
-    const meaning = (
-      await sendAPI("GET", `${baseUrl}/word-meaning/${word.textContent.trim()}`)
-    ).data;
-    document.querySelector(".modal__header").innerHTML =
-      word.textContent.trim();
-    const modalForm = document.querySelector(".modal__form");
-    let html = "";
-    meaning.forEach((el, i) => {
-      let synonyms = ``;
-      let sentences = "";
-      el.synonyms.forEach((synonym, i) => {
-        synonyms += `${synonym}`;
-        if (i !== el.synonyms.length - 1) {
-          synonyms += ", ";
-        }
+    if (this.allMeanings[actualWord]) {
+      document.querySelector(".modal__form").innerHTML =
+        this.allMeanings[actualWord];
+    } else {
+      const meaning = (
+        await sendAPI(
+          "GET",
+          `${baseUrl}/word-meaning/${word.textContent.trim()}`
+        )
+      ).data;
+
+      let html = "";
+      meaning.forEach((el, i) => {
+        let synonyms = ``;
+        let sentences = "";
+        el.synonyms.forEach((synonym, i) => {
+          synonyms += `${synonym}`;
+          if (i !== el.synonyms.length - 1) {
+            synonyms += ", ";
+          }
+        });
+        el.sentences.forEach((sentence) => {
+          sentences += `
+            <li>
+              ${sentence}
+            </li>`;
+        });
+        html += `
+          <div class="meaning mt-5">
+            <span>${i + 1}.</span>
+            <span>(${el.partOfSpeech})</span>
+            <span class="definition">
+              ${el.definition}
+            </span>
+            <ul class="meaning-sentences">
+              ${sentences}
+            </ul>
+            Synonyms:
+            <span class="synonyms">
+              ${synonyms}
+            </span>
+          </div>
+          `;
       });
-      el.sentences.forEach((sentence) => {
-        sentences += `
-          <li>
-            ${sentence}
-          </li>`;
-      });
-      html += `
-        <div class="meaning mt-5">
-          <span>${i + 1}.</span>
-          <span>(${el.partOfSpeech})</span>
-          <span class="definition">
-            ${el.definition}
-          </span>
-          <ul class="meaning-sentences">
-            ${sentences}
-          </ul>
-          Synonyms:
-          <span class="synonyms">
-            ${synonyms}
-          </span>
-        </div>
-        `;
-    });
-    modalForm.innerHTML = html;
+
+      document.querySelector(".modal__form").innerHTML = html;
+      this.allMeanings[actualWord] = html;
+    }
+    console.log(this.modal.querySelector(".spinner-border"));
     this.modal.querySelector(".spinner-border").classList.add("hidden");
     closeModalButton.addEventListener("click", this.closeModal);
 
