@@ -1,0 +1,271 @@
+/* Colors to Use */
+/*#2C3531  background*/
+/*#116466 background*/
+/* #D9B08C buttons*/
+/* #FFCB9A text*/
+/* #D1E8E2 buttons*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+body {
+  background-image: radial-gradient(circle at center, #116466, #2c3531);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  height: 100%;
+}
+
+.body {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tests-container {
+  display: block;
+}
+
+.heading {
+  text-align: center;
+  font-size: 5rem;
+  color: #d1e8e2;
+  background-color: #116466;
+}
+
+.categories,
+.users,
+.scores {
+  width: auto;
+  margin-top: 3rem;
+  margin-left: 2rem;
+}
+
+.scores {
+  margin-right: 20rem;
+}
+
+.categories-showing,
+.buttons-wrapper,
+.users-showing,
+.scores-showing,
+.user-showing,
+.user-categories,
+.users-scores-showing,
+.test-scores-showing {
+  display: flex;
+  width: 20%;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.users-scores-showing,
+.test-scores-showing {
+  margin-left: 3rem;
+}
+
+.test-categories,
+.test-categories-heading,
+.meanings,
+.users-users {
+  margin-left: 2rem;
+  color: #d1e8e2;
+  font-size: 1.5rem;
+}
+
+.add-new-test-category,
+.add-new-user,
+.add-test-button,
+.add-user-button,
+.edit-test,
+.cancel,
+.add-new-test-tests,
+.button-edit-category,
+.copy-category-name,
+.clone-button,
+.show-button,
+.score-score {
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: #d1e8e2;
+  background-color: #116466;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 1.5rem;
+}
+
+.add-new-test-category:hover,
+.add-new-user:hover,
+.edit-test:hover,
+.cancel:hover,
+.add-new-test-tests:hover,
+.button-edit-category:hover,
+.copy-category-name:hover,
+.clone-button:hover,
+.show-button:hover,
+.add-user-button:hover,
+.score-score:hover {
+  transition: all 0.2s;
+  background-color: #116466;
+  color: #ffcb9a;
+}
+
+.test-categories,
+.users-users,
+.meanings {
+  font-size: 2rem;
+}
+
+.test-categories {
+  white-space: nowrap;
+}
+
+.add-new-test-category,
+.add-new-user,
+.edit-test:hover,
+.cancel:hover,
+.add-new-test-tests,
+.button-edit-category,
+.copy-category-name,
+.clone-button,
+.add-test-button,
+.add-user-button,
+.score-score {
+  padding: 0.5rem 1.5rem;
+  margin-left: 1rem;
+}
+
+.score-score {
+  margin-left: 6rem;
+}
+
+.show-button {
+  padding: 0.5rem 0.5rem;
+}
+
+.w-6 {
+  height: 1.5rem;
+  width: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.text {
+  color: #ffcb9a;
+  font-size: 1.5rem;
+}
+
+.header {
+  border-top: 0.25rem solid #116466;
+}
+
+.row > * {
+  background-color: #d1e8e2;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.row {
+  width: 100%;
+  display: inline-flex;
+  margin-left: 4rem;
+}
+
+.edit-test,
+.cancel,
+.cancel:hover,
+.edit-test:hover {
+  background-color: #2c3531;
+  width: 10%;
+}
+
+.number {
+  display: flex;
+  align-items: center;
+  border-left: 0.25rem solid #116466;
+  border-right: 0.2rem solid #116466;
+  border-bottom: 0.2rem solid #116466;
+
+  width: 10%;
+  justify-content: center;
+}
+
+.test {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  border-right: 0.25rem solid #116466;
+  border-left: 0.2rem solid #116466;
+  border-bottom: 0.2rem solid #116466;
+}
+
+.edit,
+.copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20%;
+  border-right: 0.25rem solid #116466;
+  border-left: 0.2rem solid #116466;
+  border-bottom: 0.2rem solid #116466;
+}
+
+.categories-container,
+.categories-container-users,
+.users-container {
+  margin-left: 5rem;
+}
+
+.categories-container-users {
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
+
+.button-add,
+.button-edit,
+.button-cancel {
+  border: none;
+  cursor: pointer;
+  background-color: #116466;
+  color: #ffcb9a;
+  padding: 1rem;
+  border-radius: 5%;
+  font-size: 1.5rem;
+  margin-left: 2rem;
+  margin-top: 2rem;
+}
+
+.user-input {
+  margin-left: 2rem;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+}
+
+.input {
+  height: 4rem;
+  margin-left: 1rem;
+  width: 20rem;
+  font-size: 1.5rem;
+}
+
+.input::placeholder {
+  text-align: center;
+}

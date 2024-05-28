@@ -1,0 +1,198 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+body {
+  background-image: radial-gradient(circle at center, #116466, #2c3531);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  height: 100%;
+  font-size: 2rem;
+}
+
+.heading {
+  text-align: center;
+  font-size: 5rem;
+  color: #ffcb9a;
+  text-align: center;
+}
+
+.header {
+  background-color: #116466;
+}
+
+.fixed {
+  position: fixed;
+  bottom: -1rem;
+  color: #ffcb9a;
+  width: 15%;
+  top: 2rem;
+  display: grid;
+  height: auto;
+}
+
+.row {
+  display: inline;
+  height: auto;
+}
+
+.word,
+.word-fixed {
+  display: inline;
+  justify-content: center;
+  margin-top: 2rem;
+  cursor: pointer;
+}
+
+.container {
+  width: 90vw;
+  height: 90vh;
+}
+
+.sentences {
+  margin-left: 30rem;
+  color: #ffcb9a;
+  border: 3px solid #116466;
+  border-radius: 5%;
+}
+
+.dropping-span {
+  border-bottom: 2px solid #ffcb9a;
+  background: none;
+  text-align: center;
+  color: #ffcb9a;
+  cursor: pointer;
+}
+
+.check {
+  transition: all 0.2s;
+  background-color: #116466;
+  color: #fff;
+  border: none;
+  margin-left: 2rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.check:hover {
+  transition: all 0.2s;
+  background-color: #116466;
+  color: #ffcb9a;
+  border: none;
+  margin-left: 2rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.score,
+.sentence {
+  margin-left: 2rem;
+  margin-bottom: 2rem;
+}
+
+.my-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 80rem;
+  background-color: #f3f3f3;
+  padding: 5rem 6rem;
+  box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: fadeInOutModal 0.5s forwards; /* Animation for showing and hiding modal */
+  transition: all 0.5s;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  animation: fadeInOutOverlay 0.5s forwards; /* Animation for showing and hiding overlay */
+}
+
+@keyframes fadeInOutModal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInOutOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.my-modal.hidden,
+.overlay.hidden {
+  animation-name: fadeOutModal;
+}
+
+@keyframes fadeOutModal {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.modal__header {
+  font-size: 3.25rem;
+  margin-bottom: 4.5rem;
+  line-height: 1.5;
+}
+
+.modal__form {
+  margin: 0 3rem;
+  overflow: auto;
+  height: 60vh;
+}
+
+.btn--close-modal {
+  font-family: inherit;
+  color: inherit;
+  position: absolute;
+  top: 0.5rem;
+  right: 2rem;
+  font-size: 4rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+}
+
+ul {
+  margin-left: 5rem;
+}
