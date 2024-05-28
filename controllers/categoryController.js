@@ -119,3 +119,24 @@ exports.addNewTest = async (req, res) => {
     });
   }
 };
+
+exports.getNextTask = async (req, res) => {
+  try {
+    const category = await categoriesData.findOne({
+      categoryName: req.params.categoryName,
+    });
+    const nextTask =
+      category.tests[category.tests.indexOf(req.params.testName) + 1];
+    res.status(200).json({
+      status: "success",
+      data: {
+        nextTask,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err,
+    });
+  }
+};

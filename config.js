@@ -1,6 +1,8 @@
 // export const baseUrl = "http://127.0.0.1:8000";
 export const baseUrl =
-  "https://ipwbrd8dlf.execute-api.us-east-1.amazonaws.com/dev";
+  "https://us-central1-allprojects-424621.cloudfunctions.net/spellings-function";
+export const baseUrlScheduler =
+  "https://us-central1-allprojects-424621.cloudfunctions.net/scheduler-function";
 export const arrOfPuncs = [
   ",",
   ".",
