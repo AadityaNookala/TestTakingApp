@@ -278,11 +278,13 @@ class App {
   async getMeaning(e) {
     this.modal = document.querySelector(".my-modal");
     this.overlay = document.querySelector(".overlay");
+
+    const word = e.target.closest(".word");
+    if (!word) return;
     this.meanings = (
       await sendAPI("GET", `${baseUrl}/categories/${this.randomTest.testName}`)
     ).data.meanings;
-    const word = e.target.closest(".word");
-    if (!word) return;
+    if (!this.meanings) return;
 
     const closeModalButton = document.querySelector(".btn--close-modal");
     const actualWord = word.textContent.trim();
