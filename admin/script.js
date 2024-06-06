@@ -5,10 +5,19 @@ import Sortable from "../sortablejs/modular/sortable.core.esm.js";
 class App {
   constructor() {
     (async () => {
+      this.testCategories = (
+        await sendAPI("GET", `${baseUrl}/categories`)
+      ).data.data.sort((p1, p2) =>
+        p1.categoryName > p2.categoryName
+          ? 1
+          : p1.categoryName < p2.categoryName
+          ? -1
+          : 0
+      );
       this.addNewTestsCategory = document.querySelector(
         ".add-new-test-category"
       );
-      this.categoriesContainer = document.querySelector(
+      this.spellingsCategoriesContainer = document.querySelector(
         ".categories-container"
       );
       this.sentenceCombiningCategoriesContainer = document.querySelector(
@@ -29,7 +38,7 @@ class App {
         this.handleClickOnUsersContainer.bind(this)
       );
       this.addNewUsers.addEventListener("click", this.addNewUser.bind(this));
-      this.categoriesContainer.addEventListener(
+      this.spellingsCategoriesContainer.addEventListener(
         "click",
         this.handleClickOnCategoriesContainer.bind(this)
       );
@@ -49,7 +58,7 @@ class App {
           this.addNewSentenceCombiningTestCategory.bind(this)
         );
       this.scores.addEventListener("click", this.handleClickOnScore.bind(this));
-      this.categoriesContainer.addEventListener(
+      this.spellingsCategoriesContainer.addEventListener(
         "click",
         this.editTestName.bind(this)
       );
@@ -57,12 +66,15 @@ class App {
         "click",
         this.editTestName.bind(this)
       );
-      this.categoriesContainer.addEventListener("click", this.clone.bind(this));
-      this.categoriesContainer.addEventListener(
+      this.spellingsCategoriesContainer.addEventListener(
+        "click",
+        this.clone.bind(this)
+      );
+      this.spellingsCategoriesContainer.addEventListener(
         "click",
         this.copyTestName.bind(this)
       );
-      this.categoriesContainer.addEventListener(
+      this.spellingsCategoriesContainer.addEventListener(
         "click",
         this.copyCategoryName.bind(this)
       );
@@ -85,7 +97,7 @@ class App {
     );
   }
   createSortable() {
-    Sortable.create(this.categoriesContainer, {
+    Sortable.create(this.spellingsCategoriesContainer, {
       group: {
         name: "shared",
         pull: "clone",
@@ -361,11 +373,11 @@ class App {
     }
   }
   async addNewTestCategory() {
-    this.categoriesContainer.classList.remove("hidden");
-    this.categoriesContainer.previousElementSibling.querySelector(
+    this.spellingsCategoriesContainer.classList.remove("hidden");
+    this.spellingsCategoriesContainer.previousElementSibling.querySelector(
       ".show-button"
     ).textContent = "-";
-    this.categoriesContainer.insertAdjacentHTML(
+    this.spellingsCategoriesContainer.insertAdjacentHTML(
       "beforeend",
       `<div class="categories-showing mt-4">
       <a class="show-button">+</a>
@@ -376,7 +388,7 @@ class App {
     <button class="button-add">Add Category</button>`
     );
     const buttonAdd = document.querySelector(".button-add");
-    buttonAdd.addEventListener("click", async function () {
+    buttonAdd.addEventListener("click", async () => {
       const checkBox = document.querySelector("#meanings-input");
       let checked = false;
       if (checkBox.checked) {
@@ -392,8 +404,8 @@ class App {
       };
       await sendAPI("POST", `${baseUrl}/categories`, object);
 
-      testCategories.push(object);
-      showCategories();
+      this.testCategories.push(object);
+      this.showCategories();
     });
   }
 
@@ -411,7 +423,7 @@ class App {
     <button class="button-add">Add Category</button>`
     );
     const buttonAdd = document.querySelector(".button-add");
-    buttonAdd.addEventListener("click", async function () {
+    buttonAdd.addEventListener("click", async () => {
       const inputValue = document.querySelector(".input").value;
       const object = {
         categoryName: inputValue,
@@ -420,21 +432,14 @@ class App {
         type: "sentence-combining",
       };
       await sendAPI("POST", `${baseUrl}/categories`, object);
-
-      testCategories.push(object);
-      showCategories();
+      console.log(this.testCategories);
+      this.testCategories.push(object);
+      this.showCategories();
     });
   }
   async showCategories() {
-    this.testCategories = (
-      await sendAPI("GET", `${baseUrl}/categories`)
-    ).data.data.sort((p1, p2) =>
-      p1.categoryName > p2.categoryName
-        ? 1
-        : p1.categoryName < p2.categoryName
-        ? -1
-        : 0
-    );
+    this.spellingsCategoriesContainer.innerHTML = "";
+    this.sentenceCombiningCategoriesContainer.innerHTML = "";
     this.testCategories.forEach((element) => {
       let html = ``;
       html += `<div class="test-categories-showing mt-4" data-category-name="${
@@ -520,7 +525,7 @@ class App {
       });
       html += "</div></div>";
       if (element.type === "spellings") {
-        this.categoriesContainer.insertAdjacentHTML("beforeend", html);
+        this.spellingsCategoriesContainer.insertAdjacentHTML("beforeend", html);
       } else if (element.type === "sentence-combining") {
         this.sentenceCombiningCategoriesContainer.insertAdjacentHTML(
           "beforeend",
@@ -749,7 +754,7 @@ class App {
         }`
       )
     ).data.meanings;
-    this.categoriesContainer.insertAdjacentHTML(
+    this.spellingsCategoriesContainer.insertAdjacentHTML(
       "beforeend",
       `<div class="categories-showing mt-4">
     <a class="show-button">+</a>
