@@ -11,6 +11,9 @@ class App {
       this.categoriesContainer = document.querySelector(
         ".categories-container"
       );
+      this.sentenceCombiningCategoriesContainer = document.querySelector(
+        ".sentence-combining-categories-container"
+      );
       this.addNewUsers = document.querySelector(".add-new-user");
       this.usersContainer = document.querySelector(".users-container");
       this.scores = document.querySelector(".scores");
@@ -30,12 +33,27 @@ class App {
         "click",
         this.handleClickOnCategoriesContainer.bind(this)
       );
+      this.sentenceCombiningCategoriesContainer.addEventListener(
+        "click",
+        this.handleClickOnCategoriesContainer.bind(this)
+      );
       this.addNewTestsCategory.addEventListener(
         "click",
         this.addNewTestCategory.bind(this)
       );
+      document
+        .querySelector(".sentence-combining-categories")
+        .querySelector(".add-new-test-category")
+        .addEventListener(
+          "click",
+          this.addNewSentenceCombiningTestCategory.bind(this)
+        );
       this.scores.addEventListener("click", this.handleClickOnScore.bind(this));
       this.categoriesContainer.addEventListener(
+        "click",
+        this.editTestName.bind(this)
+      );
+      this.sentenceCombiningCategoriesContainer.addEventListener(
         "click",
         this.editTestName.bind(this)
       );
@@ -45,6 +63,14 @@ class App {
         this.copyTestName.bind(this)
       );
       this.categoriesContainer.addEventListener(
+        "click",
+        this.copyCategoryName.bind(this)
+      );
+      this.sentenceCombiningCategoriesContainer.addEventListener(
+        "click",
+        this.copyTestName.bind(this)
+      );
+      this.sentenceCombiningCategoriesContainer.addEventListener(
         "click",
         this.copyCategoryName.bind(this)
       );
@@ -191,7 +217,9 @@ class App {
         .categoryName;
       let url = window.location.href;
       const urlSplit = url.split("?");
-      urlSplit[1] += `+${categoryName.trim()}+${testName.trim()}`;
+      urlSplit[1] += `&testCategory=${categoryName.trim()}&testName=${testName.trim()}&dataType=${
+        row.closest(".category").dataset.type
+      }`;
       const urlSplitSplit = urlSplit[0].split("/");
       urlSplitSplit[urlSplitSplit.indexOf("admin")] += "/add-word-and-sentence";
       urlSplit[0] = urlSplitSplit.join("/");
@@ -360,6 +388,36 @@ class App {
         tests: [],
         withMeanings: checked,
         isClone: false,
+        type: "spellings",
+      };
+      await sendAPI("POST", `${baseUrl}/categories`, object);
+
+      testCategories.push(object);
+      showCategories();
+    });
+  }
+
+  async addNewSentenceCombiningTestCategory() {
+    this.sentenceCombiningCategoriesContainer.classList.remove("hidden");
+    this.sentenceCombiningCategoriesContainer.previousElementSibling.querySelector(
+      ".show-button"
+    ).textContent = "-";
+    this.sentenceCombiningCategoriesContainer.insertAdjacentHTML(
+      "beforeend",
+      `<div class="categories-showing mt-4">
+      <a class="show-button">+</a>
+      <h2 class="test-categories"><input type="text" class="input"></h2>
+    </div>
+    <button class="button-add">Add Category</button>`
+    );
+    const buttonAdd = document.querySelector(".button-add");
+    buttonAdd.addEventListener("click", async function () {
+      const inputValue = document.querySelector(".input").value;
+      const object = {
+        categoryName: inputValue,
+        tests: [],
+        isClone: false,
+        type: "sentence-combining",
       };
       await sendAPI("POST", `${baseUrl}/categories`, object);
 
@@ -368,7 +426,7 @@ class App {
     });
   }
   async showCategories() {
-    const testCategories = (
+    this.testCategories = (
       await sendAPI("GET", `${baseUrl}/categories`)
     ).data.data.sort((p1, p2) =>
       p1.categoryName > p2.categoryName
@@ -377,8 +435,8 @@ class App {
         ? -1
         : 0
     );
-    let html = ``;
-    testCategories.forEach((element) => {
+    this.testCategories.forEach((element) => {
+      let html = ``;
       html += `<div class="test-categories-showing mt-4" data-category-name="${
         element.categoryName
       }">
@@ -397,8 +455,13 @@ class App {
         element.isClone
           ? ""
           : `<a class="add-new-test-tests">Add new Test</a>
-        <button class="clone-button">Clone</button>
+        
       `
+      }
+      ${
+        element.isClone || element.type === "sentence-combining"
+          ? ""
+          : `<button class="clone-button">Clone</button>`
       }
       <button class="copy-category-name">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -456,8 +519,15 @@ class App {
         </div>`;
       });
       html += "</div></div>";
+      if (element.type === "spellings") {
+        this.categoriesContainer.insertAdjacentHTML("beforeend", html);
+      } else if (element.type === "sentence-combining") {
+        this.sentenceCombiningCategoriesContainer.insertAdjacentHTML(
+          "beforeend",
+          html
+        );
+      }
     });
-    this.categoriesContainer.innerHTML = html;
   }
   async showUsers() {
     const testCategories = (

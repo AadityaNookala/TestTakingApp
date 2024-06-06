@@ -1,38 +1,46 @@
 "use strict";
 
-import { baseUrl, sendAPI, arrOfPuncs } from "../../config.js";
+import { baseUrl, sendAPI } from "../../config.js";
+import { default as AddingSpellings } from "../../logics/spellings/adding.js";
+import { default as AddingSentenceCombining } from "../../logics/sentence-combining/adding.js";
 
 class App {
+  #add;
+  #form;
+  #heading;
+  #numberOfWords;
+  #addingObject;
+
   constructor() {
     (async () => {
-      this.add = document.querySelector(".add");
-      this.form = document.querySelector("form");
-      this.modalBody = document.querySelector(".modal-body");
-      this.btnDefault = document.querySelector(".btn-default");
-      this.heading = document.querySelector(".heading");
-      this.numberOfWords = 0;
-      this.setHeadingTextContent();
-      await this.showWords();
-      if (this.add) {
-        this.add.addEventListener("click", this.addWord.bind(this));
+      this.#add = document.querySelector(".add");
+      this.#form = document.querySelector("form");
+      this.#heading = document.querySelector(".heading");
+      this.#numberOfWords = 0;
+      this.#getUrlParams();
+      await this.#showWords();
+      if (this.#add) {
+        this.#add.addEventListener("click", this.#addWord.bind(this));
       }
-      document.addEventListener("click", this.edit.bind(this));
+      document.addEventListener("click", this.#edit.bind(this));
     })();
   }
-  setHeadingTextContent() {
-    const url = window.location.href;
-    this.heading.textContent = decodeURIComponent(
-      url.split("+")[url.split("+").length - 1]
-    );
+  #getUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.#heading.textContent = decodeURIComponent(urlParams.get("testName"));
+    const dataType = urlParams.get("dataType");
+    if (dataType === "spellings") this.#addingObject = new AddingSpellings();
+    else if (dataType === "sentence-combining")
+      this.#addingObject = new AddingSentenceCombining();
   }
-  showing() {
-    this.form.insertAdjacentHTML(
+  #showing() {
+    this.#form.insertAdjacentHTML(
       "beforeend",
-      ` <div class="row active-adding" data-index="${this.numberOfWords++}">
-    <div class="col-1">${this.numberOfWords}
+      ` <div class="row active-adding" data-index="${this.#numberOfWords++}">
+    <div class="col-1">${this.#numberOfWords}
     </div>
     <div class="col-7">
-    <input class="input-sentence" id="editing" type="text" name="sentences">
+    <textarea class="input-sentence" id="editing" type="text" name="sentences"></textarea>
     </div>
     <div class="col-1">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -47,109 +55,17 @@ class App {
     );
     document.querySelector(".input-sentence").focus();
   }
-  showingModal() {
-    const clickOnModalBody = function (e) {
-      if (
-        e.target.classList.contains("span-for-sentence-in-modal") &&
-        e.target.textContent.trim() !== ""
-      ) {
-        e.target.classList.toggle("highlight");
-      }
-    };
-    const typeOfChange = this.closest(".row")
-      .querySelector("button")
-      .dataset.typeOfChange.trim();
-    const arrayOfSpans = [];
-    document.querySelector(".modal-body").textContent = "";
-    const inputSentenceTest = this.value;
-    const activeIndex = +this.closest(".row").dataset.index;
-    const inputSentenceTestSplit = inputSentenceTest.split(" ");
-    document
-      .querySelector(".modal-body")
-      .insertAdjacentHTML("beforeend", `Sentence:   `);
-    let count = 0;
-    inputSentenceTestSplit.forEach(function (s, i) {
-      const bool = arrOfPuncs.some((punc) => s.includes(punc));
-      let punc = "";
-      let punc2 = "";
-      if (bool) {
-        const arr = s.split("");
-        for (; arrOfPuncs.includes(arr[arr.length - 1]); ) {
-          punc += arr.pop();
-        }
-        for (; arrOfPuncs.includes(arr[0]); ) {
-          punc2 += arr.shift();
-        }
-        s = arr.join("");
-      }
-      punc = punc.split("").reverse().join("");
-      document
-        .querySelector(".modal-body")
-        .insertAdjacentHTML(
-          "beforeend",
-          `${punc2}<span class="span-for-sentence-in-modal" data-index="${count}">${s}</span>${punc}&nbsp;`
-        );
-      count++;
-    });
-    document.querySelector(".modal-body").onclick = clickOnModalBody;
-    document
-      .querySelector(".btn-default")
-      .addEventListener("click", async function () {
-        const allHighlightedSpans = document.querySelectorAll(".highlight");
-        allHighlightedSpans.forEach(function (s, i) {
-          arrayOfSpans.push(+s.dataset.index);
-        });
-        document.querySelector("form").requestSubmit();
-      });
-    document
-      .querySelector("form")
-      .addEventListener("submit", async function (e) {
-        e.preventDefault();
-        const data = Object.fromEntries([
-          ...new FormData(document.querySelector("form")),
-        ]);
-        data.indexes = arrayOfSpans;
-        if (typeOfChange === "adding") {
-          await sendAPI(
-            "PATCH",
-            `${baseUrl}/version/${document
-              .querySelector(".heading")
-              .textContent.trim()}?typeOfChange=adding`,
-            {}
-          );
-        } else {
-          await sendAPI(
-            "PATCH",
-            `${baseUrl}/version/${document
-              .querySelector(".heading")
-              .textContent.trim()}?typeOfChange=${typeOfChange}&indexOfActualSentence=${activeIndex}`,
-            {
-              sentence: inputSentenceTest.trim(),
-              indexes: arrayOfSpans,
-            }
-          );
-        }
-        await sendAPI(
-          "PATCH",
-          `${baseUrl}/test/${
-            document.querySelector(".heading").textContent
-          }?currentIndex=${activeIndex}`,
-          data
-        );
-        location.reload();
-      });
-  }
-  async showWords() {
+
+  async #showWords() {
+    const urlParams = new URLSearchParams(window.location.search);
     const category = (
       await sendAPI(
         "GET",
-        `${baseUrl}/categories/clone/${
-          window.location.href.split("?")[1].split("+")[1]
-        }`
+        `${baseUrl}/categories/clone/${urlParams.get("testCategory")}`
       )
-    ).data.clone.isClone;
+    ).data.isClone;
     const data = (
-      await sendAPI("GET", `${baseUrl}/test/${this.heading.textContent}`)
+      await sendAPI("GET", `${baseUrl}/test/${this.#heading.textContent}`)
     ).data.test;
     if (!category) {
       document.querySelector(".row").insertAdjacentHTML(
@@ -162,11 +78,10 @@ class App {
       document.querySelector(".add").remove();
     }
     const sentences = data.sentences;
-    const self = this;
-    sentences.forEach(function (_, i) {
-      self.form.insertAdjacentHTML(
+    sentences.forEach((_, i) => {
+      this.#form.insertAdjacentHTML(
         "beforeend",
-        `<div class="row" data-index="${self.numberOfWords++}">
+        `<div class="row" data-index="${this.#numberOfWords++}">
       <div class="col-1">${i + 1}</div>
       <div class="col-7">
       ${sentences[i]}
@@ -189,13 +104,16 @@ class App {
     document.querySelector(".spinner-border").style.display = "none";
   }
 
-  addWord() {
-    this.showing();
+  #addWord() {
+    this.#showing();
     const addWord = document.querySelector(".add-word");
     const inputSentence = document.querySelector(".input-sentence");
-    addWord.addEventListener("click", this.showingModal.bind(inputSentence));
+    addWord.addEventListener(
+      "click",
+      this.#addingObject.showingModal.bind(inputSentence)
+    );
   }
-  edit(e) {
+  #edit(e) {
     const edit = e.target.closest(".w-6");
     if (!edit) return;
     const row = edit.closest(".row");
@@ -212,7 +130,7 @@ class App {
     );
     document
       .querySelector(".edit-word")
-      .addEventListener("click", this.showingModal.bind(input));
+      .addEventListener("click", this.#addingObject.showingModal.bind(input));
   }
 }
 
