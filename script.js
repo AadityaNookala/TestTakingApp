@@ -26,10 +26,15 @@ class App {
     e.preventDefault();
     if (e.target.classList.contains("links")) {
       const realUrl =
-        this.url +
-        e.target.getAttribute("href") +
-        "?" +
-        `${e.target.textContent}`;
+        e.target.textContent === "Admin"
+          ? this.url +
+            e.target.getAttribute("href") +
+            "?" +
+            `accessLevel=${e.target.textContent}`
+          : this.url +
+            e.target.getAttribute("href") +
+            "?" +
+            `${e.target.textContent}`;
       window.open(realUrl, "_blank");
     }
   }

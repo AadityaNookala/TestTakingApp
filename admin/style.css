@@ -222,9 +222,7 @@ body {
   border-bottom: 0.2rem solid #116466;
 }
 
-.categories-container,
-.categories-container-users,
-.users-container {
+.child {
   margin-left: 5rem;
 }
 
