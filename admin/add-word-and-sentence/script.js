@@ -82,9 +82,9 @@ class App {
     const sentences = this.#data.sentences;
     sentences.forEach((_, i) => {
       let html = ``;
-      sentences[i].split("\n").forEach((el, i) => {
+      sentences[i].split("\n").forEach((el, j) => {
         html += el;
-        if (sentences[i].split("\n").length - 1 !== i) {
+        if (sentences[i].split("\n").length - 1 !== j) {
           html += "<br>";
         }
       });

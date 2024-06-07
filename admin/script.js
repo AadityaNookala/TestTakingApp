@@ -106,6 +106,15 @@ class App {
       animation: 500,
       sort: false,
     });
+    Sortable.create(this.sentenceCombiningCategoriesContainer, {
+      group: {
+        name: "shared",
+        pull: "clone",
+        put: false,
+      },
+      animation: 500,
+      sort: false,
+    });
   }
   handleClickOnUsersContainer(e) {
     const row = e.target.closest(".row");
