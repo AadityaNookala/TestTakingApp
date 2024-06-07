@@ -10,7 +10,7 @@ class App {
   #heading;
   #numberOfWords;
   #addingObject;
-
+  #data;
   constructor() {
     (async () => {
       this.#add = document.querySelector(".add");
@@ -18,7 +18,11 @@ class App {
       this.#heading = document.querySelector(".heading");
       this.#numberOfWords = 0;
       this.#getUrlParams();
+      this.#data = (
+        await sendAPI("GET", `${baseUrl}/test/${this.#heading.textContent}`)
+      ).data.test;
       await this.#showWords();
+
       if (this.#add) {
         this.#add.addEventListener("click", this.#addWord.bind(this));
       }
@@ -64,9 +68,7 @@ class App {
         `${baseUrl}/categories/clone/${urlParams.get("testCategory")}`
       )
     ).data.isClone;
-    const data = (
-      await sendAPI("GET", `${baseUrl}/test/${this.#heading.textContent}`)
-    ).data.test;
+
     if (!category) {
       document.querySelector(".row").insertAdjacentHTML(
         "beforeend",
@@ -77,14 +79,21 @@ class App {
     } else {
       document.querySelector(".add").remove();
     }
-    const sentences = data.sentences;
+    const sentences = this.#data.sentences;
     sentences.forEach((_, i) => {
+      let html = ``;
+      sentences[i].split("\n").forEach((el, i) => {
+        html += el;
+        if (sentences[i].split("\n").length - 1 !== i) {
+          html += "<br>";
+        }
+      });
       this.#form.insertAdjacentHTML(
         "beforeend",
         `<div class="row" data-index="${this.#numberOfWords++}">
       <div class="col-1">${i + 1}</div>
       <div class="col-7">
-      ${sentences[i]}
+      ${html}
       </div>
       ${
         category
@@ -119,10 +128,18 @@ class App {
     const row = edit.closest(".row");
     row.classList.add("active-adding");
     const sentenceRow = row.querySelector(".col-7");
-    const textCont = sentenceRow.textContent.trim();
-    sentenceRow.innerHTML = `<input class="input-sentence" id="editing" type="text" name="sentences">`;
+    const textCont =
+      this.#data.sentences[row.querySelector(".col-1").textContent - 1];
+    let html = ``;
+    textCont.split("\n").forEach((el, i) => {
+      html += el;
+      if (textCont.split("\n").length - 1 !== i) {
+        html += "\n";
+      }
+    });
+    sentenceRow.innerHTML = `<textarea class="input-sentence" id="editing" type="text" name="sentences"></textarea>`;
     const input = sentenceRow.querySelector(".input-sentence");
-    input.value = textCont;
+    input.value = html;
     input.focus();
     row.insertAdjacentHTML(
       "beforeend",

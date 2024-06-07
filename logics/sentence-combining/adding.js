@@ -51,7 +51,7 @@ class Adding {
               .textContent.trim()}?typeOfChange=${typeOfChange}&indexOfActualSentence=${activeIndex}`,
             {
               sentence: inputSentenceTest.trim(),
-              answers: arrayOfSpans,
+              answers: answer,
             }
           );
         }

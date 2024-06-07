@@ -154,3 +154,7 @@ body {
 textarea {
   resize: both;
 }
+
+.added-sentence {
+  white-space: pre-wrap;
+}
