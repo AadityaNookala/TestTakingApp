@@ -81,12 +81,12 @@ class App {
     );
     data.forEach((el) => {
       let html = ``;
-      const indexes =
-        test.indexes[test.sentences.indexOf(Object.values(el)[1])];
+      const answers =
+        test.answers[test.sentences.indexOf(Object.values(el)[1])];
       Object.values(el).forEach((element, i) => {
         if (i !== 2) {
           element = element.split(" ");
-          indexes.forEach((index) => {
+          answers.forEach((index) => {
             const punctuationRegex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~“”‘’]/g;
             let punctuations = element[index].match(punctuationRegex);
             punctuations = punctuations ? punctuations.join("") : "";
