@@ -76,12 +76,12 @@ class App {
       sentence,
       i,
     ]);
-    let indexRandom = this.randomTest.indexes.slice();
+    let indexRandom = this.randomTest.answers.slice();
     const lengthSentenceRandom = sentenceRandom.length;
     this.randomTest.sentences.forEach((_, i) => {
       const splitWordSentence = this.randomTest.sentences[i].split(" ");
       let wordSentence = [];
-      this.randomTest.indexes[i].forEach((element) => {
+      this.randomTest.answers[i].forEach((element) => {
         let some = splitWordSentence[element].trim();
         const bool = arrOfPuncs.some((punc) => some.includes(punc));
         if (bool) {
@@ -124,7 +124,7 @@ class App {
       sentence,
       i,
     ]);
-    indexRandom = this.randomTest.indexes.slice();
+    indexRandom = this.randomTest.answers.slice();
     for (let i = 0; i < lengthSentenceRandom; i++) {
       const index = Math.trunc(Math.random() * sentenceRandom.length);
       let wordSentence = ``;
