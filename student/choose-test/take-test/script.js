@@ -10,10 +10,9 @@ import {
 class App {
   constructor() {
     (async () => {
-      this.url = window.location.href;
-      this.urlDecoded = decodeURIComponent(this.url.split("?")[1]);
+      this.url = new URLSearchParams(window.location.search);
       this.heading = document.querySelector(".heading");
-      this.length = this.urlDecoded.split("+").length;
+      this.length = this.url.size;
       this.fixed = document.querySelector(".fixed");
       this.sentences = document.querySelector(".sentences");
       this.modal = document.querySelector(".my-modal");
@@ -44,7 +43,7 @@ class App {
   async getRandomTest() {
     if (length === 1) {
       this.randomTest = (
-        await sendAPI("GET", `${baseUrl}/random/${urlDecoded.split("+")[0]}`)
+        await sendAPI("GET", `${baseUrl}/random/${this.url.get("accessLevel")}`)
       ).test;
       this.heading.textContent = `Random test`;
     } else {
@@ -52,22 +51,19 @@ class App {
         this.randomTest = (
           await sendAPI(
             "GET",
-            `${baseUrl}/random/${urlDecoded.split("+")[0]}?categoryName=${
-              urlDecoded.split("+")[1]
-            }`
+            `${baseUrl}/random/${this.url.get(
+              "accessLevel"
+            )}?categoryName=${this.url.get("testCategory")}`
           )
         ).test;
-        this.heading.textContent = `Random test for ${
-          urlDecoded.split("+")[1]
-        }`;
+        this.heading.textContent = `Random test for ${this.url.get(
+          "testCategory"
+        )}`;
       } else {
         this.randomTest = (
-          await sendAPI(
-            "GET",
-            `${baseUrl}/test/${this.urlDecoded.split("+")[2]}`
-          )
+          await sendAPI("GET", `${baseUrl}/test/${this.url.get("testName")}`)
         ).data.test;
-        this.heading.textContent = `${this.urlDecoded.split("+")[2]} test`;
+        this.heading.textContent = `${this.url.get("testName")} test`;
       }
     }
   }
@@ -237,8 +233,8 @@ class App {
     const dateMonthDayYear =
       date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
     const testName = this.randomTest.testName;
-    const userName = window.location.href.split("?")[1].split("+")[0];
-    const categoryName = decodeURI(this.url.split("?")[1].split("+")[1]);
+    const userName = this.url.get("accessLevel");
+    const categoryName = decodeURI(this.url.get("testCategory"));
     const newTestName = (
       await sendAPI(
         "GET",

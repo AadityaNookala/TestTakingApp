@@ -21,7 +21,8 @@ class App {
     })();
   }
   async renderData() {
-    const userName = this.url.split("?")[1];
+    const urlParams = new URLSearchParams(window.location.search);
+    const userName = urlParams.get("accessLevel");
     this.heading.textContent = `${userName}'s tests`;
     const testCategories = (
       await sendAPI("GET", `${baseUrl}/user`)
@@ -97,7 +98,11 @@ class App {
       const categoryName = row.closest(".student").dataset.categoryName;
       const testName = row.querySelector(".test").textContent.trim();
       const query =
-        this.url.split("?")[1] + "+" + categoryName + "+" + testName;
+        this.url.split("?")[1] +
+        "&testCategory=" +
+        categoryName +
+        "&testName=" +
+        testName;
       const realUrl =
         this.url.split("?")[0].split("/student")[0] +
         this.randomEvery.getAttribute("href") +
@@ -108,7 +113,7 @@ class App {
     if (randomButton) {
       const categoryName =
         randomButton.closest(".student").dataset.categoryName;
-      const query = (this.url.split("?")[1] += `+${categoryName}`);
+      const query = (this.url.split("?")[1] += `&testCategory=${categoryName}`);
       const realUrl =
         this.url.split("?")[0].split("/student")[0] +
         randomButton.getAttribute("href") +
