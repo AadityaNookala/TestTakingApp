@@ -240,13 +240,18 @@ class App {
         "GET",
         `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
       )
-    ).returnedData;
-    const nextTask = (
-      await sendAPI(
-        "GET",
-        `${baseUrl}/categories/getNextTask/${newTestName}/${categoryName}`
-      )
-    ).data.nextTask;
+    ).data;
+    const allTestsInCategory = (
+      await sendAPI("GET", `${baseUrl}/categories/${categoryName}`)
+    ).data.data.tests;
+    const newArr = newTestName
+      .map((el) => [el, allTestsInCategory.indexOf(el)])
+      .sort(function (a, b) {
+        return a[1] - b[1];
+      });
+
+    const nextTask = allTestsInCategory[newArr[newArr.length - 1][1] + 1];
+    console.log(nextTask);
     await sendAPI("PATCH", `${baseUrl}/score`, {
       userName: userName,
       testName: testName,
@@ -282,7 +287,6 @@ class App {
     ).data.meanings;
     if (!this.meanings) return;
 
-    const closeModalButton = document.querySelector(".btn--close-modal");
     const actualWord = word.textContent.trim();
     this.modal.innerHTML = `
         <button class="btn--close-modal">×</button>
@@ -293,6 +297,8 @@ class App {
       <div class="spinner"><div class="spinner-border text-info" role="status">
       <span class="visually-hidden">Loading...</span>
       </div></div>`;
+    const closeModalButton = document.querySelector(".btn--close-modal");
+
     document.querySelector(".modal__header").innerHTML = actualWord;
     this.modal.classList.remove("hidden");
     this.overlay.classList.remove("hidden");
@@ -344,7 +350,6 @@ class App {
       document.querySelector(".modal__form").innerHTML = html;
       this.allMeanings[actualWord] = html;
     }
-    console.log(this.modal.querySelector(".spinner-border"));
     this.modal.querySelector(".spinner-border").classList.add("hidden");
     closeModalButton.addEventListener("click", this.closeModal);
 
