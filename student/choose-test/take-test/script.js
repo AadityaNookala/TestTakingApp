@@ -251,7 +251,6 @@ class App {
       });
 
     const nextTask = allTestsInCategory[newArr[newArr.length - 1][1] + 1];
-    console.log(nextTask);
     await sendAPI("PATCH", `${baseUrl}/score`, {
       userName: userName,
       testName: testName,
