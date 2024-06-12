@@ -242,7 +242,7 @@ class App {
       )
     ).data;
     const allTestsInCategory = (
-      await sendAPI("GET", `${baseUrl}/categories/${categoryName}`)
+      await sendAPI("GET", `${baseUrl}/categories/getCategory/${categoryName}`)
     ).data.data.tests;
     const newArr = newTestName
       .map((el) => [el, allTestsInCategory.indexOf(el)])
@@ -282,8 +282,12 @@ class App {
     const word = e.target.closest(".word");
     if (!word) return;
     this.meanings = (
-      await sendAPI("GET", `${baseUrl}/categories/${this.randomTest.testName}`)
-    ).data.meanings;
+      await sendAPI(
+        "GET",
+        `${baseUrl}/categories/${this.url.get("testCategory")}`
+      )
+    ).data.data.withMeanings;
+
     if (!this.meanings) return;
 
     const actualWord = word.textContent.trim();
