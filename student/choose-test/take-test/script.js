@@ -286,7 +286,7 @@ class App {
         "GET",
         `${baseUrl}/categories/${this.url.get("testCategory")}`
       )
-    ).data.data.withMeanings;
+    ).data.meanings;
 
     if (!this.meanings) return;
 
