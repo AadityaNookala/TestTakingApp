@@ -235,22 +235,6 @@ class App {
     const testName = this.randomTest.testName;
     const userName = this.url.get("accessLevel");
     const categoryName = decodeURI(this.url.get("testCategory"));
-    const newTestName = (
-      await sendAPI(
-        "GET",
-        `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
-      )
-    ).data;
-    const allTestsInCategory = (
-      await sendAPI("GET", `${baseUrl}/categories/getCategory/${categoryName}`)
-    ).data.data.tests;
-    const newArr = newTestName
-      .map((el) => [el, allTestsInCategory.indexOf(el)])
-      .sort(function (a, b) {
-        return a[1] - b[1];
-      });
-
-    const nextTask = allTestsInCategory[newArr[newArr.length - 1][1] + 1];
     await sendAPI("PATCH", `${baseUrl}/score`, {
       userName: userName,
       testName: testName,
@@ -261,19 +245,46 @@ class App {
         score,
       },
     });
-    score = `${score}/${noOfWords}`;
-    await sendAPI("POST", `${baseUrlScheduler}/integrate-spellings-app`, {
-      score,
-      testName,
-      categoryName,
-      nextTask,
-      userName,
-    });
+    this.check.remove();
     this.sentences.insertAdjacentHTML(
       "beforeend",
-      `<div class="score">Score: ${score}</div>`
+      `<div class="score">Score: ${score}/${noOfWords}</div>`
     );
-    this.check.remove();
+    if (userName === "Shandilya" || userName === "Aaditya") {
+      const newTestName = await sendAPI(
+        "GET",
+        `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
+      ).data;
+      if (!newTestName) {
+        this.sentences.insertAdjacentHTML(
+          "beforeend",
+          `<div class="score">This is not the test that you are supposed to do today. Please visit your scheduler to see what you have to do.</div>`
+        );
+        return;
+      }
+      const allTestsInCategory = (
+        await sendAPI(
+          "GET",
+          `${baseUrl}/categories/getCategory/${categoryName}`
+        )
+      ).data.data.tests;
+      const newArr = newTestName
+        .map((el) => [el, allTestsInCategory.indexOf(el)])
+        .sort(function (a, b) {
+          return a[1] - b[1];
+        });
+
+      const nextTask = allTestsInCategory[newArr[newArr.length - 1][1] + 1];
+
+      score = `${score}/${noOfWords}`;
+      await sendAPI("POST", `${baseUrlScheduler}/integrate-spellings-app`, {
+        score,
+        testName,
+        categoryName,
+        nextTask,
+        userName,
+      });
+    }
   }
   async getMeaning(e) {
     this.modal = document.querySelector(".my-modal");

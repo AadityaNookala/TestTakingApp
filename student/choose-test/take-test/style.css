@@ -24,6 +24,9 @@ body {
   font-size: 5rem;
   color: #ffcb9a;
   text-align: center;
+  word-wrap: break-word;
+  margin: 0 auto;
+  width: 50%;
 }
 
 .header {
