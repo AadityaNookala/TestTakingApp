@@ -251,9 +251,11 @@ class App {
       `<div class="score">Score: ${score}/${noOfWords}</div>`
     );
     if (userName === "Shandilya" || userName === "Aaditya") {
-      const newTestName = await sendAPI(
-        "GET",
-        `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
+      const newTestName = (
+        await sendAPI(
+          "GET",
+          `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
+        )
       ).data;
       if (!newTestName) {
         this.sentences.insertAdjacentHTML(
