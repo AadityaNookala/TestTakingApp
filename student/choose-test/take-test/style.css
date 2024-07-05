@@ -76,7 +76,35 @@ body {
   cursor: pointer;
 }
 
-.check {
+.score {
+  margin-left: 30rem;
+  color: #ffcb9a;
+  border: 3px solid #116466;
+  border-radius: 5%;
+}
+
+.sentences-input {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #ffcb9a;
+  background: none;
+  color: #ffcb9a;
+  resize: both;
+  width: 90%;
+  max-width: 100%;
+}
+
+.sentences-input:focus {
+  outline: none;
+  box-shadow: none;
+  border: 2px solid #ffcb9a;
+}
+
+.check,
+.peer-review,
+.no-peer-review,
+.correct,
+.incorrect {
   transition: all 0.2s;
   background-color: #116466;
   color: #fff;
@@ -87,7 +115,11 @@ body {
   cursor: pointer;
 }
 
-.check:hover {
+.check:hover,
+.peer-review:hover,
+.no-peer-review:hover,
+.correct:hover,
+.incorrect:hover {
   transition: all 0.2s;
   background-color: #116466;
   color: #ffcb9a;
@@ -98,7 +130,6 @@ body {
   cursor: pointer;
 }
 
-.score,
 .sentence {
   margin-left: 2rem;
   margin-bottom: 2rem;

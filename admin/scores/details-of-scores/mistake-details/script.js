@@ -54,6 +54,7 @@ class App {
 
     const data = eveything.data;
     const test = eveything.test;
+    console.log(data);
 
     if (data.length === 0) {
       return;
