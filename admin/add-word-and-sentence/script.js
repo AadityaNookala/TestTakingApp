@@ -1,8 +1,8 @@
 "use strict";
 
 import { baseUrl, sendAPI } from "../../config.js";
-import { default as AddingSpellings } from "../../logics/spellings/adding.js";
-import { default as AddingSentenceCombining } from "../../logics/sentence-combining/adding.js";
+import { default as AddingSpellings } from "../../logics/adding/spellings.js";
+import { default as AddingSentenceCombining } from "../../logics/adding/sentence-combining.js";
 
 class App {
   #add;
