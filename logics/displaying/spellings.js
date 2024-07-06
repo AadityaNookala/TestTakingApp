@@ -244,7 +244,7 @@ class Displaying extends Common {
       )
     ).data.meanings;
 
-    if (meanings) return;
+    if (!meanings) return;
 
     const actualWord = word.textContent.trim();
     this.#modal.innerHTML = `
