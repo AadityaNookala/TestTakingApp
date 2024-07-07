@@ -315,10 +315,8 @@ class Displaying extends Common {
     this.#overlay.addEventListener("click", this.#closeModal);
   }
   #closeModal() {
-    this.#modal = document.querySelector(".my-modal");
-    this.#overlay = document.querySelector(".overlay");
-    this.#overlay.classList.add("hidden");
-    this.#modal.classList.add("hidden");
+    document.querySelector(".overlay").classList.add("hidden");
+    document.querySelector(".my-modal").classList.add("hidden");
   }
 
   #fixedDragstart(e) {
