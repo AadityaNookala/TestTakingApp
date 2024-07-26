@@ -34,8 +34,7 @@ class Common {
     enteredAnswers,
     indexOfMistake,
     score,
-    noOfWords,
-    type = null
+    noOfWords
   ) {
     const date = new Date();
     const dateMonthDayYear =
@@ -43,21 +42,18 @@ class Common {
     const testName = this.randomTest.testName;
     const userName = this.url.get("accessLevel");
     const categoryName = this.url.get("testCategory");
-    // Temp disable for sc
-    if (type !== "sentence-combining") {
-      await sendAPI("PATCH", `${baseUrl}/score`, {
-        userName: userName,
-        testName: testName,
-        dates: dateMonthDayYear,
-        enteredSentence: {
-          indexOfActualSentence: indexOfMistake,
-          mistakenAnswers: enteredAnswers,
-          score,
-        },
-      });
-    }
+    await sendAPI("PATCH", `${baseUrl}/score`, {
+      userName: userName,
+      testName: testName,
+      dates: dateMonthDayYear,
+      enteredSentence: {
+        indexOfActualSentence: indexOfMistake,
+        mistakenAnswers: enteredAnswers,
+        score,
+      },
+    });
     if (userName !== "Shandilya" && userName !== "Aaditya") return;
-    const newTestName = (
+    let newTestName = (
       await sendAPI(
         "GET",
         `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`

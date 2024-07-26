@@ -159,14 +159,14 @@ class Displaying extends Common {
             enteredAnswers,
             indexOfMistake,
             score,
-            noOfWords,
-            "sentence-combining"
+            noOfWords
           );
           document.querySelector(".no-peer-review").remove();
           document.querySelector(".peer-review").remove();
         });
 
       let noOfClicked = 0;
+      const original = indexOfMistake.length;
       document.querySelector(".peer-review").addEventListener("click", () => {
         document.querySelector(".no-peer-review").remove();
         document.querySelector(".peer-review").remove();
@@ -197,6 +197,9 @@ class Displaying extends Common {
                   .querySelector(".sentence")
               );
               const index = this.randomTest.sentences.indexOf(textContent);
+              const otherIndex = enteredAnswers.indexOf(textContent);
+              enteredAnswers.splice(otherIndex, 1);
+              indexOfMistake.splice(otherIndex, 1);
               noOfClicked++;
               this.randomTest.answers[index].push(
                 e.target
@@ -204,13 +207,12 @@ class Displaying extends Common {
                   .closest(".sentence-div")
                   .querySelector(".sentences-input").value
               );
-              if (noOfClicked === indexOfMistake.length) {
+              if (noOfClicked === original) {
                 this.sendAPIToScoresAndScheduler(
                   enteredAnswers,
                   indexOfMistake,
                   score,
-                  noOfWords,
-                  "sentence-combining"
+                  noOfWords
                 );
                 await sendAPI("PATCH", `${baseUrl}/test/updatetest`, {
                   test: this.randomTest,
@@ -225,17 +227,15 @@ class Displaying extends Common {
               e.target.closest(".correct").remove();
             } else if (e.target.closest(".incorrect")) {
               noOfClicked++;
-              if (noOfClicked === indexOfMistake.length) {
+              if (noOfClicked === original) {
                 this.sendAPIToScoresAndScheduler(
                   enteredAnswers,
                   indexOfMistake,
                   score,
-                  noOfWords,
-                  "sentence-combining"
+                  noOfWords
                 );
               }
               e.target.closest(".sentence-div").style.backgroundColor = "red";
-              console.log(e.target);
               e.target
                 .closest(".incorrect")
                 .closest(".sentence-div")
