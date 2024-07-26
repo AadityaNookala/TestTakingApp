@@ -159,7 +159,8 @@ class Displaying extends Common {
             enteredAnswers,
             indexOfMistake,
             score,
-            noOfWords
+            noOfWords,
+            "sentence-combining"
           );
           document.querySelector(".no-peer-review").remove();
           document.querySelector(".peer-review").remove();
@@ -208,7 +209,8 @@ class Displaying extends Common {
                   enteredAnswers,
                   indexOfMistake,
                   score,
-                  noOfWords
+                  noOfWords,
+                  "sentence-combining"
                 );
                 await sendAPI("PATCH", `${baseUrl}/test/updatetest`, {
                   test: this.randomTest,
@@ -228,7 +230,8 @@ class Displaying extends Common {
                   enteredAnswers,
                   indexOfMistake,
                   score,
-                  noOfWords
+                  noOfWords,
+                  "sentence-combining"
                 );
               }
               e.target.closest(".sentence-div").style.backgroundColor = "red";
