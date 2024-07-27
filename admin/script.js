@@ -762,7 +762,8 @@ class App {
           cloneButton.closest(".test-categories-showing").dataset.categoryName
         }`
       )
-    ).data.meanings;
+    ).data.withMeanings;
+    console.log(withMeanings);
     this.spellingsCategoriesContainer.insertAdjacentHTML(
       "beforeend",
       `<div class="categories-showing mt-4">
