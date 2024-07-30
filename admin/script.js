@@ -447,6 +447,15 @@ class App {
     });
   }
   async showCategories() {
+    this.testCategories = (
+      await sendAPI("GET", `${baseUrl}/categories`)
+    ).data.data.sort((p1, p2) =>
+      p1.categoryName > p2.categoryName
+        ? 1
+        : p1.categoryName < p2.categoryName
+        ? -1
+        : 0
+    );
     this.spellingsCategoriesContainer.innerHTML = "";
     this.sentenceCombiningCategoriesContainer.innerHTML = "";
     this.testCategories.forEach((element) => {
@@ -753,6 +762,7 @@ class App {
     });
   }
   async clone(e) {
+    console.log(this.showCategories);
     const cloneButton = e.target.closest(".clone-button");
     if (!cloneButton) return;
     const withMeanings = (
@@ -776,30 +786,34 @@ class App {
   }</label><button class="button-add" fdprocessedid="o4koq7">Add Category</button><input type="text" placeholder="What is to be add to all tests" class="input" fdprocessedid="6lsswm">`
     );
     const addCategoryButton = document.querySelector(".button-add");
-    addCategoryButton.addEventListener("click", async function () {
-      let checked = false;
-      if (
-        (withMeanings && !document.querySelector("#meanings-input").checked) ||
-        (!withMeanings && document.querySelector("#meanings-input").checked)
-      ) {
-        checked = true;
-      }
-      await sendAPI(
-        "POST",
-        `${baseUrl}/update/clone/updateTestCategory/${
-          cloneButton.closest(".test-categories-showing").dataset.categoryName
-        }`,
-        {
-          categoryName: document
-            .querySelector(".input-category-name")
-            .value.trim(),
-          tests: document.querySelector(".input").value.trim(),
-          withMeanings: checked,
-          isClone: true,
+    addCategoryButton.addEventListener(
+      "click",
+      async function () {
+        let checked = false;
+        if (
+          (withMeanings &&
+            !document.querySelector("#meanings-input").checked) ||
+          (!withMeanings && document.querySelector("#meanings-input").checked)
+        ) {
+          checked = true;
         }
-      );
-      this.showCategories();
-    });
+        await sendAPI(
+          "POST",
+          `${baseUrl}/update/clone/updateTestCategory/${
+            cloneButton.closest(".test-categories-showing").dataset.categoryName
+          }`,
+          {
+            categoryName: document
+              .querySelector(".input-category-name")
+              .value.trim(),
+            tests: document.querySelector(".input").value.trim(),
+            withMeanings: checked,
+            isClone: true,
+          }
+        );
+        await this.showCategories();
+      }.bind(this)
+    );
   }
   copyTestName(e) {
     const copy = e.target.closest(".copy");
