@@ -88,6 +88,7 @@ class Displaying extends Common {
         el.closest(".sentence-div").querySelector(".sentence")
       );
       const index = this.randomTest.sentences.indexOf(textContent);
+      console.log(this.randomTest.sentences.indexOf(textContent));
       if (this.randomTest.answers[index].indexOf(el.value.trim()) !== -1) {
         if (this.randomTest.answers[index].length !== 1) {
           const halfBeforeTheUnwantedElement = this.randomTest.answers[
