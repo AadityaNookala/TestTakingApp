@@ -178,18 +178,13 @@ class Adding {
     `;
 
     this.#modal.querySelector(".btn-default").onclick = async () => {
-      const split = this.#data.sentences[index].split("/");
       const formData = new FormData();
       const fileInput = document.querySelector(".form-control");
       const file = fileInput.files[0];
       formData.append(
         "questionImage",
         file,
-        `${
-          type === "adding"
-            ? `section1-questionImage-${crypto.randomUUID()}.png`
-            : `${split[split.length - 1]}`
-        }`
+        `section1-questionImage-${crypto.randomUUID()}.png`
       );
 
       const radios = document.querySelectorAll(".form-check-input");
