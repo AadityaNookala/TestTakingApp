@@ -1,6 +1,6 @@
 "use strict";
 
-import { baseUrl, sendAPI, arrOfPuncs } from "../../config.js";
+import { baseUrl, sendAPI } from "../../config.js";
 
 class Adding {
   showingModal() {

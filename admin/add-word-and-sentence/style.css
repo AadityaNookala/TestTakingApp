@@ -106,6 +106,10 @@ body {
   width: 100%;
 }
 
+.row {
+  margin-left: 2rem;
+}
+
 .highlight {
   background-color: #d1e8e2;
   color: #116466;
@@ -157,4 +161,38 @@ textarea {
 
 .added-sentence {
   white-space: pre-wrap;
+}
+
+.section-1,
+.section-2 {
+  cursor: pointer;
+}
+
+.section-heading {
+  color: #d9b08c;
+  margin-top: 1rem;
+  font-size: 2.5rem;
+  margin-left: 2rem;
+}
+
+.img {
+  width: 70%;
+  height: 70%;
+  overflow: hidden;
+}
+
+.add-file {
+  border: none;
+  cursor: pointer;
+  background-color: #2c3531;
+  color: #ffcb9a;
+  padding: 1rem;
+  border-radius: 5%;
+  font-size: 1.5rem;
+  margin-left: 2rem;
+  margin-top: 2rem;
+}
+
+.modal-form-control {
+  margin-top: 1rem;
 }
