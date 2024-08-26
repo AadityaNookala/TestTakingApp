@@ -268,7 +268,7 @@ class Displaying extends Common {
       const meaning = (
         await sendAPI(
           "GET",
-          `${baseUrl}/word-meaning/${word.textContent.trim()}`
+          `${baseUrl}/get-meaning/${word.textContent.trim()}`
         )
       ).data;
 

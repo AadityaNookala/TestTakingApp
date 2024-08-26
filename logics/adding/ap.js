@@ -199,21 +199,11 @@ class Adding {
         "testName",
         new URLSearchParams(window.location.search).get("testName")
       );
-      if (type === "adding") {
-        await (
-          await fetch(`${baseUrl}/ap/upload-image`, {
-            method: "POST",
-            body: formData,
-          })
-        ).json();
-      } else {
-        await (
-          await fetch(`${baseUrl}/ap/edit-question`, {
-            method: "PATCH",
-            body: formData,
-          })
-        ).json();
-      }
+      console.log(formData, [...formData]);
+      await fetch(`${baseUrl}/ap/upload-image`, {
+        method: "POST",
+        body: formData,
+      });
       document.querySelector(
         "form"
       ).innerHTML = `<p class="section-heading">Section 1 <button class="add" type="button" data-type="section-1">Add a new question</button></p><div class="row header">
