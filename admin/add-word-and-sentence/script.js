@@ -1,7 +1,6 @@
 "use strict";
 
-import { default as AP } from "../../logics/adding/ap.js";
-import { default as CommonSPSC } from "../../logics/adding/commonspsc.js";
+import { default as Common } from "../../logics/adding/common.js";
 
 class App {
   #heading;
@@ -15,11 +14,7 @@ class App {
     const urlParams = new URLSearchParams(window.location.search);
     const dataType = urlParams.get("dataType");
     this.#heading.textContent = decodeURIComponent(urlParams.get("testName"));
-    if (dataType === "spellings" || dataType === "sentence-combining") {
-      new CommonSPSC();
-    } else if (dataType === "ap") {
-      new AP();
-    }
+    new Common();
   }
 }
 

@@ -3,6 +3,7 @@
 import { baseUrl, sendAPI } from "../../../config.js";
 import { default as DisplayingSpellings } from "../../../logics/displaying/spellings.js";
 import { default as DisplayingSentenceCombining } from "../../../logics/displaying/sentence-combining.js";
+import { default as DisplayingKeyTerms } from "../../../logics/displaying/keyterms.js";
 class App {
   constructor() {
     (async () => {
@@ -23,6 +24,8 @@ class App {
         new DisplayingSpellings();
       } else if (testType === "sentence-combining") {
         new DisplayingSentenceCombining();
+      } else if (testType === "key-terms") {
+        new DisplayingKeyTerms();
       }
     })();
   }

@@ -58,8 +58,9 @@ class Common {
         "GET",
         `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
       )
-    ).data;
-    if (newTestName.length === 0) {
+    ).returnedData;
+    console.log(newTestName);
+    if (newTestName !== testName) {
       document
         .querySelector(".sentences")
         .insertAdjacentHTML(
@@ -71,13 +72,8 @@ class Common {
     const allTestsInCategory = (
       await sendAPI("GET", `${baseUrl}/categories/getCategory/${categoryName}`)
     ).data.data.tests;
-    const newArr = newTestName
-      .map((el) => [el, allTestsInCategory.indexOf(el)])
-      .sort(function (a, b) {
-        return a[1] - b[1];
-      });
-    const nextTask = allTestsInCategory[newArr[newArr.length - 1][1] + 1];
-
+    const nextTask =
+      allTestsInCategory[allTestsInCategory.indexOf(newTestName) + 1];
     score = `${score}/${noOfWords}`;
     await sendAPI("POST", `${baseUrlScheduler}/integrate-spellings-app`, {
       score,

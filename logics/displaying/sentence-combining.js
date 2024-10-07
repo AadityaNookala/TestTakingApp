@@ -134,12 +134,16 @@ class Displaying extends Common {
     });
     const noOfWords = this.randomTest.sentences.length;
     if (score === noOfWords) {
+      console.log("hi");
+      document.querySelector(".spinner-border").style.display = "block";
       this.sendAPIToScoresAndScheduler(
         enteredAnswers,
         indexOfMistake,
         score,
         noOfWords
       );
+      document.querySelector(".spinner-border").style.display = "none";
+
       this.#check.remove();
       this.#sentences.insertAdjacentHTML(
         "afterend",
@@ -156,12 +160,16 @@ class Displaying extends Common {
       document
         .querySelector(".no-peer-review")
         .addEventListener("click", () => {
+          console.log("hi");
+          document.querySelector(".spinner-border").style.display = "block";
           this.sendAPIToScoresAndScheduler(
             enteredAnswers,
             indexOfMistake,
             score,
             noOfWords
           );
+          document.querySelector(".spinner-border").style.display = "none";
+
           document.querySelector(".no-peer-review").remove();
           document.querySelector(".peer-review").remove();
         });
@@ -209,6 +217,9 @@ class Displaying extends Common {
                   .querySelector(".sentences-input").value
               );
               if (noOfClicked === original) {
+                console.log("hi");
+                document.querySelector(".spinner-border").style.display =
+                  "block";
                 this.sendAPIToScoresAndScheduler(
                   enteredAnswers,
                   indexOfMistake,
@@ -218,6 +229,8 @@ class Displaying extends Common {
                 await sendAPI("PATCH", `${baseUrl}/test/updatetest`, {
                   test: this.randomTest,
                 });
+                document.querySelector(".spinner-border").style.display =
+                  "none";
               }
               e.target.closest(".sentence-div").style.backgroundColor = "green";
               e.target
@@ -229,12 +242,18 @@ class Displaying extends Common {
             } else if (e.target.closest(".incorrect")) {
               noOfClicked++;
               if (noOfClicked === original) {
+                console.log("hi");
+                document.querySelector(".spinner-border").style.display =
+                  "inline-block";
+
                 this.sendAPIToScoresAndScheduler(
                   enteredAnswers,
                   indexOfMistake,
                   score,
                   noOfWords
                 );
+                document.querySelector(".spinner-border").style.display =
+                  "none";
               }
               e.target.closest(".sentence-div").style.backgroundColor = "red";
               e.target

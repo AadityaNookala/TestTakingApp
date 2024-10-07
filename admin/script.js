@@ -23,8 +23,8 @@ class App {
       this.sentenceCombiningCategoriesContainer = document.querySelector(
         ".sentence-combining-categories-container"
       );
-      this.apCategoriesContainer = document.querySelector(
-        ".ap-categories-container"
+      this.keyTermsCategoriesContainer = document.querySelector(
+        ".key-terms-categories-container"
       );
       this.addNewUsers = document.querySelector(".add-new-user");
       this.usersContainer = document.querySelector(".users-container");
@@ -41,36 +41,14 @@ class App {
         this.handleClickOnUsersContainer.bind(this)
       );
       this.addNewUsers.addEventListener("click", this.addNewUser.bind(this));
-      this.spellingsCategoriesContainer.addEventListener(
-        "click",
-        this.handleClickOnCategoriesContainer.bind(this)
-      );
-      this.sentenceCombiningCategoriesContainer.addEventListener(
-        "click",
-        this.handleClickOnCategoriesContainer.bind(this)
-      );
-      this.apCategoriesContainer.addEventListener(
-        "click",
-        this.handleClickOnCategoriesContainer.bind(this)
-      );
-      this.addNewTestsCategory.addEventListener(
-        "click",
-        this.addNewTestCategory.bind(this)
-      );
       document
-        .querySelector(".sentence-combining-categories")
-        .querySelector(".add-new-test-category")
+        .querySelector(".categories")
         .addEventListener(
           "click",
-          this.addNewSentenceCombiningTestCategory.bind(this)
+          this.handleClickOnCategoriesContainer.bind(this)
         );
-      document
-        .querySelector(".ap-categories")
-        .querySelector(".add-new-test-category")
-        .addEventListener(
-          "click",
-          this.addNewSentenceCombiningTestCategory.bind(this)
-        );
+      this.addNewTestsCategory.addEventListener.onClick =
+        this.handleClickOnCategoriesContainer.bind(this);
       this.scores.addEventListener("click", this.handleClickOnScore.bind(this));
       this.spellingsCategoriesContainer.addEventListener(
         "click",
@@ -80,7 +58,7 @@ class App {
         "click",
         this.editTestName.bind(this)
       );
-      this.apCategoriesContainer.addEventListener(
+      this.keyTermsCategoriesContainer.addEventListener(
         "click",
         this.editTestName.bind(this)
       );
@@ -104,11 +82,11 @@ class App {
         "click",
         this.copyCategoryName.bind(this)
       );
-      this.apCategoriesContainer.addEventListener(
+      this.keyTermsCategoriesContainer.addEventListener(
         "click",
         this.copyTestName.bind(this)
       );
-      this.apCategoriesContainer.addEventListener(
+      this.keyTermsCategoriesContainer.addEventListener(
         "click",
         this.copyCategoryName.bind(this)
       );
@@ -141,7 +119,7 @@ class App {
       animation: 500,
       sort: false,
     });
-    Sortable.create(this.apCategoriesContainer, {
+    Sortable.create(this.keyTermsCategoriesContainer, {
       group: {
         name: "shared",
         pull: "clone",
@@ -209,11 +187,18 @@ class App {
   }
   async handleClickOnCategoriesContainer(e) {
     const addNewTestButton = e.target.closest(".add-new-test-tests");
+    const addNewTestCategoryButton = e.target.closest(".add-new-test-category");
     const row = e.target.closest(".row");
     const edit = e.target.closest(".edit");
     const editTestCategory = e.target.closest(".button-edit-category");
     const copy = e.target.closest(".copy");
-    if (!addNewTestButton && !row && !editTestCategory) return;
+    if (
+      !addNewTestButton &&
+      !row &&
+      !editTestCategory &&
+      !addNewTestCategoryButton
+    )
+      return;
     if (editTestCategory) {
       const buttonsWrapper = editTestCategory.closest(".buttons-wrapper");
       const testCategoriesHeading =
@@ -414,90 +399,92 @@ class App {
           });
         }
       });
-    }
-  }
-  async addNewTestCategory() {
-    this.spellingsCategoriesContainer.classList.remove("hidden");
-    this.spellingsCategoriesContainer.previousElementSibling.querySelector(
-      ".show-button"
-    ).textContent = "-";
-    this.spellingsCategoriesContainer.insertAdjacentHTML(
-      "beforeend",
-      `<div class="categories-showing mt-4">
-      <a class="show-button">+</a>
-      <h2 class="test-categories"><input type="text" class="input"></h2>
-    </div>
-    <input type="checkbox" id="meanings-input" name="meanings" value="meanings">
-    <label for="meanings" class="meanings">Do you want meanings for this test category</label>
-    <button class="button-add">Add Category</button>`
-    );
-    const buttonAdd = document.querySelector(".button-add");
-    buttonAdd.addEventListener("click", async () => {
-      const checkBox = document.querySelector("#meanings-input");
-      let checked = false;
-      if (checkBox.checked) {
-        checked = true;
+    } else if (addNewTestCategoryButton) {
+      let type;
+      if (e.target.closest(".category").dataset.type === "spellings") {
+        this.spellingsCategoriesContainer.classList.remove("hidden");
+        this.spellingsCategoriesContainer.previousElementSibling.querySelector(
+          ".show-button"
+        ).textContent = "-";
+        this.spellingsCategoriesContainer.insertAdjacentHTML(
+          "beforeend",
+          `<div class="categories-showing mt-4">
+        <a class="show-button">+</a>
+        <h2 class="test-categories"><input type="text" class="input"></h2>
+      </div>
+      <input type="checkbox" id="meanings-input" name="meanings" value="meanings">
+      <label for="meanings" class="meanings">Do you want meanings for this test category</label>
+      <button class="button-add">Add Category</button>`
+        );
+        const buttonAdd = document.querySelector(".button-add");
+        buttonAdd.addEventListener("click", async () => {
+          const checkBox = document.querySelector("#meanings-input");
+          let checked = false;
+          if (checkBox.checked) {
+            checked = true;
+          }
+          const inputValue = document.querySelector(".input").value;
+          const object = {
+            categoryName: inputValue,
+            tests: [],
+            withMeanings: checked,
+            isClone: false,
+            type: "spellings",
+          };
+          await sendAPI("POST", `${baseUrl}/categories`, object);
+
+          this.testCategories.push(object);
+          this.showCategories();
+        });
       }
-      const inputValue = document.querySelector(".input").value;
-      const object = {
-        categoryName: inputValue,
-        tests: [],
-        withMeanings: checked,
-        isClone: false,
-        type: "spellings",
-      };
-      await sendAPI("POST", `${baseUrl}/categories`, object);
-
-      this.testCategories.push(object);
-      this.showCategories();
-    });
-  }
-
-  async addNewSentenceCombiningTestCategory(e) {
-    let type;
-    if (e.target.closest(".category").dataset.type === "sentence-combining") {
-      this.sentenceCombiningCategoriesContainer.classList.remove("hidden");
-      this.sentenceCombiningCategoriesContainer.previousElementSibling.querySelector(
-        ".show-button"
-      ).textContent = "-";
-      this.sentenceCombiningCategoriesContainer.insertAdjacentHTML(
-        "beforeend",
-        `<div class="categories-showing mt-4">
+      if (e.target.closest(".category").dataset.type === "sentence-combining") {
+        this.sentenceCombiningCategoriesContainer.classList.remove("hidden");
+        this.sentenceCombiningCategoriesContainer.previousElementSibling.querySelector(
+          ".show-button"
+        ).textContent = "-";
+        this.sentenceCombiningCategoriesContainer.insertAdjacentHTML(
+          "beforeend",
+          `<div class="categories-showing mt-4">
+          <a class="show-button">+</a>
+          <h2 class="test-categories"><input type="text" class="input"></h2>
+        </div>
+        <button class="button-add">Add Category</button>
+        <input type="text" class="input input-label" placeholder="Enter labels">`
+        );
+        type = "sentence-combining";
+      } else if (e.target.closest(".category").dataset.type === "key-terms") {
+        this.keyTermsCategoriesContainer.classList.remove("hidden");
+        this.keyTermsCategoriesContainer.previousElementSibling.querySelector(
+          ".show-button"
+        ).textContent = "-";
+        this.keyTermsCategoriesContainer.insertAdjacentHTML(
+          "beforeend",
+          `<div class="categories-showing mt-4">
         <a class="show-button">+</a>
         <h2 class="test-categories"><input type="text" class="input"></h2>
       </div>
       <button class="button-add">Add Category</button>`
-      );
-      type = "sentence-combining";
-    } else if (e.target.closest(".category").dataset.type === "ap") {
-      this.apCategoriesContainer.classList.remove("hidden");
-      this.apCategoriesContainer.previousElementSibling.querySelector(
-        ".show-button"
-      ).textContent = "-";
-      this.apCategoriesContainer.insertAdjacentHTML(
-        "beforeend",
-        `<div class="categories-showing mt-4">
-      <a class="show-button">+</a>
-      <h2 class="test-categories"><input type="text" class="input"></h2>
-    </div>
-    <button class="button-add">Add Category</button>`
-      );
-      type = "AP";
+        );
+        type = "Key Terms";
+      }
+      const buttonAdd = document.querySelector(".button-add");
+      buttonAdd.addEventListener("click", async () => {
+        const labels = [];
+        const inputValue = document.querySelector(".input").value;
+        const object = {
+          categoryName: inputValue,
+          tests: [],
+          isClone: false,
+          type,
+          labels,
+        };
+        await sendAPI("POST", `${baseUrl}/categories`, object);
+        this.testCategories.push(object);
+        this.showCategories();
+      });
     }
-    const buttonAdd = document.querySelector(".button-add");
-    buttonAdd.addEventListener("click", async () => {
-      const inputValue = document.querySelector(".input").value;
-      const object = {
-        categoryName: inputValue,
-        tests: [],
-        isClone: false,
-        type,
-      };
-      await sendAPI("POST", `${baseUrl}/categories`, object);
-      this.testCategories.push(object);
-      this.showCategories();
-    });
   }
+
   async showCategories() {
     this.testCategories = (
       await sendAPI("GET", `${baseUrl}/categories`)
@@ -508,9 +495,10 @@ class App {
         ? -1
         : 0
     );
+
     this.spellingsCategoriesContainer.innerHTML = "";
     this.sentenceCombiningCategoriesContainer.innerHTML = "";
-    this.apCategoriesContainer.innerHTML = "";
+    this.keyTermsCategoriesContainer.innerHTML = "";
     this.testCategories.forEach((element) => {
       let html = ``;
       html += `<div class="test-categories-showing mt-4" data-category-name="${
@@ -537,7 +525,7 @@ class App {
       ${
         element.isClone ||
         element.type === "sentence-combining" ||
-        element.type === "AP"
+        element.type === "key-terms"
           ? ""
           : `<button class="clone-button">Clone</button>`
       }
@@ -604,8 +592,8 @@ class App {
           "beforeend",
           html
         );
-      } else if (element.type === "AP") {
-        this.apCategoriesContainer.insertAdjacentHTML("beforeend", html);
+      } else if (element.type === "key-terms") {
+        this.keyTermsCategoriesContainer.insertAdjacentHTML("beforeend", html);
       }
     });
   }
@@ -777,7 +765,6 @@ class App {
       cancel.remove();
       const userData = (await sendAPI("GET", `${baseUrl}/user`)).data.data;
       let flag = 0;
-      console.log();
       userData.every((element) => {
         if (element.testCategories.includes(testCategoryName)) {
           document
@@ -819,7 +806,6 @@ class App {
     });
   }
   async clone(e) {
-    console.log(this.showCategories);
     const cloneButton = e.target.closest(".clone-button");
     if (!cloneButton) return;
     const withMeanings = (
@@ -830,7 +816,6 @@ class App {
         }`
       )
     ).data.withMeanings;
-    console.log(withMeanings);
     this.spellingsCategoriesContainer.insertAdjacentHTML(
       "beforeend",
       `<div class="categories-showing mt-4">

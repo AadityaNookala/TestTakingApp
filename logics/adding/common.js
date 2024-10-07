@@ -1,6 +1,7 @@
 import { baseUrl, sendAPI } from "../../config.js";
-import { default as AddingSpellings } from "../../logics/adding/spellings.js";
-import { default as AddingSentenceCombining } from "../../logics/adding/sentence-combining.js";
+import { default as AddingSpellings } from "./spellings.js";
+import { default as AddingSentenceCombining } from "./sentence-combining.js";
+import { default as AddingKeyTerms } from "./keyterms.js";
 class Common {
   #add;
   #form;
@@ -22,8 +23,8 @@ class Common {
       if (dataType === "spellings") this.#addingObject = new AddingSpellings();
       else if (dataType === "sentence-combining")
         this.#addingObject = new AddingSentenceCombining();
-      else if (dataType === "ap") {
-        this.#addingObject = new AP();
+      else if (dataType === "key-terms") {
+        this.#addingObject = new AddingKeyTerms();
       }
       await this.#showWords();
       if (this.#add) {
