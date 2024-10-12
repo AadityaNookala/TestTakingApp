@@ -465,7 +465,7 @@ class App {
       </div>
       <button class="button-add">Add Category</button>`
         );
-        type = "Key Terms";
+        type = "key-terms";
       }
       const buttonAdd = document.querySelector(".button-add");
       buttonAdd.addEventListener("click", async () => {
@@ -476,7 +476,6 @@ class App {
           tests: [],
           isClone: false,
           type,
-          labels,
         };
         await sendAPI("POST", `${baseUrl}/categories`, object);
         this.testCategories.push(object);
