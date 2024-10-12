@@ -6,7 +6,11 @@ import { baseUrl } from "../../config.js";
 class Adding {
   showingModal(input) {
     document.querySelector(".modal-body").textContent = "";
-    const inputSentenceTest = input.value.trim().split("");
+    const inputSentenceTest = input.value.trim().split(" ");
+    for (let i = 0; i < inputSentenceTest.length - 1; i += 2) {
+      inputSentenceTest.splice(i + 1, 0, " ");
+    }
+    console.log(inputSentenceTest);
     document
       .querySelector(".modal-body")
       .insertAdjacentHTML(
@@ -39,9 +43,11 @@ class Adding {
     document.querySelector(".modal-body").onclick = this.#clickOnModalBody;
     document.querySelector(".btn-default").onclick = async () => {
       const arrOfIndexes = [];
+
       document.querySelectorAll(".highlight").forEach((el) => {
         arrOfIndexes.push(+el.dataset.index);
       });
+
       const imageUrl = await this.#uploadImage();
       const data = Object.fromEntries([
         ...new FormData(document.querySelector("form")),
