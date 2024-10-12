@@ -4,19 +4,14 @@ import { default as CommonKTSP } from "../adding/commonktsp.js";
 import { baseUrl } from "../../config.js";
 
 class Adding {
-  showingModal() {
-    const clickOnModalBody = function (e) {
-      if (e.target.classList.contains("span-for-sentence-in-modal")) {
-        e.target.classList.toggle("highlight");
-      }
-    };
+  showingModal(input) {
     document.querySelector(".modal-body").textContent = "";
-    const inputSentenceTest = this.value.trim().split("");
+    const inputSentenceTest = input.value.trim().split("");
     document
       .querySelector(".modal-body")
       .insertAdjacentHTML(
         "beforeend",
-        `<input type="file" class="form-control modal-form-control" aria-label="file example" accept="image/*"><br>Sentence: `
+        `<input type="file" name="image" class="form-control modal-form-control" aria-label="file example" accept="image/*"><br>Sentence: `
       );
     inputSentenceTest.forEach((el, i) => {
       document
@@ -26,35 +21,69 @@ class Adding {
           `<span class="span-for-sentence-in-modal" data-index="${i}">${el}</span>`
         );
     });
-    const typeOfChange = this.closest(".row")
+    this.#saveHandler(input, inputSentenceTest);
+  }
+
+  #clickOnModalBody(e) {
+    if (e.target.classList.contains("span-for-sentence-in-modal")) {
+      e.target.classList.toggle("highlight");
+    }
+  }
+
+  #saveHandler(input, inputSentenceTest) {
+    const typeOfChange = input
+      .closest(".row")
       .querySelector("button")
       .dataset.typeOfChange.trim();
-    const activeIndex = +this.closest(".row").dataset.index;
-    document.querySelector(".modal-body").onclick = clickOnModalBody;
-    document.querySelector(".btn-default").onclick = async function () {
+    const activeIndex = +input.closest(".row").dataset.index;
+    document.querySelector(".modal-body").onclick = this.#clickOnModalBody;
+    document.querySelector(".btn-default").onclick = async () => {
       const arrOfIndexes = [];
       document.querySelectorAll(".highlight").forEach((el) => {
         arrOfIndexes.push(+el.dataset.index);
       });
-      // const common = new CommonKTSP();
-      // common.sendForKeyTermsAndSpellings(
-      //   arrOfIndexes,
-      //   typeOfChange,
-      //   activeIndex
-      // );
-      const formData = new FormData();
-      const fileInput = document.querySelector(".modal-form-control");
-      const file = fileInput.files[0];
-      formData.append(
-        "questionImage",
-        file,
-        `section1-questionImage-${crypto.randomUUID()}.png`
+      const imageUrl = await this.#uploadImage();
+      const data = Object.fromEntries([
+        ...new FormData(document.querySelector("form")),
+      ]);
+      data.answers = arrOfIndexes;
+
+      data.sentences = { sentence: data.sentences };
+      if (imageUrl) data.sentences.imageUrl = imageUrl;
+
+      console.log(data);
+
+      const common = new CommonKTSP();
+      await common.sendForKeyTermsAndSpellings(
+        data,
+        typeOfChange,
+        activeIndex,
+        inputSentenceTest
       );
-      await fetch(`${baseUrl}/key-terms/upload-image`, {
-        method: "POST",
-        body: formData,
-      });
     };
+  }
+
+  async #uploadImage() {
+    const fileInput = document.querySelector(".modal-form-control");
+    const file = fileInput.files[0];
+    console.log(file);
+    if (!file) return null;
+    const attachedImageId = crypto.randomUUID();
+    const response = await fetch(
+      `${baseUrl}/get-signed-url?fileName=${file.name}-${attachedImageId}`
+    );
+    const uploadUrl = (await response.json()).url;
+    console.log(uploadUrl);
+
+    await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/octet-stream",
+      },
+      body: file,
+    });
+
+    return `https://storage.googleapis.com/test-taking-bucket/${file.name}-${attachedImageId}`;
   }
 }
 

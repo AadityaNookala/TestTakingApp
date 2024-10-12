@@ -4,7 +4,7 @@ import { arrOfPuncs } from "../../config.js";
 import { default as CommonKTSP } from "./commonktsp.js";
 
 class Adding {
-  showingModal() {
+  showingModal(input) {
     const clickOnModalBody = function (e) {
       if (
         e.target.classList.contains("span-for-sentence-in-modal") &&
@@ -15,7 +15,7 @@ class Adding {
     };
     const arrayOfSpans = [];
     document.querySelector(".modal-body").textContent = "";
-    const inputSentenceTest = this.value;
+    const inputSentenceTest = input.value;
     const inputSentenceTestSplit = inputSentenceTest.split(" ");
     document
       .querySelector(".modal-body")
@@ -44,10 +44,11 @@ class Adding {
         );
       count++;
     });
-    const typeOfChange = this.closest(".row")
+    const typeOfChange = input
+      .closest(".row")
       .querySelector("button")
       .dataset.typeOfChange.trim();
-    const activeIndex = +this.closest(".row").dataset.index;
+    const activeIndex = +input.closest(".row").dataset.index;
     document.querySelector(".modal-body").onclick = clickOnModalBody;
     document
       .querySelector(".btn-default")
@@ -63,10 +64,15 @@ class Adding {
       .addEventListener("submit", async function (e) {
         e.preventDefault();
         const common = new CommonKTSP();
+        const data = Object.fromEntries([
+          ...new FormData(document.querySelector("form")),
+        ]);
+        data.answers = arrayOfSpans;
         common.sendForKeyTermsAndSpellings(
-          arrayOfSpans,
+          data,
           typeOfChange,
-          activeIndex
+          activeIndex,
+          inputSentenceTestSplit
         );
       });
   }

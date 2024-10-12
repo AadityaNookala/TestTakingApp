@@ -3,13 +3,14 @@
 import { baseUrl, sendAPI } from "../../config.js";
 
 class Adding {
-  showingModal() {
-    const typeOfChange = this.closest(".row")
+  showingModal(input) {
+    const typeOfChange = input
+      .closest(".row")
       .querySelector("button")
       .dataset.typeOfChange.trim();
     document.querySelector(".modal-body").textContent = "";
-    const inputSentenceTest = this.value;
-    const activeIndex = +this.closest(".row").dataset.index;
+    const inputSentenceTest = input.value;
+    const activeIndex = +input.closest(".row").dataset.index;
     const inputSentenceTestSplit = inputSentenceTest.split("\n");
     document
       .querySelector(".modal-body")

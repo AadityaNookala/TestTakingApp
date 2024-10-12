@@ -196,3 +196,12 @@ textarea {
 .modal-form-control {
   margin-top: 1rem;
 }
+
+.image {
+  display: block;
+  margin-top: 2rem;
+}
+
+.sentence {
+  display: block;
+}

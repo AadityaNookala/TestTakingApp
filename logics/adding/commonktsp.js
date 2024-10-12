@@ -3,12 +3,13 @@
 import { baseUrl, sendAPI } from "../../config.js";
 
 class CommonKTSP {
-  async sendForKeyTermsAndSpellings(arrOfIndexes, typeOfChange, activeIndex) {
-    const data = Object.fromEntries([
-      ...new FormData(document.querySelector("form")),
-    ]);
-    data.answers = arrOfIndexes;
-
+  async sendForKeyTermsAndSpellings(
+    data,
+    typeOfChange,
+    activeIndex,
+    inputSentenceTest
+  ) {
+    console.log(inputSentenceTest);
     if (typeOfChange === "adding") {
       await sendAPI(
         "PATCH",
@@ -25,7 +26,7 @@ class CommonKTSP {
           .textContent.trim()}?typeOfChange=${typeOfChange}&indexOfActualSentence=${activeIndex}`,
         {
           sentence: inputSentenceTest.join(""),
-          answers: arrOfIndexes,
+          answers: data.answers,
         }
       );
     }

@@ -77,13 +77,21 @@ class Common {
     }
     const sentences = this.#data.sentences;
     sentences.forEach((_, i) => {
-      let html = ``;
-      sentences[i].split("\n").forEach((el, j) => {
+      let html = `<p class="sentence">`;
+      const newSentence = sentences[i].sentence
+        ? sentences[i].sentence
+        : sentences[i];
+      newSentence.split("\n").forEach((el, j) => {
         html += el;
-        if (sentences[i].split("\n").length - 1 !== j) {
+        if (newSentence.split("\n").length - 1 !== j) {
           html += "<br>";
         }
       });
+      html += `</p>${
+        sentences[i].imageUrl
+          ? `<img class="image" src="${sentences[i].imageUrl}" />`
+          : ""
+      }`;
       this.#form.insertAdjacentHTML(
         "beforeend",
         `<div class="row" data-index="${this.#numberOfWords++}">
@@ -113,9 +121,8 @@ class Common {
     this.#showing();
     const addWord = document.querySelector(".add-word");
     const inputSentence = document.querySelector(".input-sentence");
-    addWord.addEventListener(
-      "click",
-      this.#addingObject.showingModal.bind(inputSentence)
+    addWord.addEventListener("click", () =>
+      this.#addingObject.showingModal(inputSentence)
     );
   }
   #edit(e) {
@@ -143,7 +150,7 @@ class Common {
     );
     document
       .querySelector(".edit-word")
-      .addEventListener("click", this.#addingObject.showingModal.bind(input));
+      .addEventListener("click", () => this.#addingObject.showingModal(input));
   }
 }
 
