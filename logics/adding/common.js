@@ -9,6 +9,7 @@ class Common {
   #numberOfWords;
   #addingObject;
   #data;
+  #dataType = new URLSearchParams(window.location.search).get("dataType");
   constructor() {
     (async () => {
       this.#add = document.querySelector(".add");
@@ -18,12 +19,11 @@ class Common {
       this.#data = (
         await sendAPI("GET", `${baseUrl}/test/${this.#heading.textContent}`)
       ).data.test;
-      const urlParams = new URLSearchParams(window.location.search);
-      const dataType = urlParams.get("dataType");
-      if (dataType === "spellings") this.#addingObject = new AddingSpellings();
-      else if (dataType === "sentence-combining")
+      if (this.#dataType === "spellings")
+        this.#addingObject = new AddingSpellings();
+      else if (this.#dataType === "sentence-combining")
         this.#addingObject = new AddingSentenceCombining();
-      else if (dataType === "key-terms") {
+      else if (this.#dataType === "key-terms") {
         this.#addingObject = new AddingKeyTerms();
       }
       await this.#showWords();
@@ -82,7 +82,20 @@ class Common {
         ? sentences[i].sentence
         : sentences[i];
       newSentence.split("\n").forEach((el, j) => {
-        html += el;
+        console.log(el);
+        if (this.#dataType === "spellings" || this.#dataType === "key-terms") {
+          const inputSentenceTest = el.trim().split(" ");
+          if (this.#dataType === "key-terms") {
+            for (let i = 0; i < inputSentenceTest.length - 1; i += 2) {
+              inputSentenceTest.splice(i + 1, 0, " ");
+            }
+          }
+          inputSentenceTest.forEach((word, k) => {
+            html += `<span class="${
+              this.#data.answers[i].includes(k) ? "highlight" : ""
+            }">${word}</span>${this.#dataType === "spellings" ? " " : ""}`;
+          });
+        } else html += el;
         if (newSentence.split("\n").length - 1 !== j) {
           html += "<br>";
         }
