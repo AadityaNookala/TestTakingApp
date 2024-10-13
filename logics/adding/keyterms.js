@@ -45,7 +45,7 @@ class Adding {
       const arrOfIndexes = [];
 
       document.querySelectorAll(".highlight").forEach((el) => {
-        if (+el.dataset.index !== (null || undefined))
+        if (el.dataset.index !== (null || undefined))
           arrOfIndexes.push(+el.dataset.index);
       });
 
