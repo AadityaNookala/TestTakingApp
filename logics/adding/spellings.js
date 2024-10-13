@@ -54,8 +54,9 @@ class Adding {
       .querySelector(".btn-default")
       .addEventListener("click", async function () {
         const allHighlightedSpans = document.querySelectorAll(".highlight");
-        allHighlightedSpans.forEach(function (s, i) {
-          arrayOfSpans.push(+s.dataset.index);
+        allHighlightedSpans.forEach(function (s) {
+          if (s.dataset.index !== (null || undefined))
+            arrayOfSpans.push(+s.dataset.index);
         });
         document.querySelector("form").requestSubmit();
       });
