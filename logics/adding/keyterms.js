@@ -45,7 +45,8 @@ class Adding {
       const arrOfIndexes = [];
 
       document.querySelectorAll(".highlight").forEach((el) => {
-        arrOfIndexes.push(+el.dataset.index);
+        if (+el.dataset.index !== (null || undefined))
+          arrOfIndexes.push(+el.dataset.index);
       });
 
       const imageUrl = await this.#uploadImage();
