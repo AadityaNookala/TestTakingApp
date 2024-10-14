@@ -205,3 +205,18 @@ textarea {
 .sentence {
   display: block;
 }
+
+#canvas-container {
+  position: relative;
+  cursor: cell;
+}
+
+#image-canvas {
+  border: 0.1rem;
+}
+
+.mask {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}

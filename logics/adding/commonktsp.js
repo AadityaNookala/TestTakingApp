@@ -7,7 +7,7 @@ class CommonKTSP {
     data,
     typeOfChange,
     activeIndex,
-    inputSentenceTest
+    inputSentenceTest = null
   ) {
     console.log(inputSentenceTest);
     if (typeOfChange === "adding") {
@@ -19,15 +19,17 @@ class CommonKTSP {
         {}
       );
     } else {
+      const sendObj = {
+        answers: data.answers,
+      };
+      if (inputSentenceTest) sendObj.sentence = inputSentenceTest.join("");
+      else sendObj.sentence = data.imageUrl;
       await sendAPI(
         "PATCH",
         `${baseUrl}/version/${document
           .querySelector(".heading")
           .textContent.trim()}?typeOfChange=${typeOfChange}&indexOfActualSentence=${activeIndex}`,
-        {
-          sentence: inputSentenceTest.join(""),
-          answers: data.answers,
-        }
+        sendObj
       );
     }
     await sendAPI(

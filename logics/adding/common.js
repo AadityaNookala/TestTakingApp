@@ -80,6 +80,8 @@ class Common {
       let html = `<p class="sentence">`;
       const newSentence = sentences[i].sentence
         ? sentences[i].sentence
+        : sentences[i].sentence === ""
+        ? ""
         : sentences[i];
       newSentence.split("\n").forEach((el, j) => {
         console.log(el);

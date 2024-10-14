@@ -2,8 +2,10 @@ export const baseUrl =
   "https://us-central1-allprojects-424621.cloudfunctions.net/spellings-function";
 export const baseUrlScheduler =
   "https://us-central1-allprojects-424621.cloudfunctions.net/scheduler-function";
+export const bucketName = "test-taking-bucket";
 // export const baseUrl = "http://127.0.0.1:8000";
 // export const baseUrlScheduler = "http://127.0.0.1:3000";
+// export const bucketName = "test-taking-bucket-dev";
 
 export const arrOfPuncs = [
   ",",
@@ -42,4 +44,26 @@ export async function sendAPI(typeOfRequest, URL, data = undefined) {
     console.error(err);
     throw err;
   }
+}
+
+export async function uploadImage(baseUrl) {
+  const fileInput = document.querySelector(".modal-form-control");
+  const file = fileInput.files[0];
+  if (!file) return null;
+  const attachedImageId = crypto.randomUUID();
+  const response = await fetch(
+    `${baseUrl}/get-signed-url?fileName=${file.name}-${attachedImageId}`
+  );
+  const uploadUrl = (await response.json()).url;
+  console.log(uploadUrl);
+
+  await fetch(uploadUrl, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+    body: file,
+  });
+
+  return `https://storage.googleapis.com/${bucketName}/${file.name}-${attachedImageId}`;
 }
