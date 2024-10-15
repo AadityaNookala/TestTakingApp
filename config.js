@@ -51,10 +51,10 @@ export async function uploadImage(baseUrl) {
   const file = fileInput.files[0];
   if (!file) return null;
   const attachedImageId = crypto.randomUUID();
-  const response = await fetch(
+  const uploadUrl = await sendAPI(
+    "GET",
     `${baseUrl}/get-signed-url?fileName=${file.name}-${attachedImageId}`
   );
-  const uploadUrl = (await response.json()).url;
   console.log(uploadUrl);
 
   await fetch(uploadUrl, {
