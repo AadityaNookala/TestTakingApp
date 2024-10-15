@@ -53,7 +53,7 @@ export async function uploadImage(baseUrl) {
   const attachedImageId = crypto.randomUUID();
   const uploadUrl = await sendAPI(
     "GET",
-    `${baseUrl}/get-signed-url?fileName=${file.name}-${attachedImageId}`
+    `${baseUrl}/get-signed-url?fileName=${file.name}-${attachedImageId}&bucketName=${bucketName}`
   );
   console.log(uploadUrl);
 
