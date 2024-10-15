@@ -40,6 +40,7 @@ class Common {
     const dateMonthDayYear =
       date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
     const testName = this.randomTest.testName;
+    console.log(testName);
     const userName = this.url.get("accessLevel");
     const categoryName = this.url.get("testCategory");
     await sendAPI("PATCH", `${baseUrl}/score`, {
@@ -58,9 +59,9 @@ class Common {
         "GET",
         `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
       )
-    ).returnedData;
+    ).data;
     console.log(newTestName);
-    if (newTestName !== testName) {
+    if (!newTestName.includes(testName)) {
       document
         .querySelector(".sentences")
         .insertAdjacentHTML(

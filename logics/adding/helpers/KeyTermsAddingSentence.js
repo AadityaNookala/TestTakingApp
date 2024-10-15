@@ -12,16 +12,16 @@ class AddingSentence {
       .querySelector(".modal-body")
       .insertAdjacentHTML(
         "beforeend",
-        `<input type="file" name="image" class="form-control modal-form-control" aria-label="file example" accept="image/*"><br>Sentence: `
+        `<input type="file" name="image" class="form-control modal-form-control" aria-label="file example" accept="image/*"><br>Sentence:`
       );
+    let sentenceHtml = `<p>`;
     inputSentenceTest.forEach((el, i) => {
-      document
-        .querySelector(".modal-body")
-        .insertAdjacentHTML(
-          "beforeend",
-          `<span class="span-for-sentence-in-modal" data-index="${i}">${el}</span>`
-        );
+      sentenceHtml += `<span class="span-for-sentence-in-modal" data-index="${i}">${el}</span>`;
     });
+    sentenceHtml += `</p>`;
+    document
+      .querySelector(".modal-body")
+      .insertAdjacentHTML("beforeend", sentenceHtml);
     this.#saveHandlerSentence(input, inputSentenceTest);
   }
 

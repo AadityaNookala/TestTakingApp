@@ -5,15 +5,6 @@ import { default as CommonKTSP } from "./commonktsp.js";
 
 class Adding {
   showingModal(input) {
-    const clickOnModalBody = function (e) {
-      if (
-        e.target.classList.contains("span-for-sentence-in-modal") &&
-        e.target.textContent.trim() !== ""
-      ) {
-        e.target.classList.toggle("highlight");
-      }
-    };
-    const arrayOfSpans = [];
     document.querySelector(".modal-body").textContent = "";
     const inputSentenceTest = input.value;
     const inputSentenceTestSplit = inputSentenceTest.split(" ");
@@ -44,38 +35,46 @@ class Adding {
         );
       count++;
     });
+    document.querySelector(".modal-body").onclick = this.#clickOnModalBody;
+    document
+      .querySelector(".btn-default")
+      .addEventListener("click", (e) =>
+        this.#handleClickOnSave(e, inputSentenceTestSplit, input)
+      );
+  }
+  #clickOnModalBody(e) {
+    if (
+      e.target.classList.contains("span-for-sentence-in-modal") &&
+      e.target.textContent.trim() !== ""
+    ) {
+      e.target.classList.toggle("highlight");
+    }
+  }
+
+  #handleClickOnSave(e, inputSentenceTestSplit, input) {
+    e.preventDefault();
+    const arrayOfSpans = [];
+    const allHighlightedSpans = document.querySelectorAll(".highlight");
+    allHighlightedSpans.forEach(function (s) {
+      if (s.dataset.index !== (null || undefined))
+        arrayOfSpans.push(+s.dataset.index);
+    });
     const typeOfChange = input
       .closest(".row")
       .querySelector("button")
       .dataset.typeOfChange.trim();
     const activeIndex = +input.closest(".row").dataset.index;
-    document.querySelector(".modal-body").onclick = clickOnModalBody;
-    document
-      .querySelector(".btn-default")
-      .addEventListener("click", async function () {
-        const allHighlightedSpans = document.querySelectorAll(".highlight");
-        allHighlightedSpans.forEach(function (s) {
-          if (s.dataset.index !== (null || undefined))
-            arrayOfSpans.push(+s.dataset.index);
-        });
-        document.querySelector("form").requestSubmit();
-      });
-    document
-      .querySelector("form")
-      .addEventListener("submit", async function (e) {
-        e.preventDefault();
-        const common = new CommonKTSP();
-        const data = Object.fromEntries([
-          ...new FormData(document.querySelector("form")),
-        ]);
-        data.answers = arrayOfSpans;
-        common.sendForKeyTermsAndSpellings(
-          data,
-          typeOfChange,
-          activeIndex,
-          inputSentenceTestSplit
-        );
-      });
+    const common = new CommonKTSP();
+    const data = Object.fromEntries([
+      ...new FormData(document.querySelector("form")),
+    ]);
+    data.answers = arrayOfSpans;
+    common.sendForKeyTermsAndSpellings(
+      data,
+      typeOfChange,
+      activeIndex,
+      inputSentenceTestSplit
+    );
   }
 }
 

@@ -159,10 +159,18 @@ textarea {
   resize: both;
 }
 
-.added-sentence {
-  white-space: pre-wrap;
+.modal-body {
+  display: block;
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 10px;
 }
 
+.span-for-sentence-in-modal {
+  display: inline-block;
+  margin-right: 5px;
+}
 .section-1,
 .section-2 {
   cursor: pointer;
