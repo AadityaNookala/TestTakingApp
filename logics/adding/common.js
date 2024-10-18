@@ -147,8 +147,7 @@ class Common {
     row.classList.add("active-adding");
     const sentenceRow = row.querySelector(".col-7");
     console.log(sentenceRow);
-    const textCont =
-      this.#data.sentences[row.querySelector(".col-7").textContent - 1];
+    const textCont = sentenceRow.querySelector(".sentence").textContent.trim();
     let html = ``;
     textCont.split("\n").forEach((el, i) => {
       html += el;
