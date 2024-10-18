@@ -16,16 +16,23 @@ class AddingSentence {
       );
     let sentenceHtml = `<p>`;
     inputSentenceTest.forEach((el, i) => {
-      sentenceHtml += `<span class="span-for-sentence-in-modal" data-index="${i}">${el}</span>`;
+      sentenceHtml += `<span class="span-for-sentence-in-modal word" data-index="${i}">${
+        el === " " ? "&nbsp;" : el
+      }</span>`;
+      // if (i < inputSentenceTest.length - 1) {
+      //   sentenceHtml += `<span class="span-for-sentence-in-modal space" data-index="space-${i}">&nbsp;</span>`;
+      // }
     });
     sentenceHtml += `</p>`;
     document
       .querySelector(".modal-body")
       .insertAdjacentHTML("beforeend", sentenceHtml);
+    document.querySelector(".modal-body").onclick = this.#clickOnModalBody;
     this.#saveHandlerSentence(input, inputSentenceTest);
   }
 
   #clickOnModalBody(e) {
+    console.log(e.target);
     if (e.target.classList.contains("span-for-sentence-in-modal")) {
       e.target.classList.toggle("highlight");
     }
@@ -37,7 +44,6 @@ class AddingSentence {
       .querySelector("button")
       .dataset.typeOfChange.trim();
     const activeIndex = +input.closest(".row").dataset.index;
-    document.querySelector(".modal-body").onclick = this.#clickOnModalBody;
     document.querySelector(".btn-default").onclick = async () => {
       const arrOfIndexes = [];
 

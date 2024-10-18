@@ -2,7 +2,6 @@
 
 import AddingSentence from "./helpers/KeyTermsAddingSentence.js";
 import AddingImage from "./helpers/KeyTermsAddingImage.js";
-import { baseUrl, bucketName } from "../../../config.js";
 
 class Adding {
   showingModal(input) {

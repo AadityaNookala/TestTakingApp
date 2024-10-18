@@ -169,11 +169,6 @@ textarea {
 
 .span-for-sentence-in-modal {
   display: inline-block;
-  margin-right: 5px;
-}
-.section-1,
-.section-2 {
-  cursor: pointer;
 }
 
 .section-heading {
