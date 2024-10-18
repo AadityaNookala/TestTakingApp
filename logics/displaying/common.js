@@ -73,8 +73,8 @@ class Common {
     const allTestsInCategory = (
       await sendAPI("GET", `${baseUrl}/categories/getCategory/${categoryName}`)
     ).data.data.tests;
-    const nextTask =
-      allTestsInCategory[allTestsInCategory.indexOf(newTestName) + 1];
+    const nextTask = allTestsInCategory[newTestName.indexOf(testName) + 1];
+    console.log(nextTask);
     score = `${score}/${noOfWords}`;
     await sendAPI("POST", `${baseUrlScheduler}/integrate-spellings-app`, {
       score,
