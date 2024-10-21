@@ -9,7 +9,6 @@ class Displaying extends Common {
   #idOfSentence;
   #allMeanings;
   #check;
-  #url;
   #sentences;
 
   constructor() {
@@ -25,11 +24,11 @@ class Displaying extends Common {
 
     </div>`
       );
-      this.#url = new URLSearchParams(window.location.search);
       this.#sentences = document.querySelector(".sentences");
       this.#fixed = document.querySelector(".fixed");
       this.#modal = document.querySelector(".my-modal");
       this.#overlay = document.querySelector(".overlay");
+      // put this in config sometime, the number of spaces not the actual string
       this.#defaultDroppingSpanValue =
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
       this.#words = [];
@@ -240,7 +239,7 @@ class Displaying extends Common {
     const meanings = (
       await sendAPI(
         "GET",
-        `${baseUrl}/categories/${this.#url.get("testCategory")}`
+        `${baseUrl}/categories/${this.url.get("testCategory")}`
       )
     ).data.meanings;
 

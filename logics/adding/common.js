@@ -84,7 +84,6 @@ class Common {
         ? ""
         : sentences[i];
       newSentence.split("\n").forEach((el, j) => {
-        console.log(el);
         if (this.#dataType === "spellings" || this.#dataType === "key-terms") {
           const inputSentenceTest = el.trim().split(" ");
           if (this.#dataType === "key-terms") {
