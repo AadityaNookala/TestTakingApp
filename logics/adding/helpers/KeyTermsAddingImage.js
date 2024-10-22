@@ -143,7 +143,7 @@ class AddingImage {
     const data = {};
     data.answers = this.#masks;
 
-    data.sentences = { sentence: "" };
+    data.sentences = {};
     if (imageUrl) data.sentences.imageUrl = imageUrl;
 
     console.log(data);
