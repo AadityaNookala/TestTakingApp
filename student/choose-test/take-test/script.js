@@ -1,6 +1,7 @@
 "use strict";
 
-import { baseUrl, sendAPI } from "../../../config.js";
+import { baseUrl } from "../../../config.js";
+import { sendAPI } from "../../../helpers.js";
 import { default as DisplayingSpellings } from "../../../logics/displaying/spellings.js";
 import { default as DisplayingSentenceCombining } from "../../../logics/displaying/sentence-combining.js";
 import { default as DisplayingKeyTerms } from "../../../logics/displaying/keyterms.js";

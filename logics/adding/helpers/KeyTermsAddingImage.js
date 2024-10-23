@@ -1,4 +1,5 @@
-import { baseUrl, uploadImage } from "../../../config.js";
+import { baseUrl } from "../../../config.js";
+import { uploadImage } from "../../../helpers.js";
 import CommonKTSP from "../commonktsp.js";
 
 class AddingImage {

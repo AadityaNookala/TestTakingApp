@@ -1,4 +1,5 @@
-import { baseUrl, sendAPI } from "../../config.js";
+import { baseUrl } from "../../config.js";
+import { sendAPI } from "../../helpers.js";
 import { default as Common } from "./common.js";
 
 class Displaying extends Common {

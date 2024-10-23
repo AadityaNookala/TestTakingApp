@@ -1,4 +1,5 @@
-import { baseUrl, sendAPI, arrOfPuncs } from "../../config.js";
+import { baseUrl, arrOfPuncs } from "../../config.js";
+import { sendAPI } from "../../helpers.js";
 import { default as Common } from "./common.js";
 class Displaying extends Common {
   #fixed;

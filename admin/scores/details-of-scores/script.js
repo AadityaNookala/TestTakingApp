@@ -1,6 +1,7 @@
 "use strict";
 
-import { baseUrl, sendAPI } from "../../../config.js";
+import { baseUrl } from "../../../config.js";
+import { sendAPI } from "../../../helpers.js";
 
 class App {
   constructor() {

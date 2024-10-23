@@ -1,4 +1,5 @@
-import { baseUrl, sendAPI } from "../../config.js";
+import { baseUrl } from "../../config.js";
+import { sendAPI } from "../../helpers.js";
 import { default as AddingSpellings } from "./spellings.js";
 import { default as AddingSentenceCombining } from "./sentence-combining.js";
 import { default as AddingKeyTerms } from "./keyterms.js";
@@ -80,9 +81,9 @@ class Common {
       let html = `<p class="sentence">`;
       const newSentence = sentences[i].sentence
         ? sentences[i].sentence
-        : sentences[i].sentence === ""
-        ? ""
-        : sentences[i];
+        : typeof sentences[i] === String
+        ? sentences[i]
+        : "";
       newSentence.split("\n").forEach((el, j) => {
         if (this.#dataType === "spellings" || this.#dataType === "key-terms") {
           const inputSentenceTest = el.trim().split(" ");

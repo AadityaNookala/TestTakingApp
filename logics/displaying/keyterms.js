@@ -6,7 +6,8 @@ import { imageUrlStartsWith } from "../../config.js";
 class Displaying extends Common {
   #fixed;
   #answers = [];
-
+  #defaultDroppingSpanValue;
+  #check;
   constructor() {
     super();
     (async () => {
@@ -23,12 +24,14 @@ class Displaying extends Common {
         `
       );
       this.#fixed = document.querySelector(".fixed");
+      this.#defaultDroppingSpanValue =
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
       this.#renderPage();
     })();
   }
 
-  #renderPage() {
-    this.#renderDraggables();
+  async #renderPage() {
+    await this.#renderDraggables();
     this.#renderQuestions();
   }
 
@@ -101,7 +104,6 @@ class Displaying extends Common {
   }
 
   #renderAnswers() {
-    const fixedContainer = document.querySelector(".fixed");
     const randomAnswers = this.#randomizeArray(this.#answers);
     let html = "";
     randomAnswers.forEach((ans, i) => {
@@ -111,7 +113,7 @@ class Displaying extends Common {
         html += `<span class="word" draggable="true" id="word-span-${i}"><img src=${ans}></span>`;
       }
     });
-    fixedContainer.insertAdjacentHTML("afterbegin", html);
+    this.#fixed.insertAdjacentHTML("afterbegin", html);
   }
 
   #randomizeArray(arr) {
@@ -124,18 +126,44 @@ class Displaying extends Common {
   }
 
   #renderQuestions() {
-    let html = "";
-    // <span class="dropping-span" id="dropping-span-${j}"><span class="word">${
-    //   this.#defaultDroppingSpanValue
-    // }</span></span>
-    // <div class="sentence mb-5" data-index=${sentenceRandom[index][1]}>
-    //   ${i + 1}: ${splitWordSentence.join(" ")}
-    //   </div>
-    this.randomTest.sentences.forEach((obj) => {
-      if (obj.sentence) {
-        const sentence = obj.sentence;
-      }
+    this.randomTest.sentences.forEach((sentence, i) => {
+      const newSentence = sentence.sentence ? sentence.sentence.split(" ") : "";
+      for (let i = 0; i < newSentence.length - 1; i += 2)
+        newSentence.splice(i + 1, 0, " ");
+      console.log(this.randomTest.answers[i]);
+      this.randomTest.answers[i].forEach((answer, j) => {
+        if (typeof answer === "number") {
+          if(j!==this.randomTest.answers[i].length)
+          {
+            if (answer[i] === answer[i + 1] - 1) {
+              newSentence[
+                answer
+              ] = `<span class="dropping-span" id="dropping-span-${j}"><span class="word">${
+                this.#defaultDroppingSpanValue
+              }</span></span>`;
+            } else {
+            }
+          }
+        } else {
+        }
+      });
+      console.log(newSentence);
+      document.querySelector(".sentences").insertAdjacentHTML(
+        "beforeend",
+        `<div class="sentence mb-5" data-index=${i}>
+        ${sentence.imageUrl ? `<br><img src="${sentence.imageUrl}"><br>` : ""}
+        ${sentence.sentence ? `${i + 1}: ${newSentence.join(" ")}` : ""}
+        </div>`
+      );
     });
+    document
+      .querySelector(".sentences")
+      .insertAdjacentHTML(
+        "beforeend",
+        `<button class="check">Check your answers!</button>`
+      );
+    this.#check = document.querySelector(".check");
+    document.querySelector(".spinner-border").style.display = "none";
   }
 }
 
