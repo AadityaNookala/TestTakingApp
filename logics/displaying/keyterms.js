@@ -133,16 +133,13 @@ class Displaying extends Common {
       console.log(this.randomTest.answers[i]);
       this.randomTest.answers[i].forEach((answer, j) => {
         if (typeof answer === "number") {
-          if(j!==this.randomTest.answers[i].length)
-          {
-            if (answer[i] === answer[i + 1] - 1) {
-              newSentence[
-                answer
-              ] = `<span class="dropping-span" id="dropping-span-${j}"><span class="word">${
-                this.#defaultDroppingSpanValue
-              }</span></span>`;
-            } else {
-            }
+          if (j === 0) {
+            newSentence[
+              answer
+            ] = `<span class="dropping-span" id="dropping-span-${j}"><span class="word">${
+              this.#defaultDroppingSpanValue
+            }</span></span>`;
+          } else {
           }
         } else {
         }
