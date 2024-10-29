@@ -39,7 +39,7 @@ class Displaying extends Common {
   async #renderPage() {
     await this.#renderDraggables();
     await this.#renderQuestions();
-    this.#addDragAndDropHandlers(); // Ensure this method exists to handle drag-and-drop
+    this.#addDragAndDropHandlers();
   }
 
   async #renderDraggables() {
@@ -51,27 +51,29 @@ class Displaying extends Common {
     this.#answers = await Promise.all(
       this.randomTest.answers.map(async (answer, i) => {
         if (typeof answer[0] === "number") {
+          // Handle text-based answers
           const sentence = this.randomTest.sentences[i].sentence.split(" ");
-          for (let i = 0; i < sentence.length - 1; i += 2)
-            sentence.splice(i + 1, 0, " ");
+          for (let j = 0; j < sentence.length - 1; j += 2)
+            sentence.splice(j + 1, 0, " ");
           const storedAnswer = [];
           let word = "";
-          for (let i = 0; i < answer.length; i++) {
-            word += sentence[answer[i]];
-            if (answer[i] !== answer[i + 1] - 1) {
+          for (let j = 0; j < answer.length; j++) {
+            word += sentence[answer[j]];
+            if (answer[j] !== answer[j + 1] - 1) {
               storedAnswer.push(word);
               word = "";
             }
           }
-          return storedAnswer;
+          return { type: "text", content: storedAnswer };
         } else {
+          // Handle image-based answers by masking
           const maskedParts = [];
           const imageUrl = this.randomTest.sentences[i].imageUrl;
 
           return new Promise((resolve, reject) => {
             const img = new Image();
             img.crossOrigin = "Anonymous";
-            img.onload = function () {
+            img.onload = () => {
               answer.forEach((mask, index) => {
                 const tempCanvas = document.createElement("canvas");
                 const tempContext = tempCanvas.getContext("2d");
@@ -92,13 +94,15 @@ class Displaying extends Common {
                 );
 
                 const dataURL = tempCanvas.toDataURL("image/png");
-
-                maskedParts.push(dataURL);
+                if (!mask.id) {
+                  mask.id = `mask${index + 1}`;
+                }
+                maskedParts.push({ id: mask.id, maskedImageURL: dataURL });
               });
-              resolve(maskedParts);
+              resolve({ type: "image", content: maskedParts });
             };
 
-            img.onerror = function () {
+            img.onerror = () => {
               console.error(`Failed to load image at ${imageUrl}`);
               reject(new Error(`Failed to load image at ${imageUrl}`));
             };
@@ -114,13 +118,44 @@ class Displaying extends Common {
     const fixedContainer = document.querySelector(".fixed");
     const randomAnswers = this.#randomizeArray(this.#answers);
     let html = "";
+
     randomAnswers.forEach((ans, i) => {
-      if (!ans.startsWith(imageUrlStartsWith)) {
-        html += `<span class="word" draggable="true" id="word-span-${i}">${ans}</span>`;
+      if (ans.type === "image") {
+        // Image-based answers
+        ans.content.forEach((maskedPart, index) => {
+          html += `
+            <span 
+              class="word" 
+              draggable="true" 
+              id="word-span-${i}-${index}" 
+              data-id="${maskedPart.id}" 
+              data-type="image">
+              <img src="${maskedPart.maskedImageURL}" alt="Masked Part ${maskedPart.id}" class="img" />
+            </span>
+          `;
+          console.log(
+            `Rendered Draggable Image: ID=word-span-${i}-${index}, data-id=${maskedPart.id}`
+          );
+        });
+      } else if (ans.type === "text") {
+        // Text-based answers
+        ans.content.forEach((text, index) => {
+          html += `
+            <span 
+              class="word" 
+              draggable="true" 
+              id="word-span-${i}-${index}" 
+              data-type="text">
+              ${text}
+            </span>
+          `;
+          console.log(`Rendered Draggable Text: ID=word-span-${i}-${index}`);
+        });
       } else {
-        html += `<span class="word" draggable="true" id="word-span-${i}"><img src=${ans}></span>`;
+        console.warn(`Unknown answer type at index ${i}:`, ans);
       }
     });
+
     fixedContainer.insertAdjacentHTML("afterbegin", html);
   }
 
@@ -134,10 +169,11 @@ class Displaying extends Common {
   }
 
   async #renderQuestions() {
-    let num = 0;
     for (let i = 0; i < this.randomTest.sentences.length; i++) {
       const sentence = this.randomTest.sentences[i];
       const newSentence = sentence.sentence ? sentence.sentence.split(" ") : [];
+
+      // Insert spaces between words for better spacing
       for (let j = 0; j < newSentence.length - 1; j += 2)
         newSentence.splice(j + 1, 0, " ");
 
@@ -145,19 +181,25 @@ class Displaying extends Common {
       if (typeof answer === "number") {
         // Handle text-based answers by inserting drop zones
         this.randomTest.answers[i].forEach((ans) => {
-          newSentence[
-            ans
-          ] = `<span class="dropping-span" data-index="${num}"><span class="word">${
+          newSentence[ans] = `<span class="dropping-span"><span class="word">${
             this.#defaultDroppingSpanValue
           }</span></span>`;
-          num++;
         });
 
-        // Clean up any duplicate blanks
+        // Remove duplicate blanks
         for (let j = 0; j < newSentence.length - 1; j++) {
           if (newSentence[j] === newSentence[j + 1]) {
             newSentence.splice(j, 1);
             j = -1; // Reset loop after splice
+          }
+        }
+
+        // Assign data-index to drop zones
+        for (let j = 0; j < newSentence.length; j++) {
+          if (newSentence[j].startsWith("<span")) {
+            newSentence[j] = `<span class="dropping-span" data-index="${j}">
+              <span class="word">${this.#defaultDroppingSpanValue}</span>
+            </span>`;
           }
         }
 
@@ -182,9 +224,18 @@ class Displaying extends Common {
         const imageUrl = sentence.imageUrl;
         const masks = this.randomTest.answers[i]; // Array of mask objects
 
+        // Assign unique IDs to masks if they don't have them
+        masks.forEach((mask, index) => {
+          if (!mask.id) {
+            mask.id = `mask${index + 1}`;
+          }
+        });
+
         try {
-          const maskedImageURL = await this.#maskImage(imageUrl, masks);
-          console.log(maskedImageURL);
+          const maskedImageData = await this.#maskImage(imageUrl, masks);
+          const maskedImageURL = maskedImageData.maskedImageURL;
+          const naturalWidth = maskedImageData.naturalWidth;
+          const naturalHeight = maskedImageData.naturalHeight;
 
           // Insert the masked image along with the sentence
           this.#sentencesContainer.insertAdjacentHTML(
@@ -192,26 +243,30 @@ class Displaying extends Common {
             `
             <div class="sentence mb-5" data-index="${i}">
               <div class="masked-image-container" style="position: relative; display: inline-block;">
-                <img src="${maskedImageURL}" alt="Masked Image ${
-              i + 1
-            }" class="masked-image">
+                <img 
+                  src="${maskedImageURL}" 
+                  alt="Masked Image ${i + 1}" 
+                  class="masked-image" 
+                  data-index="${i}"
+                  onload="this.dataset.naturalWidth = this.naturalWidth; this.dataset.naturalHeight = this.naturalHeight;"
+                >
                 ${masks
                   .map(
                     (mask) => `
-                  <div 
-                    class="drop-zone" 
-                    data-id="${mask.id}" 
-                    style="
-                      position: absolute;
-                      left: ${mask.x}px;
-                      top: ${mask.y}px;
-                      width: ${mask.width}px;
-                      height: ${mask.height}px;
-                      box-sizing: border-box;
-                      cursor: pointer;
-                    ">
-                  </div>
-                `
+                      <div 
+                        class="drop-zone" 
+                        data-id="${mask.id}" 
+                        style="
+                          position: absolute;
+                          left: 0%;
+                          top: 0%;
+                          width: 0%;
+                          height: 0%;
+                          box-sizing: border-box;
+                          cursor: pointer;
+                        ">
+                      </div>
+                    `
                   )
                   .join("")}
               </div>
@@ -219,6 +274,45 @@ class Displaying extends Common {
             </div>
             `
           );
+
+          // After inserting, update drop zones with percentage-based positions
+          const maskedImage = this.#sentencesContainer.querySelector(
+            `.masked-image[data-index="${i}"]`
+          );
+          const dropZones = this.#sentencesContainer.querySelectorAll(
+            `.drop-zone[data-id^="mask"]`
+          );
+
+          maskedImage.addEventListener("load", () => {
+            const naturalW = maskedImage.naturalWidth;
+            const naturalH = maskedImage.naturalHeight;
+            const renderedW = maskedImage.clientWidth;
+            const renderedH = maskedImage.clientHeight;
+
+            const scaleX = renderedW / naturalW;
+            const scaleY = renderedH / naturalH;
+
+            dropZones.forEach((zone, idx) => {
+              const mask = masks[idx];
+              // Calculate percentage positions
+              const xPercent = (mask.x / naturalW) * 100;
+              const yPercent = (mask.y / naturalH) * 100;
+              const widthPercent = (mask.width / naturalW) * 100;
+              const heightPercent = (mask.height / naturalH) * 100;
+
+              // Update mask with percentage values
+              mask.xPercent = xPercent;
+              mask.yPercent = yPercent;
+              mask.widthPercent = widthPercent;
+              mask.heightPercent = heightPercent;
+
+              // Apply percentage-based styles
+              zone.style.left = `${mask.xPercent}%`;
+              zone.style.top = `${mask.yPercent}%`;
+              zone.style.width = `${mask.widthPercent}%`;
+              zone.style.height = `${mask.heightPercent}%`;
+            });
+          });
         } catch (error) {
           console.error(`Error masking image for sentence ${i}:`, error);
           // Optionally, insert the original image or a placeholder
@@ -237,13 +331,19 @@ class Displaying extends Common {
       }
     }
 
-    // Add Check Answers Button
+    // Add Check and Reset buttons
     this.#sentencesContainer.insertAdjacentHTML(
       "beforeend",
-      `<button class="check btn btn-primary mt-4">Check your answers!</button>`
+      `<button class="check btn btn-primary mt-4">Check your answers!</button>
+       <button class="reset btn btn-secondary mt-4">Reset Answers</button>`
     );
+
+    // Attach event listeners
     this.#check = document.querySelector(".check");
     this.#check.addEventListener("click", () => this.checkAnswers());
+
+    const resetButton = document.querySelector(".reset");
+    resetButton.addEventListener("click", () => this.resetAnswers());
 
     // Hide Spinner if exists
     const spinner = document.querySelector(".spinner-border");
@@ -278,13 +378,14 @@ class Displaying extends Common {
 
   // Drag Start Handler
   #handleDragStart(event) {
-    const type = event.target.getAttribute("data-type");
+    const target = event.currentTarget;
+    const type = target.getAttribute("data-type");
     if (type === "image") {
-      const id = event.target.getAttribute("data-id");
+      const id = target.getAttribute("data-id");
       event.dataTransfer.setData("text/plain", id);
       event.dataTransfer.effectAllowed = "move";
     } else if (type === "text") {
-      const text = event.target.textContent;
+      const text = target.textContent;
       event.dataTransfer.setData("text/plain", text);
       event.dataTransfer.effectAllowed = "copy";
     }
@@ -297,6 +398,7 @@ class Displaying extends Common {
   }
 
   // Drop Handler
+  // Drop Handler
   #handleDrop(event) {
     event.preventDefault();
     const dropZone = event.currentTarget;
@@ -304,27 +406,49 @@ class Displaying extends Common {
 
     const draggedData = event.dataTransfer.getData("text/plain");
 
-    const type = dropZone.getAttribute("data-type"); // You might need to set this
+    console.log(`Drop Zone ID: ${dropZoneId}`);
+    console.log(`Dragged Data ID: ${draggedData}`);
 
     if (dropZoneId) {
       // For image-based drop zones
       const draggable = document.querySelector(
         `.word[data-id="${draggedData}"]`
       );
-      if (draggable && dropZoneId === draggedData) {
-        // Append the dragged item to the drop zone
-        dropZone.innerHTML = "";
-        dropZone.appendChild(draggable);
-        draggable.setAttribute("draggable", "false"); // Prevent further dragging
-        // Optionally, add a class to indicate correct placement
-        dropZone.classList.add("correct");
+      if (draggable) {
+        const imgElement = draggable.querySelector("img");
+        console.log(imgElement);
+        if (imgElement) {
+          // Remove existing image in drop zone, if any
+          if (dropZone.firstChild) {
+            const existingImg = dropZone.querySelector("img");
+            if (existingImg) {
+              dropZone.removeChild(existingImg);
+            }
+          }
+
+          // Append the dragged image to the drop zone
+          dropZone.appendChild(imgElement);
+          console.log(dropZone);
+          draggable.remove(); // Remove the draggable from the fixed container
+          imgElement.setAttribute("draggable", "false"); // Prevent further dragging
+
+          // Ensure the image fills the drop zone precisely
+          imgElement.style.width = "100%";
+          imgElement.style.height = "100%";
+          imgElement.style.objectFit = "cover";
+        } else {
+          console.error(
+            `Image element not found within draggable item with data-id "${draggedData}".`
+          );
+        }
       } else {
-        // Optionally, provide feedback for incorrect drop
-        alert("Incorrect placement!");
+        console.error(
+          `Draggable item with data-id "${draggedData}" not found.`
+        );
       }
     } else {
       // Handle text-based drop zones if applicable
-      // Similar logic for text
+      // Implement similar logic for text-based drops
     }
   }
 
@@ -349,7 +473,7 @@ class Displaying extends Common {
           ctx.drawImage(img, 0, 0);
 
           // Set the fill style to white for masking
-          ctx.fillStyle = "#ffcb9a";
+          ctx.fillStyle = "#ffcb9a"; // Adjust as needed
 
           // Iterate through each mask and draw a white rectangle
           masks.forEach((mask, index) => {
@@ -365,20 +489,17 @@ class Displaying extends Common {
             }
 
             ctx.fillRect(mask.x, mask.y, mask.width, mask.height);
-
-            // Optional: Add a border around the masked area for debugging
-            /*
-            ctx.strokeStyle = '#FF0000'; // Red border
-            ctx.lineWidth = 2;
-            ctx.strokeRect(mask.x, mask.y, mask.width, mask.height);
-            */
           });
 
           // Convert the canvas content to a data URL
           const maskedImageURL = canvas.toDataURL("image/png");
 
-          // Resolve the promise with the masked image URL
-          resolve(maskedImageURL);
+          // Resolve the promise with maskedImageURL and natural dimensions
+          resolve({
+            maskedImageURL,
+            naturalWidth: img.width,
+            naturalHeight: img.height,
+          });
         } catch (error) {
           reject(`Error while masking the image: ${error}`);
         }
