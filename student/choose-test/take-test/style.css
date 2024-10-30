@@ -33,7 +33,8 @@ body {
   background-color: #116466;
 }
 
-.fixed {
+.fixed,
+.draggables {
   position: fixed;
   bottom: -1rem;
   color: #ffcb9a;
@@ -41,11 +42,28 @@ body {
   top: 2rem;
   display: grid;
   height: auto;
+  overflow: auto;
 }
 
 .row {
   display: inline;
   height: auto;
+}
+
+.word.dragging {
+  opacity: 0.5;
+}
+
+.drop-zone.over {
+  background-color: #f0f0f0; /* Change as needed */
+  border-color: #333; /* Change as needed */
+}
+
+/* Ensure images inside drop zones fill them */
+.drop-zone .word img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .word,

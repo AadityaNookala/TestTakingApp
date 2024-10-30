@@ -1,3 +1,5 @@
+// displaying.js
+
 "use strict";
 
 import { default as Common } from "./common.js";
@@ -18,17 +20,20 @@ class Displaying extends Common {
         if (!this.randomTest) {
           throw new Error("Failed to load random test data.");
         }
-        console.log(this.randomTest);
+        console.log("Random Test Data:", this.randomTest);
         document.querySelector(".container").insertAdjacentHTML(
           "beforeend",
-          `<div class="fixed"></div>
+          `<div class="fixed">
+             <div class="draggables"></div>
+           </div>
            <div class="sentences"></div>`
         );
-        this.#fixed = document.querySelector(".fixed");
+        this.#fixed = document.querySelector(".fixed .draggables");
         this.#sentencesContainer = document.querySelector(".sentences");
         this.#defaultDroppingSpanValue =
           "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         await this.#renderPage();
+        this.#addDragAndDropHandlers(); // Ensure handlers are added after rendering
       } catch (error) {
         console.error("Error initializing Displaying class:", error);
         // Optionally, display an error message to the user
@@ -39,7 +44,6 @@ class Displaying extends Common {
   async #renderPage() {
     await this.#renderDraggables();
     await this.#renderQuestions();
-    this.#addDragAndDropHandlers();
   }
 
   async #renderDraggables() {
@@ -112,10 +116,11 @@ class Displaying extends Common {
         }
       })
     );
+    console.log("Answers Created:", this.#answers);
   }
 
   #renderAnswers() {
-    const fixedContainer = document.querySelector(".fixed");
+    const fixedContainer = document.querySelector(".fixed .draggables");
     const randomAnswers = this.#randomizeArray(this.#answers);
     let html = "";
 
@@ -125,7 +130,7 @@ class Displaying extends Common {
         ans.content.forEach((maskedPart, index) => {
           html += `
             <span 
-              class="word" 
+              class="word draggable" 
               draggable="true" 
               id="word-span-${i}-${index}" 
               data-id="${maskedPart.id}" 
@@ -142,7 +147,7 @@ class Displaying extends Common {
         ans.content.forEach((text, index) => {
           html += `
             <span 
-              class="word" 
+              class="word draggable" 
               draggable="true" 
               id="word-span-${i}-${index}" 
               data-type="text">
@@ -157,6 +162,7 @@ class Displaying extends Common {
     });
 
     fixedContainer.insertAdjacentHTML("afterbegin", html);
+    console.log("Draggable Items Rendered in Fixed Container");
   }
 
   #randomizeArray(arr) {
@@ -181,9 +187,9 @@ class Displaying extends Common {
       if (typeof answer === "number") {
         // Handle text-based answers by inserting drop zones
         this.randomTest.answers[i].forEach((ans) => {
-          newSentence[ans] = `<span class="dropping-span"><span class="word">${
-            this.#defaultDroppingSpanValue
-          }</span></span>`;
+          newSentence[ans] = `<span class="dropping-span">
+              <span class="word">${this.#defaultDroppingSpanValue}</span>
+            </span>`;
         });
 
         // Remove duplicate blanks
@@ -198,16 +204,16 @@ class Displaying extends Common {
         for (let j = 0; j < newSentence.length; j++) {
           if (newSentence[j].startsWith("<span")) {
             newSentence[j] = `<span class="dropping-span" data-index="${j}">
-              <span class="word">${this.#defaultDroppingSpanValue}</span>
-            </span>`;
+                <span class="word">${this.#defaultDroppingSpanValue}</span>
+              </span>`;
           }
         }
 
         // Insert the sentence into the DOM
         this.#sentencesContainer.insertAdjacentHTML(
           "beforeend",
-          `
-          <div class="sentence mb-5" data-index="${i}">
+
+          `<div class="sentence mb-5" data-index="${i}">
             ${
               sentence.imageUrl
                 ? `<br><img src="${sentence.imageUrl}" alt="Image ${
@@ -216,8 +222,7 @@ class Displaying extends Common {
                 : ""
             }
             ${sentence.sentence ? `${i + 1}: ${newSentence.join(" ")}` : ""}
-          </div>
-          `
+          </div>`
         );
       } else {
         // Handle image-based answers by masking
@@ -240,8 +245,8 @@ class Displaying extends Common {
           // Insert the masked image along with the sentence
           this.#sentencesContainer.insertAdjacentHTML(
             "beforeend",
-            `
-            <div class="sentence mb-5" data-index="${i}">
+
+            `<div class="sentence mb-5" data-index="${i}">
               <div class="masked-image-container" style="position: relative; display: inline-block;">
                 <img 
                   src="${maskedImageURL}" 
@@ -252,8 +257,8 @@ class Displaying extends Common {
                 >
                 ${masks
                   .map(
-                    (mask) => `
-                      <div 
+                    (mask) =>
+                      `<div 
                         class="drop-zone" 
                         data-id="${mask.id}" 
                         style="
@@ -265,14 +270,12 @@ class Displaying extends Common {
                           box-sizing: border-box;
                           cursor: pointer;
                         ">
-                      </div>
-                    `
+                      </div>`
                   )
                   .join("")}
               </div>
               ${sentence.sentence ? `${i + 1}: ${newSentence.join(" ")}` : ""}
-            </div>
-            `
+            </div>`
           );
 
           // After inserting, update drop zones with percentage-based positions
@@ -314,42 +317,28 @@ class Displaying extends Common {
             });
           });
         } catch (error) {
-          console.error(`Error masking image for sentence ${i}:`, error);
           // Optionally, insert the original image or a placeholder
           this.#sentencesContainer.insertAdjacentHTML(
             "beforeend",
-            `
-            <div class="sentence mb-5" data-index="${i}">
+
+            `<div class="sentence mb-5" data-index="${i}">
               <br><img src="${imageUrl}" alt="Image ${
               i + 1
             }" class="masked-image" data-index="${i}"><br>
               ${sentence.sentence ? `${i + 1}: ${newSentence.join(" ")}` : ""}
-            </div>
-            `
+            </div>`
           );
         }
       }
     }
-
-    // Add Check and Reset buttons
-    this.#sentencesContainer.insertAdjacentHTML(
-      "beforeend",
-      `<button class="check btn btn-primary mt-4">Check your answers!</button>
-       <button class="reset btn btn-secondary mt-4">Reset Answers</button>`
-    );
-
-    // Attach event listeners
+    document
+      .querySelector(".sentences")
+      .insertAdjacentHTML(
+        "beforeend",
+        `<button class="check">Check your answers!</button>`
+      );
     this.#check = document.querySelector(".check");
-    this.#check.addEventListener("click", () => this.checkAnswers());
-
-    const resetButton = document.querySelector(".reset");
-    resetButton.addEventListener("click", () => this.resetAnswers());
-
-    // Hide Spinner if exists
-    const spinner = document.querySelector(".spinner-border");
-    if (spinner) {
-      spinner.style.display = "none";
-    }
+    document.querySelector(".spinner-border").style.display = "none";
   }
 
   // Placeholder for checkAnswers method
@@ -360,99 +349,120 @@ class Displaying extends Common {
 
   // Drag-and-Drop Handlers
   #addDragAndDropHandlers() {
-    // Select all draggable items
-    const draggableItems = document.querySelectorAll('.word[draggable="true"]');
+    // Attach event listeners to the parent container for delegation
+    const container = document.querySelector(".container");
 
-    draggableItems.forEach((item) => {
-      item.addEventListener("dragstart", this.#handleDragStart.bind(this));
-    });
+    // Drag Start
+    container.addEventListener("dragstart", (event) => {
+      const draggable = event.target.closest(".word");
+      if (!draggable) return;
 
-    // Select all drop zones
-    const dropZones = document.querySelectorAll(".drop-zone");
-
-    dropZones.forEach((zone) => {
-      zone.addEventListener("dragover", this.#handleDragOver.bind(this));
-      zone.addEventListener("drop", this.#handleDrop.bind(this));
-    });
-  }
-
-  // Drag Start Handler
-  #handleDragStart(event) {
-    const target = event.currentTarget;
-    const type = target.getAttribute("data-type");
-    if (type === "image") {
-      const id = target.getAttribute("data-id");
-      event.dataTransfer.setData("text/plain", id);
-      event.dataTransfer.effectAllowed = "move";
-    } else if (type === "text") {
-      const text = target.textContent;
-      event.dataTransfer.setData("text/plain", text);
-      event.dataTransfer.effectAllowed = "copy";
-    }
-  }
-
-  // Drag Over Handler
-  #handleDragOver(event) {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move"; // or 'copy' for text
-  }
-
-  // Drop Handler
-  // Drop Handler
-  #handleDrop(event) {
-    event.preventDefault();
-    const dropZone = event.currentTarget;
-    const dropZoneId = dropZone.getAttribute("data-id");
-
-    const draggedData = event.dataTransfer.getData("text/plain");
-
-    console.log(`Drop Zone ID: ${dropZoneId}`);
-    console.log(`Dragged Data ID: ${draggedData}`);
-
-    if (dropZoneId) {
-      // For image-based drop zones
-      const draggable = document.querySelector(
-        `.word[data-id="${draggedData}"]`
-      );
-      if (draggable) {
-        const imgElement = draggable.querySelector("img");
-        console.log(imgElement);
-        if (imgElement) {
-          // Remove existing image in drop zone, if any
-          if (dropZone.firstChild) {
-            const existingImg = dropZone.querySelector("img");
-            if (existingImg) {
-              dropZone.removeChild(existingImg);
-            }
-          }
-
-          // Append the dragged image to the drop zone
-          dropZone.appendChild(imgElement);
-          console.log(dropZone);
-          draggable.remove(); // Remove the draggable from the fixed container
-          imgElement.setAttribute("draggable", "false"); // Prevent further dragging
-
-          // Ensure the image fills the drop zone precisely
-          imgElement.style.width = "100%";
-          imgElement.style.height = "100%";
-          imgElement.style.objectFit = "cover";
-        } else {
-          console.error(
-            `Image element not found within draggable item with data-id "${draggedData}".`
-          );
-        }
-      } else {
-        console.error(
-          `Draggable item with data-id "${draggedData}" not found.`
-        );
+      const type = draggable.getAttribute("data-type");
+      if (type === "image") {
+        const id = draggable.getAttribute("data-id");
+        event.dataTransfer.setData("text/plain", id);
+        event.dataTransfer.effectAllowed = "move";
+        draggable.classList.add("dragging");
+        console.log(`Dragging: ${id}`);
       }
-    } else {
-      // Handle text-based drop zones if applicable
-      // Implement similar logic for text-based drops
-    }
+    });
+
+    // Drag End
+    container.addEventListener("dragend", (event) => {
+      const draggable = event.target.closest(".word");
+      if (draggable) {
+        draggable.classList.remove("dragging");
+      }
+    });
+
+    // Drag Over
+    container.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+    });
+
+    // Drag Enter
+    container.addEventListener("dragenter", (event) => {
+      const dropZone =
+        event.target.closest(".drop-zone") ||
+        event.target.closest(".fixed .draggables");
+      if (dropZone) {
+        dropZone.classList.add("over");
+      }
+    });
+
+    // Drag Leave
+    container.addEventListener("dragleave", (event) => {
+      const dropZone =
+        event.target.closest(".drop-zone") ||
+        event.target.closest(".fixed .draggables");
+      if (dropZone) {
+        dropZone.classList.remove("over");
+      }
+    });
+
+    // Drop
+    container.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const dropZone =
+        event.target.closest(".drop-zone") ||
+        event.target.closest(".fixed .draggables");
+      if (!dropZone) return;
+
+      const draggedId = event.dataTransfer.getData("text/plain");
+      const draggable = document.querySelector(`.word[data-id="${draggedId}"]`);
+      if (!draggable) return;
+
+      if (dropZone.classList.contains("drop-zone")) {
+        this.#moveDraggableToDropZone(draggable, dropZone);
+      } else if (dropZone.classList.contains("draggables")) {
+        this.#moveDraggableToFixed(draggable);
+      }
+
+      dropZone.classList.remove("over");
+    });
+
+    console.log("Event Listeners Attached via Event Delegation");
   }
 
-  // Masking method inside the class
+  /**
+   * Moves a draggable element back to the fixed container.
+   * @param {HTMLElement} draggable - The draggable element to move.
+   */
+  #moveDraggableToFixed(draggable) {
+    if (!draggable) return;
+    this.#fixed.appendChild(draggable);
+    console.log(
+      `Moved ${draggable.getAttribute("data-id")} back to Fixed Container`
+    );
+  }
+
+  /**
+   * Moves a draggable element to a drop zone.
+   * @param {HTMLElement} draggable - The draggable element to move.
+   * @param {HTMLElement} dropZone - The drop zone to move into.
+   */
+  #moveDraggableToDropZone(draggable, dropZone) {
+    if (!draggable || !dropZone) return;
+
+    // Check if drop zone already has a draggable
+    const existingDraggable = dropZone.querySelector(".word");
+    if (existingDraggable) {
+      this.#moveDraggableToFixed(existingDraggable);
+    }
+
+    // Append draggable to drop zone
+    dropZone.appendChild(draggable);
+    console.log(
+      `Moved ${draggable.getAttribute(
+        "data-id"
+      )} to Drop Zone ${dropZone.getAttribute("data-id")}`
+    );
+  }
+
+  /**
+   * Masking method inside the class
+   */
   #maskImage(imageUrl, masks) {
     return new Promise((resolve, reject) => {
       // Create a new Image element
@@ -514,6 +524,25 @@ class Displaying extends Common {
       // Set the image source to trigger loading
       img.src = imageUrl;
     });
+  }
+
+  /**
+   * Reset Answers Method
+   */
+  resetAnswers() {
+    // Select all drop zones
+    const dropZones = document.querySelectorAll(".drop-zone");
+
+    dropZones.forEach((zone) => {
+      if (zone.children.length > 0) {
+        const draggable = zone.querySelector(".word");
+        if (draggable) {
+          this.#moveDraggableToFixed(draggable);
+        }
+      }
+    });
+
+    console.log("All answers have been reset.");
   }
 }
 
