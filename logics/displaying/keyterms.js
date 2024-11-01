@@ -1,5 +1,3 @@
-// displaying.js
-
 "use strict";
 
 import { default as Common } from "./common.js";
@@ -33,16 +31,15 @@ class Displaying extends Common {
         this.#defaultDroppingSpanValue =
           "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         await this.#renderPage();
-        this.#addDragAndDropHandlers(); // Ensure handlers are added after rendering
+        this.#addDragAndDropHandlers();
       } catch (error) {
         console.error("Error initializing Displaying class:", error);
-        // Optionally, display an error message to the user
       }
     })();
   }
 
   async #renderPage() {
-    await this.#renderDraggables();
+    this.#renderDraggables();
     await this.#renderQuestions();
   }
 
@@ -55,7 +52,6 @@ class Displaying extends Common {
     this.#answers = await Promise.all(
       this.randomTest.answers.map(async (answer, i) => {
         if (typeof answer[0] === "number") {
-          // Handle text-based answers
           const sentence = this.randomTest.sentences[i].sentence.split(" ");
           for (let j = 0; j < sentence.length - 1; j += 2)
             sentence.splice(j + 1, 0, " ");
@@ -70,7 +66,6 @@ class Displaying extends Common {
           }
           return { type: "text", content: storedAnswer };
         } else {
-          // Handle image-based answers by masking
           const maskedParts = [];
           const imageUrl = this.randomTest.sentences[i].imageUrl;
 
@@ -116,7 +111,11 @@ class Displaying extends Common {
         }
       })
     );
-    console.log("Answers Created:", this.#answers);
+    this.#answers = this.#answers.flatMap((answer) =>
+      answer.content.map((contentPiece) => {
+        return { type: answer.type, content: contentPiece };
+      })
+    );
   }
 
   #renderAnswers() {
@@ -126,43 +125,34 @@ class Displaying extends Common {
 
     randomAnswers.forEach((ans, i) => {
       if (ans.type === "image") {
-        // Image-based answers
-        ans.content.forEach((maskedPart, index) => {
-          html += `
+        const maskedPart = ans.content;
+        html += `
             <span 
               class="word draggable" 
               draggable="true" 
-              id="word-span-${i}-${index}" 
+              id="word-span-${i}" 
               data-id="${maskedPart.id}" 
               data-type="image">
               <img src="${maskedPart.maskedImageURL}" alt="Masked Part ${maskedPart.id}" class="img" />
             </span>
           `;
-          console.log(
-            `Rendered Draggable Image: ID=word-span-${i}-${index}, data-id=${maskedPart.id}`
-          );
-        });
       } else if (ans.type === "text") {
-        // Text-based answers
-        ans.content.forEach((text, index) => {
-          html += `
+        const text = ans.content;
+        html += `
             <span 
               class="word draggable" 
               draggable="true" 
-              id="word-span-${i}-${index}" 
+              id="word-span-${i}" 
               data-type="text">
               ${text}
             </span>
           `;
-          console.log(`Rendered Draggable Text: ID=word-span-${i}-${index}`);
-        });
       } else {
         console.warn(`Unknown answer type at index ${i}:`, ans);
       }
     });
 
     fixedContainer.insertAdjacentHTML("afterbegin", html);
-    console.log("Draggable Items Rendered in Fixed Container");
   }
 
   #randomizeArray(arr) {
@@ -175,32 +165,32 @@ class Displaying extends Common {
   }
 
   async #renderQuestions() {
+    // Have to refactor this code to include .forEach instead of for loop
     for (let i = 0; i < this.randomTest.sentences.length; i++) {
       const sentence = this.randomTest.sentences[i];
       const newSentence = sentence.sentence ? sentence.sentence.split(" ") : [];
 
-      // Insert spaces between words for better spacing
       for (let j = 0; j < newSentence.length - 1; j += 2)
         newSentence.splice(j + 1, 0, " ");
 
       const answer = this.randomTest.answers[i][0];
-      if (typeof answer === "number") {
-        // Handle text-based answers by inserting drop zones
+      if (typeof answer === "nuxmber") {
+        console.log("NEW SENTENCE", newSentence);
         this.randomTest.answers[i].forEach((ans) => {
           newSentence[ans] = `<span class="dropping-span">
               <span class="word">${this.#defaultDroppingSpanValue}</span>
             </span>`;
         });
 
-        // Remove duplicate blanks
         for (let j = 0; j < newSentence.length - 1; j++) {
           if (newSentence[j] === newSentence[j + 1]) {
             newSentence.splice(j, 1);
-            j = -1; // Reset loop after splice
+            j = -1;
           }
         }
 
-        // Assign data-index to drop zones
+        console.log(newSentence);
+
         for (let j = 0; j < newSentence.length; j++) {
           if (newSentence[j].startsWith("<span")) {
             newSentence[j] = `<span class="dropping-span" data-index="${j}">
@@ -209,7 +199,6 @@ class Displaying extends Common {
           }
         }
 
-        // Insert the sentence into the DOM
         this.#sentencesContainer.insertAdjacentHTML(
           "beforeend",
 
@@ -225,11 +214,8 @@ class Displaying extends Common {
           </div>`
         );
       } else {
-        // Handle image-based answers by masking
         const imageUrl = sentence.imageUrl;
-        const masks = this.randomTest.answers[i]; // Array of mask objects
-
-        // Assign unique IDs to masks if they don't have them
+        const masks = this.randomTest.answers[i];
         masks.forEach((mask, index) => {
           if (!mask.id) {
             mask.id = `mask${index + 1}`;
@@ -242,7 +228,6 @@ class Displaying extends Common {
           const naturalWidth = maskedImageData.naturalWidth;
           const naturalHeight = maskedImageData.naturalHeight;
 
-          // Insert the masked image along with the sentence
           this.#sentencesContainer.insertAdjacentHTML(
             "beforeend",
 
@@ -278,7 +263,6 @@ class Displaying extends Common {
             </div>`
           );
 
-          // After inserting, update drop zones with percentage-based positions
           const maskedImage = this.#sentencesContainer.querySelector(
             `.masked-image[data-index="${i}"]`
           );
@@ -297,19 +281,16 @@ class Displaying extends Common {
 
             dropZones.forEach((zone, idx) => {
               const mask = masks[idx];
-              // Calculate percentage positions
               const xPercent = (mask.x / naturalW) * 100;
               const yPercent = (mask.y / naturalH) * 100;
               const widthPercent = (mask.width / naturalW) * 100;
               const heightPercent = (mask.height / naturalH) * 100;
 
-              // Update mask with percentage values
               mask.xPercent = xPercent;
               mask.yPercent = yPercent;
               mask.widthPercent = widthPercent;
               mask.heightPercent = heightPercent;
 
-              // Apply percentage-based styles
               zone.style.left = `${mask.xPercent}%`;
               zone.style.top = `${mask.yPercent}%`;
               zone.style.width = `${mask.widthPercent}%`;
@@ -317,7 +298,6 @@ class Displaying extends Common {
             });
           });
         } catch (error) {
-          // Optionally, insert the original image or a placeholder
           this.#sentencesContainer.insertAdjacentHTML(
             "beforeend",
 
@@ -341,18 +321,13 @@ class Displaying extends Common {
     document.querySelector(".spinner-border").style.display = "none";
   }
 
-  // Placeholder for checkAnswers method
-  checkAnswers() {
-    // Implement your answer checking logic here
+  #checkAnswers() {
     console.log("Checking answers...");
   }
 
-  // Drag-and-Drop Handlers
   #addDragAndDropHandlers() {
-    // Attach event listeners to the parent container for delegation
     const container = document.querySelector(".container");
 
-    // Drag Start
     container.addEventListener("dragstart", (event) => {
       const draggable = event.target.closest(".word");
       if (!draggable) return;
@@ -363,11 +338,9 @@ class Displaying extends Common {
         event.dataTransfer.setData("text/plain", id);
         event.dataTransfer.effectAllowed = "move";
         draggable.classList.add("dragging");
-        console.log(`Dragging: ${id}`);
       }
     });
 
-    // Drag End
     container.addEventListener("dragend", (event) => {
       const draggable = event.target.closest(".word");
       if (draggable) {
@@ -375,13 +348,11 @@ class Displaying extends Common {
       }
     });
 
-    // Drag Over
     container.addEventListener("dragover", (event) => {
       event.preventDefault();
       event.dataTransfer.dropEffect = "move";
     });
 
-    // Drag Enter
     container.addEventListener("dragenter", (event) => {
       const dropZone =
         event.target.closest(".drop-zone") ||
@@ -391,7 +362,6 @@ class Displaying extends Common {
       }
     });
 
-    // Drag Leave
     container.addEventListener("dragleave", (event) => {
       const dropZone =
         event.target.closest(".drop-zone") ||
@@ -401,7 +371,6 @@ class Displaying extends Common {
       }
     });
 
-    // Drop
     container.addEventListener("drop", (event) => {
       event.preventDefault();
       const dropZone =
@@ -421,90 +390,47 @@ class Displaying extends Common {
 
       dropZone.classList.remove("over");
     });
-
-    console.log("Event Listeners Attached via Event Delegation");
   }
 
-  /**
-   * Moves a draggable element back to the fixed container.
-   * @param {HTMLElement} draggable - The draggable element to move.
-   */
   #moveDraggableToFixed(draggable) {
     if (!draggable) return;
     this.#fixed.appendChild(draggable);
-    console.log(
-      `Moved ${draggable.getAttribute("data-id")} back to Fixed Container`
-    );
   }
 
-  /**
-   * Moves a draggable element to a drop zone.
-   * @param {HTMLElement} draggable - The draggable element to move.
-   * @param {HTMLElement} dropZone - The drop zone to move into.
-   */
   #moveDraggableToDropZone(draggable, dropZone) {
     if (!draggable || !dropZone) return;
 
-    // Check if drop zone already has a draggable
     const existingDraggable = dropZone.querySelector(".word");
     if (existingDraggable) {
       this.#moveDraggableToFixed(existingDraggable);
     }
 
-    // Append draggable to drop zone
     dropZone.appendChild(draggable);
-    console.log(
-      `Moved ${draggable.getAttribute(
-        "data-id"
-      )} to Drop Zone ${dropZone.getAttribute("data-id")}`
-    );
   }
 
-  /**
-   * Masking method inside the class
-   */
   #maskImage(imageUrl, masks) {
     return new Promise((resolve, reject) => {
-      // Create a new Image element
       const img = new Image();
-      img.crossOrigin = "Anonymous"; // Enable CORS to avoid tainted canvas
+      img.crossOrigin = "Anonymous";
 
       img.onload = () => {
         try {
-          // Create a canvas element
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
 
-          // Set canvas dimensions to match the image
           canvas.width = img.width;
           canvas.height = img.height;
 
-          // Draw the original image onto the canvas
           ctx.drawImage(img, 0, 0);
 
-          // Set the fill style to white for masking
-          ctx.fillStyle = "#ffcb9a"; // Adjust as needed
+          ctx.fillStyle = "#ffcb9a";
 
-          // Iterate through each mask and draw a white rectangle
           masks.forEach((mask, index) => {
-            // Validate mask properties
-            if (
-              typeof mask.x !== "number" ||
-              typeof mask.y !== "number" ||
-              typeof mask.width !== "number" ||
-              typeof mask.height !== "number"
-            ) {
-              console.error(`Invalid mask at index ${index}:`, mask);
-              return; // Skip invalid masks
-            }
-
             ctx.fillRect(mask.x, mask.y, mask.width, mask.height);
           });
 
-          // Convert the canvas content to a data URL
           const maskedImageURL = canvas.toDataURL("image/png");
 
-          // Resolve the promise with maskedImageURL and natural dimensions
           resolve({
             maskedImageURL,
             naturalWidth: img.width,
@@ -521,28 +447,8 @@ class Displaying extends Common {
         );
       };
 
-      // Set the image source to trigger loading
       img.src = imageUrl;
     });
-  }
-
-  /**
-   * Reset Answers Method
-   */
-  resetAnswers() {
-    // Select all drop zones
-    const dropZones = document.querySelectorAll(".drop-zone");
-
-    dropZones.forEach((zone) => {
-      if (zone.children.length > 0) {
-        const draggable = zone.querySelector(".word");
-        if (draggable) {
-          this.#moveDraggableToFixed(draggable);
-        }
-      }
-    });
-
-    console.log("All answers have been reset.");
   }
 }
 
