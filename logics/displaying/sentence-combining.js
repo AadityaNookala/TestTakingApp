@@ -135,7 +135,6 @@ class Displaying extends Common {
     });
     const noOfWords = this.randomTest.sentences.length;
     if (score === noOfWords) {
-      console.log("hi");
       document.querySelector(".spinner-border").style.display = "block";
       this.sendAPIToScoresAndScheduler(
         enteredAnswers,

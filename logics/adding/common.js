@@ -81,7 +81,7 @@ class Common {
       let html = `<p class="sentence">`;
       const newSentence = sentences[i].sentence
         ? sentences[i].sentence
-        : typeof sentences[i] === String
+        : typeof sentences[i] === "string"
         ? sentences[i]
         : "";
       newSentence.split("\n").forEach((el, j) => {

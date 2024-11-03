@@ -43,6 +43,7 @@ body {
   display: grid;
   height: auto;
   overflow: auto;
+  bottom: 2rem;
 }
 
 .row {
@@ -54,21 +55,20 @@ body {
   opacity: 0.5;
 }
 
-.drop-zone.over {
-  background-color: #f0f0f0; /* Change as needed */
-  border-color: #333; /* Change as needed */
-}
-
-/* Ensure images inside drop zones fill them */
 .drop-zone .word img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+.drop-zone {
+  display: inline-block;
+  height: 5rem;
+  width: 30rem;
+}
+
 .word,
 .word-fixed {
-  display: inline;
   justify-content: center;
   margin-top: 2rem;
   cursor: pointer;
@@ -169,7 +169,7 @@ body {
   padding: 5rem 6rem;
   box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.3);
   z-index: 1000;
-  animation: fadeInOutModal 0.5s forwards; /* Animation for showing and hiding modal */
+  animation: fadeInOutModal 0.5s forwards;
   transition: all 0.5s;
 }
 
@@ -182,7 +182,7 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   z-index: 100;
-  animation: fadeInOutOverlay 0.5s forwards; /* Animation for showing and hiding overlay */
+  animation: fadeInOutOverlay 0.5s forwards;
 }
 
 @keyframes fadeInOutModal {

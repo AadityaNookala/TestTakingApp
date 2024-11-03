@@ -1,7 +1,6 @@
 "use strict";
 
 import { default as Common } from "./common.js";
-import { imageUrlStartsWith } from "../../config.js";
 
 class Displaying extends Common {
   #fixed;
@@ -18,7 +17,6 @@ class Displaying extends Common {
         if (!this.randomTest) {
           throw new Error("Failed to load random test data.");
         }
-        console.log("Random Test Data:", this.randomTest);
         document.querySelector(".container").insertAdjacentHTML(
           "beforeend",
           `<div class="fixed">
@@ -32,6 +30,8 @@ class Displaying extends Common {
           "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         await this.#renderPage();
         this.#addDragAndDropHandlers();
+        console.log(this.#answers);
+        this.#check.addEventListener("click", this.#checkAnswers.bind(this));
       } catch (error) {
         console.error("Error initializing Displaying class:", error);
       }
@@ -102,7 +102,6 @@ class Displaying extends Common {
             };
 
             img.onerror = () => {
-              console.error(`Failed to load image at ${imageUrl}`);
               reject(new Error(`Failed to load image at ${imageUrl}`));
             };
 
@@ -143,6 +142,7 @@ class Displaying extends Common {
               class="word draggable" 
               draggable="true" 
               id="word-span-${i}" 
+              data-id="${i}"
               data-type="text">
               ${text}
             </span>
@@ -174,8 +174,7 @@ class Displaying extends Common {
         newSentence.splice(j + 1, 0, " ");
 
       const answer = this.randomTest.answers[i][0];
-      if (typeof answer === "nuxmber") {
-        console.log("NEW SENTENCE", newSentence);
+      if (typeof answer === "number") {
         this.randomTest.answers[i].forEach((ans) => {
           newSentence[ans] = `<span class="dropping-span">
               <span class="word">${this.#defaultDroppingSpanValue}</span>
@@ -189,12 +188,10 @@ class Displaying extends Common {
           }
         }
 
-        console.log(newSentence);
-
         for (let j = 0; j < newSentence.length; j++) {
           if (newSentence[j].startsWith("<span")) {
             newSentence[j] = `<span class="dropping-span" data-index="${j}">
-                <span class="word">${this.#defaultDroppingSpanValue}</span>
+                <span class="drop drop-zone" data-id=${j}></span>
               </span>`;
           }
         }
@@ -323,6 +320,90 @@ class Displaying extends Common {
 
   #checkAnswers() {
     console.log("Checking answers...");
+
+    const indexOfActualSentence = [];
+    const mistakenAnswers = [];
+    let correctCount = 0;
+    let totalCount = 0;
+
+    // Iterate through each sentence
+    this.#sentencesContainer
+      .querySelectorAll(".sentence")
+      .forEach((sentenceDiv, index) => {
+        const sentenceIndex = sentenceDiv.getAttribute("data-index");
+        const sentence = this.randomTest.sentences[sentenceIndex];
+        const answers = this.randomTest.answers[sentenceIndex];
+
+        if (!sentence.sentence && sentence.imageUrl) {
+          // Handle image-based drop zones
+          const masks = answers;
+          let arr = [];
+          masks.forEach((mask) => {
+            const dropZone = sentenceDiv.querySelector(
+              `.drop-zone[data-id="${mask.id}"]`
+            );
+            if (!dropZone) {
+              console.warn(`Drop zone with data-id="${mask.id}" not found.`);
+              return;
+            }
+
+            const draggable = dropZone.querySelector(".word.draggable");
+            if (draggable) {
+              let draggableId = draggable.getAttribute("data-id");
+              if (draggableId === mask.id) {
+                draggableId = draggableId.split("mask")[1] - 1;
+                arr.push(answers[draggableId]);
+                correctCount++;
+              } else {
+                draggableId = draggableId.split("mask")[1] - 1;
+                arr.push(answers[draggableId]);
+              }
+              totalCount++;
+            } else {
+              totalCount++;
+              arr.push("");
+            }
+          });
+          if (masks.length !== correctCount) {
+            indexOfActualSentence.push(sentenceIndex);
+            mistakenAnswers.push(arr);
+          }
+        } else {
+          // Handle text-based drop zones
+          const droppingSpans = Array.from(
+            sentenceDiv.querySelectorAll(".dropping-span")
+          );
+          let arr = [];
+
+          console.log(droppingSpans);
+          droppingSpans.forEach((el, i) => {
+            const answer = this.#answers[totalCount].content;
+            const item = el.querySelector(".word");
+            if (item) {
+              if (item.textContent.trim() === answer) {
+                arr.push(answer);
+                correctCount++;
+              } else {
+                arr.push(answer);
+              }
+            } else {
+              arr.push(answer);
+            }
+            totalCount++;
+          });
+          if (droppingSpans.length !== correctCount) {
+            indexOfActualSentence.push(sentenceIndex);
+            mistakenAnswers.push(arr);
+          }
+        }
+      });
+
+    console.log("Wrong Answers Array:", indexOfActualSentence, mistakenAnswers);
+
+    // Calculate score
+    const score = correctCount;
+    const total = totalCount;
+    console.log(score, total);
   }
 
   #addDragAndDropHandlers() {
@@ -338,6 +419,10 @@ class Displaying extends Common {
         event.dataTransfer.setData("text/plain", id);
         event.dataTransfer.effectAllowed = "move";
         draggable.classList.add("dragging");
+      } else {
+        const id = draggable.getAttribute("data-id");
+        event.dataTransfer.setData("text/plain", id);
+        event.dataTransfer.setData("word", event.target.textContent);
       }
     });
 
@@ -377,7 +462,6 @@ class Displaying extends Common {
         event.target.closest(".drop-zone") ||
         event.target.closest(".fixed .draggables");
       if (!dropZone) return;
-
       const draggedId = event.dataTransfer.getData("text/plain");
       const draggable = document.querySelector(`.word[data-id="${draggedId}"]`);
       if (!draggable) return;
@@ -404,7 +488,6 @@ class Displaying extends Common {
     if (existingDraggable) {
       this.#moveDraggableToFixed(existingDraggable);
     }
-
     dropZone.appendChild(draggable);
   }
 
