@@ -55,28 +55,14 @@ class Common {
       },
     });
     if (userName !== "Shandilya" && userName !== "Aaditya") return;
-    let newTestName = (
-      await sendAPI(
-        "GET",
-        `${baseUrlScheduler}/get-current-test/${categoryName}/${userName}`
-      )
-    ).data;
-    console.log(newTestName);
-    if (!newTestName.includes(testName)) {
-      document
-        .querySelector(".sentences")
-        .insertAdjacentHTML(
-          "beforeend",
-          "This is not the test that use are supposed to do today. Please visit scheduler for more information."
-        );
-      return;
-    }
     const allTestsInCategory = (
       await sendAPI("GET", `${baseUrl}/categories/getCategory/${categoryName}`)
     ).data.data.tests;
-    const nextTask = allTestsInCategory[newTestName.indexOf(testName) + 1];
+    const nextTask =
+      allTestsInCategory[allTestsInCategory.indexOf(testName) + 1];
     console.log(nextTask);
     score = `${score}/${noOfWords}`;
+    
     await sendAPI("POST", `${baseUrlScheduler}/integrate-spellings-app`, {
       score,
       testName,

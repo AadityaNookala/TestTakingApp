@@ -220,7 +220,7 @@ class Displaying extends Common {
       });
     });
     this.#sentences.insertAdjacentHTML(
-      "beforeend",
+      "afterend",
       `<div class="score">Score: ${score}/${noOfWords}</div>`
     );
     await this.sendAPIToScoresAndScheduler(

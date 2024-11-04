@@ -318,7 +318,7 @@ class Displaying extends Common {
     document.querySelector(".spinner-border").style.display = "none";
   }
 
-  #checkAnswers() {
+  async #checkAnswers() {
     console.log("Checking answers...");
 
     const indexOfActualSentence = [];
@@ -326,7 +326,6 @@ class Displaying extends Common {
     let correctCount = 0;
     let totalCount = 0;
 
-    // Iterate through each sentence
     this.#sentencesContainer
       .querySelectorAll(".sentence")
       .forEach((sentenceDiv, index) => {
@@ -335,9 +334,9 @@ class Displaying extends Common {
         const answers = this.randomTest.answers[sentenceIndex];
 
         if (!sentence.sentence && sentence.imageUrl) {
-          // Handle image-based drop zones
           const masks = answers;
-          let arr = [];
+          const arr = [];
+          let temp = 0;
           masks.forEach((mask) => {
             const dropZone = sentenceDiv.querySelector(
               `.drop-zone[data-id="${mask.id}"]`
@@ -353,29 +352,35 @@ class Displaying extends Common {
               if (draggableId === mask.id) {
                 draggableId = draggableId.split("mask")[1] - 1;
                 arr.push(answers[draggableId]);
+                dropZone.style.border = "5px solid green";
                 correctCount++;
+                temp++;
               } else {
                 draggableId = draggableId.split("mask")[1] - 1;
                 arr.push(answers[draggableId]);
+                dropZone.style.border = "5px solid red";
               }
               totalCount++;
             } else {
               totalCount++;
               arr.push("");
+              dropZone.style.border = "5px solid red";
             }
           });
-          if (masks.length !== correctCount) {
+          if (masks.length !== temp) {
             indexOfActualSentence.push(sentenceIndex);
             mistakenAnswers.push(arr);
+            sentenceDiv.insertAdjacentHTML(
+              "beforeend",
+              `<img src="${sentence.imageUrl}" />`
+            );
           }
         } else {
-          // Handle text-based drop zones
           const droppingSpans = Array.from(
             sentenceDiv.querySelectorAll(".dropping-span")
           );
-          let arr = [];
-
-          console.log(droppingSpans);
+          const arr = [];
+          let temp = 0;
           droppingSpans.forEach((el, i) => {
             const answer = this.#answers[totalCount].content;
             const item = el.querySelector(".word");
@@ -383,7 +388,9 @@ class Displaying extends Common {
               if (item.textContent.trim() === answer) {
                 arr.push(answer);
                 correctCount++;
+                temp++;
               } else {
+                console.log(item.textContent.trim());
                 arr.push(answer);
               }
             } else {
@@ -391,19 +398,35 @@ class Displaying extends Common {
             }
             totalCount++;
           });
-          if (droppingSpans.length !== correctCount) {
+          if (droppingSpans.length !== temp) {
             indexOfActualSentence.push(sentenceIndex);
             mistakenAnswers.push(arr);
+            sentenceDiv.insertAdjacentHTML(
+              "beforeend",
+              `<div class="answer">${sentence.sentence}</div>`
+            );
           }
         }
+        console.log(correctCount);
       });
 
     console.log("Wrong Answers Array:", indexOfActualSentence, mistakenAnswers);
 
-    // Calculate score
     const score = correctCount;
     const total = totalCount;
-    console.log(score, total);
+    this.#check.remove();
+    document
+      .querySelector(".sentences")
+      .insertAdjacentHTML(
+        "afterend",
+        `<div class="score">Score:${score}/${total}</div>`
+      );
+    await this.sendAPIToScoresAndScheduler(
+      mistakenAnswers,
+      indexOfActualSentence,
+      score,
+      total
+    );
   }
 
   #addDragAndDropHandlers() {

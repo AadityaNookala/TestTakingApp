@@ -7,17 +7,12 @@ class App {
     (async () => {
       this.container = document.querySelector(".container");
       this.heading = document.querySelector(".heading");
-      this.randomEvery = document.querySelector(".random-every");
       this.url = window.location.href;
       await this.renderData();
       document.addEventListener("click", this.showButton.bind(this));
       this.container.addEventListener(
         "click",
-        this.handleClickOnTestAndOnCategoryRandom.bind(this)
-      );
-      this.randomEvery.addEventListener(
-        "click",
-        this.handleClickOnRandomEvery.bind(this)
+        this.handleClickOnTest.bind(this)
       );
     })();
   }
@@ -72,10 +67,6 @@ class App {
   </div>`
         );
       });
-      contains.insertAdjacentHTML(
-        "beforeend",
-        `  <a type="button" class="random" href="/student/choose-test/take-test/index.html">Take a random one for ${element}</a> `
-      );
     });
     document.querySelector(".spinner-border").style.display = "none";
   }
@@ -91,9 +82,8 @@ class App {
       showButton.textContent = "+";
     }
   }
-  handleClickOnTestAndOnCategoryRandom(e) {
+  handleClickOnTest(e) {
     e.preventDefault();
-    const randomButton = e.target.closest(".random");
     const row = e.target.closest(".row");
     if (row && !row.classList.contains("header")) {
       const categoryName = row.closest(".student").dataset.categoryName;
@@ -106,32 +96,11 @@ class App {
         testName;
       const realUrl =
         this.url.split("?")[0].split("/student")[0] +
-        this.randomEvery.getAttribute("href") +
+        "/student/choose-test/take-test/index.html" +
         "?" +
         query;
       window.open(realUrl, "_blank");
     }
-    if (randomButton) {
-      const categoryName =
-        randomButton.closest(".student").dataset.categoryName;
-      const query = (this.url.split("?")[1] += `&testCategory=${categoryName}`);
-      const realUrl =
-        this.url.split("?")[0].split("/student")[0] +
-        randomButton.getAttribute("href") +
-        "?" +
-        query;
-      window.open(realUrl, "_blank");
-    }
-  }
-  handleClickOnRandomEvery(e) {
-    e.preventDefault();
-    const query = this.url.split("?")[1];
-    const realUrl =
-      this.url.split("?")[0].split("/student")[0] +
-      this.randomEvery.getAttribute("href") +
-      "?" +
-      query;
-    window.open(realUrl, "_blank");
   }
 }
 
