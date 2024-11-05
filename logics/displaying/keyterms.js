@@ -1,6 +1,8 @@
 "use strict";
 
 import { default as Common } from "./common.js";
+import keyTermsDisplayingSentence from "./helpers/KeyTermsDisplayingSentence.js";
+import keyTermsDisplayingImage from "./helpers/KeyTermsDisplayingImage.js";
 
 class Displaying extends Common {
   #fixed;
@@ -14,28 +16,29 @@ class Displaying extends Common {
     (async () => {
       try {
         await this.getRandomTest();
-        if (!this.randomTest) {
-          throw new Error("Failed to load random test data.");
-        }
-        document.querySelector(".container").insertAdjacentHTML(
-          "beforeend",
-          `<div class="fixed">
-             <div class="draggables"></div>
-           </div>
-           <div class="sentences"></div>`
-        );
-        this.#fixed = document.querySelector(".fixed .draggables");
-        this.#sentencesContainer = document.querySelector(".sentences");
-        this.#defaultDroppingSpanValue =
-          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        this.#prepareDivs();
+
+        // this.#defaultDroppingSpanValue =
+        //   "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         await this.#renderPage();
         this.#addDragAndDropHandlers();
-        console.log(this.#answers);
         this.#check.addEventListener("click", this.#checkAnswers.bind(this));
       } catch (error) {
         console.error("Error initializing Displaying class:", error);
       }
     })();
+  }
+
+  #prepareDivs() {
+    document.querySelector(".container").insertAdjacentHTML(
+      "beforeend",
+      `<div class="fixed">
+         <div class="draggables"></div>
+       </div>
+       <div class="sentences"></div>`
+    );
+    this.#fixed = document.querySelector(".fixed .draggables");
+    this.#sentencesContainer = document.querySelector(".sentences");
   }
 
   async #renderPage() {
@@ -50,66 +53,23 @@ class Displaying extends Common {
 
   async #createAnswers() {
     this.#answers = await Promise.all(
-      this.randomTest.answers.map(async (answer, i) => {
+      this.randomTest.answers.map((answer, i) => {
         if (typeof answer[0] === "number") {
-          const sentence = this.randomTest.sentences[i].sentence.split(" ");
-          for (let j = 0; j < sentence.length - 1; j += 2)
-            sentence.splice(j + 1, 0, " ");
-          const storedAnswer = [];
-          let word = "";
-          for (let j = 0; j < answer.length; j++) {
-            word += sentence[answer[j]];
-            if (answer[j] !== answer[j + 1] - 1) {
-              storedAnswer.push(word);
-              word = "";
-            }
-          }
-          return { type: "text", content: storedAnswer };
+          return keyTermsDisplayingSentence.createAnswers(
+            this.randomTest,
+            answer,
+            i
+          );
         } else {
-          const maskedParts = [];
-          const imageUrl = this.randomTest.sentences[i].imageUrl;
-
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.onload = () => {
-              answer.forEach((mask, index) => {
-                const tempCanvas = document.createElement("canvas");
-                const tempContext = tempCanvas.getContext("2d");
-
-                tempCanvas.width = mask.width;
-                tempCanvas.height = mask.height;
-
-                tempContext.drawImage(
-                  img,
-                  mask.x,
-                  mask.y,
-                  mask.width,
-                  mask.height,
-                  0,
-                  0,
-                  mask.width,
-                  mask.height
-                );
-
-                const dataURL = tempCanvas.toDataURL("image/png");
-                if (!mask.id) {
-                  mask.id = `mask${index + 1}`;
-                }
-                maskedParts.push({ id: mask.id, maskedImageURL: dataURL });
-              });
-              resolve({ type: "image", content: maskedParts });
-            };
-
-            img.onerror = () => {
-              reject(new Error(`Failed to load image at ${imageUrl}`));
-            };
-
-            img.src = imageUrl;
-          });
+          return keyTermsDisplayingImage.createAnswers(
+            this.randomTest,
+            answer,
+            i
+          );
         }
       })
     );
+
     this.#answers = this.#answers.flatMap((answer) =>
       answer.content.map((contentPiece) => {
         return { type: answer.type, content: contentPiece };
@@ -124,31 +84,9 @@ class Displaying extends Common {
 
     randomAnswers.forEach((ans, i) => {
       if (ans.type === "image") {
-        const maskedPart = ans.content;
-        html += `
-            <span 
-              class="word draggable" 
-              draggable="true" 
-              id="word-span-${i}" 
-              data-id="${maskedPart.id}" 
-              data-type="image">
-              <img src="${maskedPart.maskedImageURL}" alt="Masked Part ${maskedPart.id}" class="img" />
-            </span>
-          `;
-      } else if (ans.type === "text") {
-        const text = ans.content;
-        html += `
-            <span 
-              class="word draggable" 
-              draggable="true" 
-              id="word-span-${i}" 
-              data-id="${i}"
-              data-type="text">
-              ${text}
-            </span>
-          `;
+        html += keyTermsDisplayingImage.renderAnswers(i, ans.content);
       } else {
-        console.warn(`Unknown answer type at index ${i}:`, ans);
+        html += keyTermsDisplayingSentence.renderAnswers(i, ans.content);
       }
     });
 
@@ -165,16 +103,17 @@ class Displaying extends Common {
   }
 
   async #renderQuestions() {
-    // Have to refactor this code to include .forEach instead of for loop
-    for (let i = 0; i < this.randomTest.sentences.length; i++) {
-      const sentence = this.randomTest.sentences[i];
-      const newSentence = sentence.sentence ? sentence.sentence.split(" ") : [];
+    this.randomTest.sentences.map((sentence, i) => {
+      const answer = this.randomTest.answers[i];
+      if (typeof answer[0] === "number") {
+        const currentSentence = sentence.sentence.split(" ");
 
-      for (let j = 0; j < newSentence.length - 1; j += 2)
-        newSentence.splice(j + 1, 0, " ");
-
-      const answer = this.randomTest.answers[i][0];
-      if (typeof answer === "number") {
+        for (let j = 0; j < currentSentence.length - 1; j += 2)
+          currentSentence.splice(j + 1, 0, " ");
+        const newSentence = [];
+        for (let j = 0; j < currentSentence.length; ) {
+          j++;
+        }
         this.randomTest.answers[i].forEach((ans) => {
           newSentence[ans] = `<span class="dropping-span">
               <span class="word">${this.#defaultDroppingSpanValue}</span>
@@ -220,7 +159,7 @@ class Displaying extends Common {
         });
 
         try {
-          const maskedImageData = await this.#maskImage(imageUrl, masks);
+          const maskedImageData = this.#maskImage(imageUrl, masks);
           const maskedImageURL = maskedImageData.maskedImageURL;
           const naturalWidth = maskedImageData.naturalWidth;
           const naturalHeight = maskedImageData.naturalHeight;
@@ -294,20 +233,12 @@ class Displaying extends Common {
               zone.style.height = `${mask.heightPercent}%`;
             });
           });
-        } catch (error) {
-          this.#sentencesContainer.insertAdjacentHTML(
-            "beforeend",
-
-            `<div class="sentence mb-5" data-index="${i}">
-              <br><img src="${imageUrl}" alt="Image ${
-              i + 1
-            }" class="masked-image" data-index="${i}"><br>
-              ${sentence.sentence ? `${i + 1}: ${newSentence.join(" ")}` : ""}
-            </div>`
-          );
+        } catch (err) {
+          console.error(err);
         }
       }
-    }
+    });
+
     document
       .querySelector(".sentences")
       .insertAdjacentHTML(
