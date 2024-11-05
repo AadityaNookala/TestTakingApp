@@ -1,6 +1,6 @@
 import { baseUrl } from "../../../config.js";
-import { uploadImage } from "../../../helpers.js";
-import CommonKTSP from "../commonktsp.js";
+import { uploadImage } from "../../../helpers/helpers.js";
+import CommonKTSP from "../../../logics/adding/commonktsp.js";
 
 class AddingImage {
   #modalBody;

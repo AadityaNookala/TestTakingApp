@@ -1,5 +1,5 @@
 import { baseUrl, baseUrlScheduler } from "../../config.js";
-import { sendAPI } from "../../helpers.js";
+import { sendAPI } from "../../helpers/helpers.js";
 class Common {
   constructor() {
     this.url = new URLSearchParams(window.location.search);

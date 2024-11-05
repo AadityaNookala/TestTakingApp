@@ -1,5 +1,5 @@
 import { baseUrl } from "../../config.js";
-import { sendAPI } from "../../helpers.js";
+import { sendAPI } from "../../helpers/helpers.js";
 import { default as AddingSpellings } from "./spellings.js";
 import { default as AddingSentenceCombining } from "./sentence-combining.js";
 import { default as AddingKeyTerms } from "./keyterms.js";

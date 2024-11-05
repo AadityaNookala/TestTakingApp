@@ -1,6 +1,6 @@
-import { default as CommonKTSP } from "../commonktsp.js";
+import { default as CommonKTSP } from "../../../logics/adding/commonktsp.js";
 import { baseUrl } from "../../../config.js";
-import { uploadImage } from "../../../helpers.js";
+import { uploadImage } from "../../../helpers/helpers.js";
 
 class AddingSentence {
   constructor(input) {

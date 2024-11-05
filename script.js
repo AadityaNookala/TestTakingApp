@@ -1,6 +1,6 @@
 "use strict";
 import { baseUrl } from "../../config.js";
-import { sendAPI } from "./helpers.js";
+import { sendAPI } from "./helpers/helpers.js";
 
 class App {
   constructor() {

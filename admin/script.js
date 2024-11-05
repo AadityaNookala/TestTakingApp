@@ -1,7 +1,7 @@
 "use strict";
 
 import { baseUrl } from "../config.js";
-import { sendAPI } from "../helpers.js";
+import { sendAPI } from "../helpers/helpers.js";
 import Sortable from "../sortablejs/modular/sortable.core.esm.js";
 class App {
   constructor() {
@@ -37,10 +37,6 @@ class App {
       await this.showUsersInScores();
       this.createSortableForEachCategory();
       document.addEventListener("click", this.clickShowButton.bind(this));
-      this.usersContainer.addEventListener(
-        "click",
-        this.handleClickOnUsersContainer.bind(this)
-      );
       this.addNewUsers.addEventListener("click", this.addNewUser.bind(this));
       document
         .querySelector(".categories")
@@ -129,21 +125,6 @@ class App {
       animation: 500,
       sort: false,
     });
-  }
-  handleClickOnUsersContainer(e) {
-    const row = e.target.closest(".row");
-    if (!row || row.classList.contains("heading-row")) return;
-    const testName = row.querySelector(".test").textContent;
-    const categoryName = row.closest(".test-categories-showing").dataset
-      .categoryName;
-    let url = window.location.href;
-    const urlSplit = url.split("?");
-    urlSplit[1] += `+${categoryName.trim()}+${testName.trim()}`;
-    const urlSplitSplit = urlSplit[0].split("/");
-    urlSplitSplit[urlSplitSplit.indexOf("admin")] += "/add-word-and-sentence";
-    urlSplit[0] = urlSplitSplit.join("/");
-    url = urlSplit.join("?");
-    window.open(url, "__blank");
   }
   async addNewUser() {
     this.addNewUser

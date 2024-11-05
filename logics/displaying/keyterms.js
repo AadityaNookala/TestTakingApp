@@ -1,8 +1,8 @@
 "use strict";
 
 import { default as Common } from "./common.js";
-import keyTermsDisplayingSentence from "./helpers/KeyTermsDisplayingSentence.js";
-import keyTermsDisplayingImage from "./helpers/KeyTermsDisplayingImage.js";
+import displayingSentence from "../../helpers/displaying/keyterms/DisplayingSentence.js";
+import displayingImage from "../../helpers/displaying/keyterms/DisplayingImage.js";
 
 class Displaying extends Common {
   #fixed;
@@ -55,13 +55,13 @@ class Displaying extends Common {
     this.#answers = await Promise.all(
       this.randomTest.answers.map((answer, i) => {
         if (typeof answer[0] === "number") {
-          return keyTermsDisplayingSentence.createAnswers(
+          return displayingSentence.createAnswers(
             this.randomTest,
             answer,
             i
           );
         } else {
-          return keyTermsDisplayingImage.createAnswers(
+          return displayingImage.createAnswers(
             this.randomTest,
             answer,
             i
@@ -84,9 +84,9 @@ class Displaying extends Common {
 
     randomAnswers.forEach((ans, i) => {
       if (ans.type === "image") {
-        html += keyTermsDisplayingImage.renderAnswers(i, ans.content);
+        html += displayingImage.renderAnswers(i, ans.content);
       } else {
-        html += keyTermsDisplayingSentence.renderAnswers(i, ans.content);
+        html += displayingSentence.renderAnswers(i, ans.content);
       }
     });
 
@@ -103,17 +103,13 @@ class Displaying extends Common {
   }
 
   async #renderQuestions() {
-    this.randomTest.sentences.map((sentence, i) => {
+    for (let i = 0; i < this.randomTest.sentences.length; i++) {
       const answer = this.randomTest.answers[i];
+      const sentence = this.randomTest.sentences[i];
+      const newSentence = sentence.sentence?.split(" ");
       if (typeof answer[0] === "number") {
-        const currentSentence = sentence.sentence.split(" ");
-
-        for (let j = 0; j < currentSentence.length - 1; j += 2)
-          currentSentence.splice(j + 1, 0, " ");
-        const newSentence = [];
-        for (let j = 0; j < currentSentence.length; ) {
-          j++;
-        }
+        for (let j = 0; j < newSentence.length - 1; j += 2)
+          newSentence.splice(j + 1, 0, " ");
         this.randomTest.answers[i].forEach((ans) => {
           newSentence[ans] = `<span class="dropping-span">
               <span class="word">${this.#defaultDroppingSpanValue}</span>
@@ -159,10 +155,8 @@ class Displaying extends Common {
         });
 
         try {
-          const maskedImageData = this.#maskImage(imageUrl, masks);
+          const maskedImageData = await this.#maskImage(imageUrl, masks);
           const maskedImageURL = maskedImageData.maskedImageURL;
-          const naturalWidth = maskedImageData.naturalWidth;
-          const naturalHeight = maskedImageData.naturalHeight;
 
           this.#sentencesContainer.insertAdjacentHTML(
             "beforeend",
@@ -209,11 +203,6 @@ class Displaying extends Common {
           maskedImage.addEventListener("load", () => {
             const naturalW = maskedImage.naturalWidth;
             const naturalH = maskedImage.naturalHeight;
-            const renderedW = maskedImage.clientWidth;
-            const renderedH = maskedImage.clientHeight;
-
-            const scaleX = renderedW / naturalW;
-            const scaleY = renderedH / naturalH;
 
             dropZones.forEach((zone, idx) => {
               const mask = masks[idx];
@@ -237,7 +226,7 @@ class Displaying extends Common {
           console.error(err);
         }
       }
-    });
+    }
 
     document
       .querySelector(".sentences")
@@ -250,8 +239,6 @@ class Displaying extends Common {
   }
 
   async #checkAnswers() {
-    console.log("Checking answers...");
-
     const indexOfActualSentence = [];
     const mistakenAnswers = [];
     let correctCount = 0;
@@ -259,89 +246,39 @@ class Displaying extends Common {
 
     this.#sentencesContainer
       .querySelectorAll(".sentence")
-      .forEach((sentenceDiv, index) => {
+      .forEach((sentenceDiv) => {
         const sentenceIndex = sentenceDiv.getAttribute("data-index");
         const sentence = this.randomTest.sentences[sentenceIndex];
         const answers = this.randomTest.answers[sentenceIndex];
-
+        let count;
         if (!sentence.sentence && sentence.imageUrl) {
-          const masks = answers;
-          const arr = [];
-          let temp = 0;
-          masks.forEach((mask) => {
-            const dropZone = sentenceDiv.querySelector(
-              `.drop-zone[data-id="${mask.id}"]`
-            );
-            if (!dropZone) {
-              console.warn(`Drop zone with data-id="${mask.id}" not found.`);
-              return;
-            }
-
-            const draggable = dropZone.querySelector(".word.draggable");
-            if (draggable) {
-              let draggableId = draggable.getAttribute("data-id");
-              if (draggableId === mask.id) {
-                draggableId = draggableId.split("mask")[1] - 1;
-                arr.push(answers[draggableId]);
-                dropZone.style.border = "5px solid green";
-                correctCount++;
-                temp++;
-              } else {
-                draggableId = draggableId.split("mask")[1] - 1;
-                arr.push(answers[draggableId]);
-                dropZone.style.border = "5px solid red";
-              }
-              totalCount++;
-            } else {
-              totalCount++;
-              arr.push("");
-              dropZone.style.border = "5px solid red";
-            }
-          });
-          if (masks.length !== temp) {
-            indexOfActualSentence.push(sentenceIndex);
-            mistakenAnswers.push(arr);
-            sentenceDiv.insertAdjacentHTML(
-              "beforeend",
-              `<img src="${sentence.imageUrl}" />`
-            );
-          }
-        } else {
-          const droppingSpans = Array.from(
-            sentenceDiv.querySelectorAll(".dropping-span")
+          count = displayingImage.checkAnswers(
+            sentence,
+            answers,
+            sentenceDiv,
+            correctCount,
+            totalCount,
+            indexOfActualSentence,
+            mistakenAnswers,
+            sentenceIndex
           );
-          const arr = [];
-          let temp = 0;
-          droppingSpans.forEach((el, i) => {
-            const answer = this.#answers[totalCount].content;
-            const item = el.querySelector(".word");
-            if (item) {
-              if (item.textContent.trim() === answer) {
-                arr.push(answer);
-                correctCount++;
-                temp++;
-              } else {
-                console.log(item.textContent.trim());
-                arr.push(answer);
-              }
-            } else {
-              arr.push(answer);
-            }
-            totalCount++;
-          });
-          if (droppingSpans.length !== temp) {
-            indexOfActualSentence.push(sentenceIndex);
-            mistakenAnswers.push(arr);
-            sentenceDiv.insertAdjacentHTML(
-              "beforeend",
-              `<div class="answer">${sentence.sentence}</div>`
-            );
-          }
+          correctCount = count.correctCount;
+          totalCount = count.totalCount;
+        } else {
+          count = displayingSentence.checkAnswers(
+            sentence,
+            this.#answers,
+            sentenceDiv,
+            correctCount,
+            totalCount,
+            indexOfActualSentence,
+            mistakenAnswers,
+            sentenceIndex
+          );
         }
-        console.log(correctCount);
+        correctCount = count.correctCount;
+        totalCount = count.totalCount;
       });
-
-    console.log("Wrong Answers Array:", indexOfActualSentence, mistakenAnswers);
 
     const score = correctCount;
     const total = totalCount;
@@ -369,14 +306,9 @@ class Displaying extends Common {
 
       const type = draggable.getAttribute("data-type");
       if (type === "image") {
-        const id = draggable.getAttribute("data-id");
-        event.dataTransfer.setData("text/plain", id);
-        event.dataTransfer.effectAllowed = "move";
-        draggable.classList.add("dragging");
+        displayingImage.addDragAndDropHandlers(event, draggable);
       } else {
-        const id = draggable.getAttribute("data-id");
-        event.dataTransfer.setData("text/plain", id);
-        event.dataTransfer.setData("word", event.target.textContent);
+        displayingSentence.addDragAndDropHandlers(event, draggable);
       }
     });
 
@@ -462,7 +394,7 @@ class Displaying extends Common {
 
           ctx.fillStyle = "#ffcb9a";
 
-          masks.forEach((mask, index) => {
+          masks.forEach((mask) => {
             ctx.fillRect(mask.x, mask.y, mask.width, mask.height);
           });
 

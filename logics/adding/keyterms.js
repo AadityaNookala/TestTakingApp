@@ -1,7 +1,7 @@
 "use strict";
 
-import AddingSentence from "./helpers/KeyTermsAddingSentence.js";
-import AddingImage from "./helpers/KeyTermsAddingImage.js";
+import AddingSentence from "../../helpers/adding/keyterms/AddingSentence.js";
+import AddingImage from "../../helpers/adding/keyterms/AddingImage.js";
 
 class Adding {
   showingModal(input) {
