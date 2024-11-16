@@ -49,7 +49,6 @@ class App {
       await sendAPI("GET", `${baseUrl}/score/${this.userName}/${this.testName}`)
     ).data;
     let str = ``;
-    console.log(data);
     Object.keys(data[0]).forEach((el) => {
       str += `<div class="col-6">${
         el

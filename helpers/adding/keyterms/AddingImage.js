@@ -147,7 +147,6 @@ class AddingImage {
     data.sentences = {};
     if (imageUrl) data.sentences.imageUrl = imageUrl;
 
-    console.log(data);
 
     const common = new CommonKTSP();
     await common.sendForKeyTermsAndSpellings(data, typeOfChange, activeIndex);

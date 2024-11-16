@@ -1,5 +1,5 @@
 import { default as CommonKTSP } from "../../../logics/adding/commonktsp.js";
-import { baseUrl } from "../../../config.js";
+import { baseUrl, arrOfPuncs } from "../../../config.js";
 import { uploadImage } from "../../../helpers/helpers.js";
 
 class AddingSentence {
@@ -8,7 +8,6 @@ class AddingSentence {
     for (let i = 0; i < inputSentenceTest.length - 1; i += 2) {
       inputSentenceTest.splice(i + 1, 0, " ");
     }
-    console.log(inputSentenceTest);
     document
       .querySelector(".modal-body")
       .insertAdjacentHTML(
@@ -16,13 +15,26 @@ class AddingSentence {
         `<input type="file" name="image" class="form-control modal-form-control" aria-label="file example" accept="image/*"><br>Sentence:`
       );
     let sentenceHtml = `<p>`;
-    inputSentenceTest.forEach((el, i) => {
-      sentenceHtml += `<span class="span-for-sentence-in-modal word" data-index="${i}">${
-        el === " " ? "&nbsp;" : el
-      }</span>`;
-      // if (i < inputSentenceTest.length - 1) {
-      //   sentenceHtml += `<span class="span-for-sentence-in-modal space" data-index="space-${i}">&nbsp;</span>`;
-      // }
+    let count = 0;
+    inputSentenceTest.forEach(function (s, i) {
+      const bool = arrOfPuncs.some((punc) => s.includes(punc));
+      let punc = "";
+      let punc2 = "";
+      if (bool && s !== " ") {
+        const arr = s.split("");
+        for (; arrOfPuncs.includes(arr[arr.length - 1]); ) {
+          punc += arr.pop();
+        }
+        for (; arrOfPuncs.includes(arr[0]); ) {
+          punc2 += arr.shift();
+        }
+        s = arr.join("");
+      }
+      punc = punc.split("").reverse().join("");
+      sentenceHtml += `${punc2}<span class="span-for-sentence-in-modal" data-index="${count}">${
+        s === " " ? "&nbsp" : s
+      }</span>${punc}`;
+      count++;
     });
     sentenceHtml += `</p>`;
     document
@@ -33,7 +45,6 @@ class AddingSentence {
   }
 
   #clickOnModalBody(e) {
-    console.log(e.target);
     if (e.target.classList.contains("span-for-sentence-in-modal")) {
       e.target.classList.toggle("highlight");
     }
@@ -62,7 +73,6 @@ class AddingSentence {
       data.sentences = { sentence: data.sentences };
       if (imageUrl) data.sentences.imageUrl = imageUrl;
 
-      console.log(data);
 
       const common = new CommonKTSP();
       await common.sendForKeyTermsAndSpellings(

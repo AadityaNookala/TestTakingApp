@@ -89,7 +89,6 @@ class Displaying extends Common {
         el.closest(".sentence-div").querySelector(".sentence")
       );
       const index = this.randomTest.sentences.indexOf(textContent);
-      console.log(this.randomTest.sentences.indexOf(textContent));
       if (this.randomTest.answers[index].indexOf(el.value.trim()) !== -1) {
         if (this.randomTest.answers[index].length !== 1) {
           const halfBeforeTheUnwantedElement = this.randomTest.answers[
@@ -160,7 +159,6 @@ class Displaying extends Common {
       document
         .querySelector(".no-peer-review")
         .addEventListener("click", () => {
-          console.log("hi");
           document.querySelector(".spinner-border").style.display = "block";
           this.sendAPIToScoresAndScheduler(
             enteredAnswers,
@@ -217,7 +215,6 @@ class Displaying extends Common {
                   .querySelector(".sentences-input").value
               );
               if (noOfClicked === original) {
-                console.log("hi");
                 document.querySelector(".spinner-border").style.display =
                   "block";
                 this.sendAPIToScoresAndScheduler(
@@ -242,7 +239,6 @@ class Displaying extends Common {
             } else if (e.target.closest(".incorrect")) {
               noOfClicked++;
               if (noOfClicked === original) {
-                console.log("hi");
                 document.querySelector(".spinner-border").style.display =
                   "inline-block";
 

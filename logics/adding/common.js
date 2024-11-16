@@ -95,14 +95,24 @@ class Common {
           inputSentenceTest.forEach((word, k) => {
             html += `<span class="${
               this.#data.answers[i].includes(k) ? "highlight" : ""
-            }">${word}</span>${this.#dataType === "spellings" ? " " : ""}`;
+            }">${
+              word.replace(/[^\w\s-]|_/g, "") !== word &&
+              this.#data.answers[i].includes(k)
+                ? word.slice(0, word.length - 1)
+                : word
+            }</span>${
+              word.replace(/[^\w\s-]|_/g, "") !== word &&
+              this.#data.answers[i].includes(k)
+                ? word[word.length - 1]
+                : ""
+            }${this.#dataType === "spellings" ? " " : ""}`;
           });
         } else html += el;
         if (newSentence.split("\n").length - 1 !== j) {
           html += "<br>";
         }
       });
-      html += `</p>${
+      html += `</p>\n${
         sentences[i].imageUrl
           ? `<img class="image" src="${sentences[i].imageUrl}" />`
           : ""
@@ -146,7 +156,6 @@ class Common {
     const row = edit.closest(".row");
     row.classList.add("active-adding");
     const sentenceRow = row.querySelector(".col-7");
-    console.log(sentenceRow);
     const textCont = sentenceRow.querySelector(".sentence").textContent.trim();
     let html = ``;
     textCont.split("\n").forEach((el, i) => {

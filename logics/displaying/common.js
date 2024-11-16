@@ -41,7 +41,6 @@ class Common {
     const dateMonthDayYear =
       date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
     const testName = this.randomTest.testName;
-    console.log(testName);
     const userName = this.url.get("accessLevel");
     const categoryName = this.url.get("testCategory");
     await sendAPI("PATCH", `${baseUrl}/score`, {
@@ -60,7 +59,6 @@ class Common {
     ).data.data.tests;
     const nextTask =
       allTestsInCategory[allTestsInCategory.indexOf(testName) + 1];
-    console.log(nextTask);
     score = `${score}/${noOfWords}`;
     
     await sendAPI("POST", `${baseUrlScheduler}/integrate-spellings-app`, {

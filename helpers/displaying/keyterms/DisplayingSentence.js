@@ -23,7 +23,7 @@ class DisplayingSentence {
               id="word-span-${i}" 
               data-id="${i}"
               data-type="text">
-              ${text}
+              ${text.replace(/[^\w\s-]|_/g, "")}
             </span>
           `;
   }
@@ -44,7 +44,8 @@ class DisplayingSentence {
     const arr = [];
     let temp = 0;
     droppingSpans.forEach((el, i) => {
-      const answer = answers[totalCount].content;
+      const answer = answers[totalCount].content.replace(/[^\w\s-]|_/g, "");
+      console.log(answer);
       const item = el.querySelector(".word");
       if (item) {
         if (item.textContent.trim() === answer) {
@@ -52,13 +53,13 @@ class DisplayingSentence {
           correctCount++;
           temp++;
         } else {
-          console.log(item.textContent.trim());
           arr.push(answer);
         }
       } else {
         arr.push(answer);
       }
       totalCount++;
+      console.log(correctCount);
     });
     if (droppingSpans.length !== temp) {
       indexOfActualSentence.push(sentenceIndex);
@@ -75,6 +76,55 @@ class DisplayingSentence {
     const id = draggable.getAttribute("data-id");
     event.dataTransfer.setData("text/plain", id);
     event.dataTransfer.setData("word", event.target.textContent);
+  }
+
+  renderQuestions(answers, sentence, index) {
+    const tokens = sentence.sentence.match(/(\w+|\s+|[^\s\w]+)/g);
+
+    const ranges = [];
+    let start = answers[0];
+    let end = answers[0];
+
+    for (let i = 1; i < answers.length; i++) {
+      if (answers[i] === answers[i - 1] + 1) {
+        end = answers[i];
+      } else {
+        ranges.push([start, end]);
+        start = answers[i];
+        end = answers[i];
+      }
+    }
+    ranges.push([start, end]);
+
+    const newTokens = [];
+    let i = 0;
+    let rangeIndex = 0;
+
+    while (i < tokens.length) {
+      if (rangeIndex < ranges.length && i === ranges[rangeIndex][0]) {
+        newTokens.push(
+          `<span class="dropping-span" data-index="${i}"> <span class="drop drop-zone" data-id="${i}"></span> </span>`
+        );
+        i = ranges[rangeIndex][1] + 1;
+        rangeIndex++;
+      } else {
+        newTokens.push(tokens[i]);
+        i++;
+      }
+    }
+
+    const modifiedSentence = newTokens.join("");
+
+    return `<div class="sentence mb-5" data-index="${index}">
+          ${
+            sentence.imageUrl
+              ? `<br><img src="${sentence.imageUrl}" alt="Image ${
+                  index + 1
+                }" class="masked-image" data-index="${i}"><br>`
+              : ""
+          }
+          ${sentence.sentence ? `${index + 1}: ${modifiedSentence}` : ""}
+        </div>`;
   }
 }
 

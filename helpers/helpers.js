@@ -32,7 +32,6 @@ export async function uploadImage(baseUrl) {
     `${baseUrl}/get-signed-url?fileName=${file.name}`
   );
   const uploadUrl = data.signedUrl;
-  console.log(data);
 
   await fetch(uploadUrl, {
     method: "PUT",

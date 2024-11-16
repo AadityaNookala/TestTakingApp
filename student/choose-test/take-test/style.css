@@ -42,7 +42,7 @@ body {
   top: 2rem;
   display: grid;
   height: auto;
-  overflow: auto;
+  overflow-y: auto;
   bottom: 2rem;
 }
 
@@ -64,7 +64,8 @@ body {
 .drop-zone {
   display: inline-block;
   height: 5rem;
-  width: 30rem;
+  width: auto;
+  min-width: 6rem;
 }
 
 .word,

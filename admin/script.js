@@ -430,8 +430,7 @@ class App {
           <a class="show-button">+</a>
           <h2 class="test-categories"><input type="text" class="input"></h2>
         </div>
-        <button class="button-add">Add Category</button>
-        <input type="text" class="input input-label" placeholder="Enter labels">`
+        <button class="button-add">Add Category</button>`
         );
         type = "sentence-combining";
       } else if (e.target.closest(".category").dataset.type === "key-terms") {
@@ -451,7 +450,6 @@ class App {
       }
       const buttonAdd = document.querySelector(".button-add");
       buttonAdd.addEventListener("click", async () => {
-        const labels = [];
         const inputValue = document.querySelector(".input").value;
         const object = {
           categoryName: inputValue,

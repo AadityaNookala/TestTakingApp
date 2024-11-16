@@ -10,7 +10,6 @@ class CommonKTSP {
     activeIndex,
     inputSentenceTest = null
   ) {
-    console.log(inputSentenceTest);
     if (typeOfChange === "adding") {
       await sendAPI(
         "PATCH",

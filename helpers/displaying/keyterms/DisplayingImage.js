@@ -116,6 +116,123 @@ class DisplayingImage {
     event.dataTransfer.effectAllowed = "move";
     draggable.classList.add("dragging");
   }
+
+  async renderQuestions(i, sentence, masks) {
+    const imageUrl = sentence.imageUrl;
+    masks.forEach((mask, index) => {
+      if (!mask.id) {
+        mask.id = `mask${index + 1}`;
+      }
+    });
+
+    const maskedImageData = await this.#maskImage(imageUrl, masks);
+    const maskedImageURL = maskedImageData.maskedImageURL;
+
+    return `<div class="sentence mb-5" data-index="${i}">
+          <div class="masked-image-container" style="position: relative; display: inline-block;">
+            <img 
+              src="${maskedImageURL}" 
+              alt="Masked Image ${i + 1}" 
+              class="masked-image" 
+              data-index="${i}"
+              onload="this.dataset.naturalWidth = this.naturalWidth; this.dataset.naturalHeight = this.naturalHeight;"
+            >
+            ${masks
+              .map(
+                (mask) =>
+                  `<div 
+                    class="drop-zone" 
+                    data-id="${mask.id}" 
+                    style="
+                      position: absolute;
+                      left: 0%;
+                      top: 0%;
+                      width: 0%;
+                      height: 0%;
+                      box-sizing: border-box;
+                      cursor: pointer;
+                    ">
+                  </div>`
+              )
+              .join("")}
+          </div>
+        </div>`;
+  }
+
+  #maskImage(imageUrl, masks) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          ctx.drawImage(img, 0, 0);
+
+          ctx.fillStyle = "#ffcb9a";
+
+          masks.forEach((mask) => {
+            ctx.fillRect(mask.x, mask.y, mask.width, mask.height);
+          });
+
+          const maskedImageURL = canvas.toDataURL("image/png");
+
+          resolve({
+            maskedImageURL,
+            naturalWidth: img.width,
+            naturalHeight: img.height,
+          });
+        } catch (error) {
+          reject(`Error while masking the image: ${error}`);
+        }
+      };
+
+      img.onerror = () => {
+        reject(
+          "Failed to load the image. Please check the image URL and CORS settings."
+        );
+      };
+
+      img.src = imageUrl;
+    });
+  }
+
+  activateDropZones(masks, i) {
+    const maskedImage = document
+      .querySelector(".sentences")
+      .querySelector(`.masked-image[data-index="${i}"]`);
+    const dropZones = document
+      .querySelector(".sentences")
+      .querySelectorAll(`.drop-zone[data-id^="mask"]`);
+
+    maskedImage.addEventListener("load", () => {
+      const naturalW = maskedImage.naturalWidth;
+      const naturalH = maskedImage.naturalHeight;
+
+      dropZones.forEach((zone, idx) => {
+        const mask = masks[idx];
+        const xPercent = (mask.x / naturalW) * 100;
+        const yPercent = (mask.y / naturalH) * 100;
+        const widthPercent = (mask.width / naturalW) * 100;
+        const heightPercent = (mask.height / naturalH) * 100;
+
+        mask.xPercent = xPercent;
+        mask.yPercent = yPercent;
+        mask.widthPercent = widthPercent;
+        mask.heightPercent = heightPercent;
+
+        zone.style.left = `${mask.xPercent}%`;
+        zone.style.top = `${mask.yPercent}%`;
+        zone.style.width = `${mask.widthPercent}%`;
+        zone.style.height = `${mask.heightPercent}%`;
+      });
+    });
+  }
 }
 
 export default new DisplayingImage();
