@@ -1,4 +1,4 @@
-import { baseUrl } from "../../config.js";
+import { arrOfPuncs, baseUrl } from "../../config.js";
 import { sendAPI } from "../../helpers/helpers.js";
 import { default as AddingSpellings } from "./spellings.js";
 import { default as AddingSentenceCombining } from "./sentence-combining.js";
@@ -93,19 +93,23 @@ class Common {
             }
           }
           inputSentenceTest.forEach((word, k) => {
-            html += `<span class="${
+            let punc = "";
+            let puncOfBeginning = "";
+            const arr = word.split("");
+            for (; arrOfPuncs.includes(arr[arr.length - 1]); ) {
+              punc += arr.pop();
+            }
+            for (; arrOfPuncs.includes(arr[0]); ) {
+              puncOfBeginning += arr.shift();
+            }
+            punc = punc.split("").reverse().join("");
+            html += `${puncOfBeginning}<span class="${
               this.#data.answers[i].includes(k) ? "highlight" : ""
-            }">${
-              word.replace(/[^\w\s-]|_/g, "") !== word &&
-              this.#data.answers[i].includes(k)
-                ? word.slice(0, word.length - 1)
-                : word
-            }</span>${
-              word.replace(/[^\w\s-]|_/g, "") !== word &&
-              this.#data.answers[i].includes(k)
-                ? word[word.length - 1]
-                : ""
-            }${this.#dataType === "spellings" ? " " : ""}`;
+            }">${word
+              .replace(punc, "")
+              .replace(puncOfBeginning, "")}</span>${punc}${
+              this.#dataType === "spellings" ? " " : ""
+            }`;
           });
         } else html += el;
         if (newSentence.split("\n").length - 1 !== j) {

@@ -1,3 +1,5 @@
+import { arrOfPuncs } from "../../../config.js";
+
 class DisplayingSentence {
   createAnswers(randomTest, answer, i) {
     const sentence = randomTest.sentences[i].sentence.split(" ");
@@ -79,8 +81,7 @@ class DisplayingSentence {
   }
 
   renderQuestions(answers, sentence, index) {
-    const tokens = sentence.sentence.match(/(\w+|\s+|[^\s\w]+)/g);
-
+    const tokens = sentence.sentence.match(/(\S+|\s+)/g);
     const ranges = [];
     let start = answers[0];
     let end = answers[0];
@@ -100,10 +101,22 @@ class DisplayingSentence {
     let i = 0;
     let rangeIndex = 0;
 
+    console.log(tokens);
     while (i < tokens.length) {
       if (rangeIndex < ranges.length && i === ranges[rangeIndex][0]) {
+        let punc = "";
+        let puncOfBeginning = "";
+        const arr = tokens[ranges[rangeIndex][1]].split("");
+        const arrOfBeginning = tokens[i].split("");
+        for (; arrOfPuncs.includes(arr[arr.length - 1]); ) {
+          punc += arr.pop();
+        }
+        for (; arrOfPuncs.includes(arrOfBeginning[0]); ) {
+          puncOfBeginning += arrOfBeginning.shift();
+        }
+        punc = punc.split("").reverse().join("");
         newTokens.push(
-          `<span class="dropping-span" data-index="${i}"> <span class="drop drop-zone" data-id="${i}"></span> </span>`
+          `${puncOfBeginning}<span class="dropping-span" data-index="${i}"> <span class="drop drop-zone" data-id="${i}"></span> </span>${punc}`
         );
         i = ranges[rangeIndex][1] + 1;
         rangeIndex++;

@@ -73,7 +73,6 @@ class Displaying extends Common {
     const fixedContainer = document.querySelector(".fixed .draggables");
     const randomAnswers = this.#randomizeArray(this.#answers);
     let html = "";
-
     randomAnswers.forEach((ans, i) => {
       if (ans.type === "image") {
         html += displayingImage.renderAnswers(i, ans.content);
