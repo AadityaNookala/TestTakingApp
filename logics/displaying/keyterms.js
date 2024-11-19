@@ -220,25 +220,17 @@ class Displaying extends Common {
       }
     });
 
-    container.addEventListener("dragleave", (event) => {
-      const dropZone =
-        event.target.closest(".drop-zone") ||
-        event.target.closest(".fixed .draggables");
-      if (dropZone) {
-        dropZone.classList.remove("over");
-      }
-    });
-
     container.addEventListener("drop", (event) => {
       event.preventDefault();
+      console.log(event.target);
       const dropZone =
         event.target.closest(".drop-zone") ||
+        event.target.querySelector(".drop-zone") ||
         event.target.closest(".fixed .draggables");
       if (!dropZone) return;
       const draggedId = event.dataTransfer.getData("text/plain");
       const draggable = document.querySelector(`.word[data-id="${draggedId}"]`);
       if (!draggable) return;
-
       if (dropZone.classList.contains("drop-zone")) {
         this.#moveDraggableToDropZone(draggable, dropZone);
       } else if (dropZone.classList.contains("draggables")) {
@@ -258,10 +250,15 @@ class Displaying extends Common {
     if (!draggable || !dropZone) return;
 
     const existingDraggable = dropZone.querySelector(".word");
+    console.log(existingDraggable);
     if (existingDraggable) {
       this.#moveDraggableToFixed(existingDraggable);
     }
+
     dropZone.appendChild(draggable);
+    // console.log(draggable);
+    // console.log(draggable.outerHTML);
+    // dropZone.innerHTML = draggable.outerHTML;
   }
 }
 

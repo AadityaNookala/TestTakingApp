@@ -28,7 +28,7 @@ class DisplayingImage {
 
           const dataURL = tempCanvas.toDataURL("image/png");
           if (!mask.id) {
-            mask.id = `mask${index + 1}`;
+            mask.id = `mask${index + 1}-${i}`;
           }
           maskedParts.push({ id: mask.id, maskedImageURL: dataURL });
         });
@@ -48,7 +48,6 @@ class DisplayingImage {
             <span 
               class="word draggable" 
               draggable="true" 
-              id="word-span-${i}" 
               data-id="${maskedPart.id}" 
               data-type="image">
               <img src="${maskedPart.maskedImageURL}" alt="Masked Part ${maskedPart.id}" class="img" />
@@ -119,15 +118,10 @@ class DisplayingImage {
 
   async renderQuestions(i, sentence, masks) {
     const imageUrl = sentence.imageUrl;
-    masks.forEach((mask, index) => {
-      if (!mask.id) {
-        mask.id = `mask${index + 1}`;
-      }
-    });
 
     const maskedImageData = await this.#maskImage(imageUrl, masks);
     const maskedImageURL = maskedImageData.maskedImageURL;
-
+    console.log(masks);
     return `<div class="sentence mb-5" data-index="${i}">
           <div class="masked-image-container" style="position: relative; display: inline-block;">
             <img 
@@ -208,30 +202,31 @@ class DisplayingImage {
       .querySelector(`.masked-image[data-index="${i}"]`);
     const dropZones = document
       .querySelector(".sentences")
+      .querySelector(`.sentence[data-index="${i}"]`)
       .querySelectorAll(`.drop-zone[data-id^="mask"]`);
 
-    maskedImage.addEventListener("load", () => {
+    const updateDropZones = () => {
       const naturalW = maskedImage.naturalWidth;
       const naturalH = maskedImage.naturalHeight;
+      const displayedW = maskedImage.offsetWidth;
+      const displayedH = maskedImage.offsetHeight;
 
       dropZones.forEach((zone, idx) => {
         const mask = masks[idx];
-        const xPercent = (mask.x / naturalW) * 100;
-        const yPercent = (mask.y / naturalH) * 100;
-        const widthPercent = (mask.width / naturalW) * 100;
-        const heightPercent = (mask.height / naturalH) * 100;
 
-        mask.xPercent = xPercent;
-        mask.yPercent = yPercent;
-        mask.widthPercent = widthPercent;
-        mask.heightPercent = heightPercent;
-
-        zone.style.left = `${mask.xPercent}%`;
-        zone.style.top = `${mask.yPercent}%`;
-        zone.style.width = `${mask.widthPercent}%`;
-        zone.style.height = `${mask.heightPercent}%`;
+        // Adjust for actual displayed size
+        zone.style.left = `${(mask.x / naturalW) * displayedW}px`;
+        zone.style.top = `${(mask.y / naturalH) * displayedH}px`;
+        zone.style.width = `${(mask.width / naturalW) * displayedW}px`;
+        zone.style.height = `${(mask.height / naturalH) * displayedH}px`;
       });
-    });
+    };
+
+    maskedImage.addEventListener("load", updateDropZones);
+    window.addEventListener("resize", updateDropZones);
+
+    // Call once on activation
+    updateDropZones();
   }
 }
 

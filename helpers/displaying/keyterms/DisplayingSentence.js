@@ -22,7 +22,6 @@ class DisplayingSentence {
             <span 
               class="word draggable" 
               draggable="true" 
-              id="word-span-${i}" 
               data-id="${i}"
               data-type="text">
               ${text.replace(/[^\w\s-]|_/g, "")}
@@ -47,7 +46,6 @@ class DisplayingSentence {
     let temp = 0;
     droppingSpans.forEach((el, i) => {
       const answer = answers[totalCount].content.replace(/[^\w\s-]|_/g, "");
-      console.log(answer);
       const item = el.querySelector(".word");
       if (item) {
         if (item.textContent.trim() === answer) {
@@ -61,7 +59,6 @@ class DisplayingSentence {
         arr.push(answer);
       }
       totalCount++;
-      console.log(correctCount);
     });
     if (droppingSpans.length !== temp) {
       indexOfActualSentence.push(sentenceIndex);
@@ -101,7 +98,6 @@ class DisplayingSentence {
     let i = 0;
     let rangeIndex = 0;
 
-    console.log(tokens);
     while (i < tokens.length) {
       if (rangeIndex < ranges.length && i === ranges[rangeIndex][0]) {
         let punc = "";
