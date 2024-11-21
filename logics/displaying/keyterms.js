@@ -14,18 +14,11 @@ class Displaying extends Common {
   constructor() {
     super();
     (async () => {
-      try {
-        await this.getRandomTest();
-        this.#prepareDivs();
-
-        // this.#defaultDroppingSpanValue =
-        //   "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        await this.#renderPage();
-        this.#addDragAndDropHandlers();
-        this.#check.addEventListener("click", this.#checkAnswers.bind(this));
-      } catch (error) {
-        console.error("Error initializing Displaying class:", error);
-      }
+      await this.getRandomTest();
+      this.#prepareDivs();
+      await this.#renderPage();
+      this.#addDragAndDropHandlers();
+      this.#check.addEventListener("click", this.#checkAnswers.bind(this));
     })();
   }
 
@@ -222,7 +215,6 @@ class Displaying extends Common {
 
     container.addEventListener("drop", (event) => {
       event.preventDefault();
-      console.log(event.target);
       const dropZone =
         event.target.closest(".drop-zone") ||
         event.target.querySelector(".drop-zone") ||
@@ -250,15 +242,11 @@ class Displaying extends Common {
     if (!draggable || !dropZone) return;
 
     const existingDraggable = dropZone.querySelector(".word");
-    console.log(existingDraggable);
     if (existingDraggable) {
       this.#moveDraggableToFixed(existingDraggable);
     }
 
     dropZone.appendChild(draggable);
-    // console.log(draggable);
-    // console.log(draggable.outerHTML);
-    // dropZone.innerHTML = draggable.outerHTML;
   }
 }
 

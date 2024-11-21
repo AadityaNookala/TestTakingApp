@@ -127,18 +127,18 @@ class App {
     });
   }
   async addNewUser() {
-    this.addNewUser
+    this.addNewUsers
       .closest(".users")
       .querySelector(".users-container")
       .classList.remove("hidden");
-    this.addNewUser
+    this.addNewUsers
       .closest(".users-showing")
       .querySelector(".show-button").textContent = "-";
     this.usersContainer.insertAdjacentHTML(
       "beforeend",
       `<div class="user"><div class="categories-showing mt-4">
       <button class="show-button">+</button>
-      <h2 class="test-categories user-name"><input type="text" class="user-input"></h2>
+      <h2 class="test-categories user-name"><input type="text" class="user-input username" placeholder="Username"><input type="password" class="user-input password" placeholder="Password"></h2>
     </div>
     <div class="categories-container-users child hidden">
         </div>
@@ -146,12 +146,17 @@ class App {
     <button class="add-user-button mt-2">Add User</button>
     `
     );
-    const userInput = document.querySelector(".user-input");
-    userInput.focus();
+    const userName = document.querySelector(".username");
+    const password = document.querySelector(".password");
+    userName.focus();
     const addUserButton = document.querySelector(".add-user-button");
     addUserButton.addEventListener("click", async function () {
-      await sendAPI("POST", `${baseUrl}/user`, { userName: userInput.value });
-      userInput.closest(".test-categories").innerHTML = userInput.value;
+      await sendAPI("POST", `${baseUrl}/user`, {
+        userName: userName.value.trim(),
+        password: password.value.trim(),
+      });
+      userName.closest(".test-categories").innerHTML = userName.value;
+      password.remove();
       addUserButton.remove();
     });
   }
@@ -588,10 +593,11 @@ class App {
     );
     const userData = (await sendAPI("GET", `${baseUrl}/user`)).data.data;
     userData.forEach((element) => {
-      let string = ``;
-      this.usersContainer.insertAdjacentHTML(
-        "beforeend",
-        `<div class="user mt-4">
+      if (element.role !== "admin") {
+        let string = ``;
+        this.usersContainer.insertAdjacentHTML(
+          "beforeend",
+          `<div class="user mt-4">
       <div class="user-categories">
       <a class="show-button">+</a>
       <h2 class="test-categories user-name">${element.userName}</h2>
@@ -599,18 +605,18 @@ class App {
       <div class="categories-container-users child hidden">
       </div>
     </div>`
-      );
-      const user = this.usersContainer.lastElementChild;
-      const categoriesContainerUsers = user.querySelector(
-        ".categories-container-users"
-      );
-      element.testCategories.forEach((testCategory) => {
-        const object = testCategories.find(
-          (elements) => elements.categoryName === testCategory
         );
-        let string2 = ``;
-        object.tests.forEach((test, i) => {
-          string2 += `<div class="row">
+        const user = this.usersContainer.lastElementChild;
+        const categoriesContainerUsers = user.querySelector(
+          ".categories-container-users"
+        );
+        element.testCategories.forEach((testCategory) => {
+          const object = testCategories.find(
+            (elements) => elements.categoryName === testCategory
+          );
+          let string2 = ``;
+          object.tests.forEach((test, i) => {
+            string2 += `<div class="row">
           <div class="number">
             ${i + 1}
           </div>
@@ -618,8 +624,8 @@ class App {
             ${test}
           </div>
         </div>`;
-        });
-        string += `<div class="test-categories-showing mt-4" data-category-name="${testCategory}">
+          });
+          string += `<div class="test-categories-showing mt-4" data-category-name="${testCategory}">
         <div class="buttons-wrapper">
         <a class="show-button">+</a>
         <h2 class="test-categories">${testCategory}</h2>
@@ -635,9 +641,10 @@ class App {
     </div>
     ${string2}
       </div>`;
-        categoriesContainerUsers.insertAdjacentHTML("beforeend", string);
-        string = ``;
-      });
+          categoriesContainerUsers.insertAdjacentHTML("beforeend", string);
+          string = ``;
+        });
+      }
     });
   }
   async showUsersInScores() {

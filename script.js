@@ -1,37 +1,41 @@
 "use strict";
 import { baseUrl } from "../../config.js";
-import { sendAPI } from "./helpers/helpers.js";
+import { renderError, sendAPI } from "./helpers/helpers.js";
 
 class App {
+  #loginButton;
+
   constructor() {
-    this.url = window.location.href.replace("index.html", "");
-    this.modalBody = document.querySelector(".modal-body");
-    this.showUsers();
-    document.addEventListener("click", this.openNewUrl.bind(this));
+    this.#loginButton = document.querySelector(".login-button");
+    this.#loginButton.addEventListener("click", this.#login.bind(this));
   }
-  async showUsers() {
-    const users = (await sendAPI("GET", `${baseUrl}/user`)).data.data;
-    users.forEach((element) => {
-      this.modalBody.insertAdjacentHTML(
-        "beforeend",
-        `<a href="student/choose-test/index.html" class="links">${element.userName}</a>`
-      );
-    });
-    this.modalBody.insertAdjacentHTML(
-      "beforeend",
-      `<a href="admin/index.html" class="links">Admin</a>`
-    );
-    document.querySelector(".spinner-border").style.display = "none";
-  }
-  openNewUrl(e) {
+
+  async #login(e) {
     e.preventDefault();
-    if (e.target.classList.contains("links")) {
-      const realUrl =
-        this.url +
-        e.target.getAttribute("href") +
-        "?" +
-        `accessLevel=${e.target.textContent}`;
-      window.open(realUrl, "_blank");
+    const userName = document.querySelector(".username-input").value;
+    const password = document.querySelector(".password-input").value;
+    const spinnerOverlay = document.querySelector(".spinner-overlay");
+
+    spinnerOverlay.classList.remove("hidden");
+
+    try {
+      const loggedIn = await sendAPI("POST", `${baseUrl}/user/login`, {
+        userName,
+        password,
+      });
+
+      spinnerOverlay.classList.add("hidden");
+
+      if (loggedIn.status === "fail") {
+        renderError(document.body, loggedIn.message);
+      } else if (loggedIn.isAdmin) {
+        window.open(`/admin/index.html?accessLevel=${userName}`);
+      } else {
+        window.open(`/student/choose-test/index.html?accessLevel=${userName}`);
+      }
+    } catch (error) {
+      spinnerOverlay.classList.add("hidden");
+      renderError(document.body, error.message);
     }
   }
 }

@@ -73,7 +73,6 @@ class DisplayingImage {
         `.drop-zone[data-id="${mask.id}"]`
       );
       if (!dropZone) {
-        console.warn(`Drop zone with data-id="${mask.id}" not found.`);
         return;
       }
 
@@ -121,7 +120,6 @@ class DisplayingImage {
 
     const maskedImageData = await this.#maskImage(imageUrl, masks);
     const maskedImageURL = maskedImageData.maskedImageURL;
-    console.log(masks);
     return `<div class="sentence mb-5" data-index="${i}">
           <div class="masked-image-container" style="position: relative; display: inline-block;">
             <img 
