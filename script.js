@@ -33,6 +33,8 @@ class App {
       } else {
         window.open(`/student/choose-test/index.html?accessLevel=${userName}`);
       }
+      userName.value = "";
+      password.value = "";
     } catch (error) {
       spinnerOverlay.classList.add("hidden");
       renderError(document.body, error.message);
