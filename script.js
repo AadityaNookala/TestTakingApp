@@ -38,7 +38,7 @@ class App {
       this.spinnerOverlay.classList.add("hidden");
 
       if (response.status === "fail") {
-        renderError(response.message);
+        renderError(document.body, response.message);
       } else if (response.isAdmin) {
         window.location.href = `/admin/index.html?accessLevel=${userName}`;
       } else {
@@ -46,7 +46,7 @@ class App {
       }
     } catch (error) {
       this.spinnerOverlay.classList.add("hidden");
-      renderError(error.message);
+      renderError(document.body, error.message);
     }
   }
 }

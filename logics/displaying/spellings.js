@@ -29,7 +29,6 @@ class Displaying extends Common {
       this.#fixed = document.querySelector(".fixed");
       this.#modal = document.querySelector(".my-modal");
       this.#overlay = document.querySelector(".overlay");
-      // put this in config sometime, the number of spaces not the actual string
       this.#defaultDroppingSpanValue =
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
       this.#words = [];
