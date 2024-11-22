@@ -46,7 +46,7 @@ class App {
       }
     } catch (error) {
       this.spinnerOverlay.classList.add("hidden");
-      this.renderError(error.message);
+      renderError(error.message);
     }
   }
 }

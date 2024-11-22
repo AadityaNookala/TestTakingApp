@@ -212,7 +212,6 @@ class DisplayingImage {
       dropZones.forEach((zone, idx) => {
         const mask = masks[idx];
 
-        // Adjust for actual displayed size
         zone.style.left = `${(mask.x / naturalW) * displayedW}px`;
         zone.style.top = `${(mask.y / naturalH) * displayedH}px`;
         zone.style.width = `${(mask.width / naturalW) * displayedW}px`;
@@ -223,7 +222,6 @@ class DisplayingImage {
     maskedImage.addEventListener("load", updateDropZones);
     window.addEventListener("resize", updateDropZones);
 
-    // Call once on activation
     updateDropZones();
   }
 }
