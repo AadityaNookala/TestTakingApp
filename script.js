@@ -1,5 +1,3 @@
-/* script.js */
-
 "use strict";
 
 import { baseUrl } from "../../config.js";
@@ -40,7 +38,7 @@ class App {
       this.spinnerOverlay.classList.add("hidden");
 
       if (response.status === "fail") {
-        this.renderError(response.message);
+        renderError(response.message);
       } else if (response.isAdmin) {
         window.location.href = `/admin/index.html?accessLevel=${userName}`;
       } else {
