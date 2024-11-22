@@ -1,43 +1,56 @@
+/* script.js */
+
 "use strict";
+
 import { baseUrl } from "../../config.js";
 import { renderError, sendAPI } from "./helpers/helpers.js";
 
 class App {
-  #loginButton;
-
   constructor() {
-    this.#loginButton = document.querySelector(".login-button");
-    this.#loginButton.addEventListener("click", this.#login.bind(this));
+    this.flipCard = document.getElementById("flipCard");
+    this.goButton = document.querySelector(".go-button");
+    this.loginForm = document.getElementById("loginForm");
+    this.spinnerOverlay = document.querySelector(".spinner-overlay");
+
+    this.handleGoHover = this.handleGoHover.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+
+    this.goButton.addEventListener("mouseenter", this.handleGoHover);
+    this.loginForm.addEventListener("submit", this.handleLogin);
   }
 
-  async #login(e) {
-    e.preventDefault();
+  handleGoHover() {
+    this.flipCard.classList.add("flipped");
+    this.goButton.removeEventListener("mouseenter", this.handleGoHover);
+  }
+
+  async handleLogin(event) {
+    event.preventDefault();
+
     const userName = document.querySelector(".username-input").value;
     const password = document.querySelector(".password-input").value;
-    const spinnerOverlay = document.querySelector(".spinner-overlay");
-
-    spinnerOverlay.classList.remove("hidden");
+    this.spinnerOverlay.classList.remove("hidden");
 
     try {
-      const loggedIn = await sendAPI("POST", `${baseUrl}/user/login`, {
+      const response = await sendAPI("POST", `${baseUrl}/user/login`, {
         userName,
         password,
       });
 
-      spinnerOverlay.classList.add("hidden");
+      this.spinnerOverlay.classList.add("hidden");
 
-      if (loggedIn.status === "fail") {
-        renderError(document.body, loggedIn.message);
-      } else if (loggedIn.isAdmin) {
-        window.open(`/admin/index.html?accessLevel=${userName}`);
+      if (response.status === "fail") {
+        this.renderError(response.message);
+      } else if (response.isAdmin) {
+        window.location.href = `/admin/index.html?accessLevel=${userName}`;
       } else {
-        window.open(`/student/choose-test/index.html?accessLevel=${userName}`);
+        window.location.href = `/student/choose-test/index.html?accessLevel=${userName}`;
       }
     } catch (error) {
-      spinnerOverlay.classList.add("hidden");
-      renderError(document.body, error.message);
+      this.spinnerOverlay.classList.add("hidden");
+      this.renderError(error.message);
     }
   }
 }
 
-new App();
+document.addEventListener("DOMContentLoaded", () => new App());

@@ -1,3 +1,9 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background-image: linear-gradient(to bottom right, #116466, #2c3531);
   background-size: cover;
@@ -10,61 +16,116 @@ body {
   align-items: center;
 }
 
-.container {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 30rem;
-  text-align: center;
-  position: relative;
+.card-container {
+  perspective: 1000px;
 }
 
-form {
+.flip-card {
+  width: 350px;
+  height: 400px;
+  position: relative;
+  transition: transform 1.5s;
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.flip-card-front {
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.go-button {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  font-size: 2rem;
+
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.7s ease, transform 0.7s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 10rem;
+  font-weight: bold;
+  font-size: 6rem;
+
+  border: 5px inset #ffcb9a;
+  color: #ffcb9a;
+  background-color: #116466;
+}
+
+.flip-card-back {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: rotateY(180deg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 5px inset #ffcb9a;
+}
+
+.flip-card-back h2 {
+  font-size: 2.4rem;
+  margin-bottom: 2rem;
+  color: #ffcb9a;
+}
+
+.flip-card-back form {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-input {
-  width: 100%;
+.flip-card-back .form-control {
   padding: 1rem;
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   border: none;
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.8);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-input:focus {
+.flip-card-back .form-control:focus {
   outline: none;
   border: 2px solid #116466;
 }
 
-button {
-  padding: 1rem;
-  font-size: 1.6rem;
+.login-button {
+  padding: 0.8rem;
+  font-size: 1.2rem;
   background-color: #d9b08c;
   color: #2c3531;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.5s ease;
 }
 
-button:hover {
+.login-button:hover {
   background-color: #d1e8e2;
 }
 
-button:active {
+.login-button:active {
   background-color: #116466;
   color: white;
-}
-
-h2 {
-  font-size: 2.4rem;
-  margin-bottom: 2rem;
-  color: #ffcb9a;
 }
 
 .spinner-overlay {
@@ -78,13 +139,13 @@ h2 {
   justify-content: center;
   align-items: center;
   z-index: 10;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease;
 }
 
 .hidden {
   display: none;
 }
 
-.spinner-active + .container form {
-  filter: blur(5px);
+.go-button {
+  user-select: none;
 }
