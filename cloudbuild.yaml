@@ -1,0 +1,20 @@
+steps:
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        gcloud functions deploy $_FUNCTION_NAME \
+          --runtime nodejs18 \
+          --trigger-http \
+          --entry-point $_ENTRY_POINT \
+          --set-secrets "DB_USERNAME=projects/$_PROJECT_ID/secrets/DB_USERNAME:latest,PASSWORD=projects/$_PROJECT_ID/secrets/PASSWORD:latest,DATABASE=projects/$_PROJECT_ID/secrets/DATABASE:latest,BUCKET_NAME=projects/$_PROJECT_ID/secrets/BUCKET_NAME:latest,IMAGE_BASE_URL=projects/$_PROJECT_ID/secrets/IMAGE_BASE_URL:latest,JWT_SECRET_FOR_TESTS=projects/$_PROJECT_ID/secrets/JWT_SECRET_FOR_TESTS:latest,JWT_EXPIRES_IN=projects/$_PROJECT_ID/secrets/JWT_EXPIRES_IN:latest,NODE_ENV=projects/$_PROJECT_ID/secrets/NODE_ENV:latest,ORIGIN_URL_FOR_TESTS=projects/$_PROJECT_ID/secrets/ORIGIN_URL_FOR_TESTS:latest,SALT_COST_FACTOR=projects/$_PROJECT_ID/secrets/SALT_COST_FACTOR:latest" \
+          --region $_REGION
+
+substitutions:
+  _PROJECT_ID: "allprojects-424621"
+  _REGION: "us-central1"
+  _FUNCTION_NAME: "spellings-function"
+  _ENTRY_POINT: "spellingsApi"
+
+timeout: "600s"

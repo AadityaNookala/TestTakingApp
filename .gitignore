@@ -1,0 +1,4 @@
+node_modules
+cors.json
+keys/
+config.env
