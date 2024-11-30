@@ -11,15 +11,22 @@ class Common {
   #addingObject;
   #data;
   #dataType = new URLSearchParams(window.location.search).get("dataType");
+  #dataEverything;
   constructor() {
     (async () => {
       this.#add = document.querySelector(".add");
       this.#form = document.querySelector("form");
       this.#heading = document.querySelector(".heading");
       this.#numberOfWords = 0;
-      this.#data = (
-        await sendAPI("GET", `${baseUrl}/test/${this.#heading.textContent}`)
-      ).data.test;
+      this.#dataEverything = (
+        await sendAPI(
+          "GET",
+          `${baseUrl}/test/${this.#heading.textContent}/${new URLSearchParams(
+            window.location.search
+          ).get("testCategory")}`
+        )
+      ).data;
+      this.#data = this.#dataEverything.test;
       if (this.#dataType === "spellings")
         this.#addingObject = new AddingSpellings();
       else if (this.#dataType === "sentence-combining")
@@ -144,6 +151,9 @@ class Common {
       );
     });
     document.querySelector(".spinner-border").style.display = "none";
+    document.querySelector(
+      ".top-right-corner"
+    ).innerHTML = `Number of highlights: ${this.#dataEverything.count}`;
   }
 
   #addWord() {
@@ -176,9 +186,23 @@ class Common {
       "beforeend",
       `<button class="edit-word" data-bs-toggle="modal" data-bs-target="#myModal" type="button" data-type-of-change="editing">Edit</button>`
     );
+    let sentence;
+    if (this.#data.sentences[row.dataset.index].sentence) {
+      sentence = this.#data.sentences[row.dataset.index].sentence;
+    } else if (this.#data.sentences[row.dataset.index].imageUrl) {
+      sentence = null;
+    } else {
+      sentence = this.#data.sentences[row.dataset.index];
+    }
     document
       .querySelector(".edit-word")
-      .addEventListener("click", () => this.#addingObject.showingModal(input));
+      .addEventListener("click", () =>
+        this.#addingObject.showingModal(
+          input,
+          sentence,
+          this.#data.answers[row.dataset.index]
+        )
+      );
   }
 }
 

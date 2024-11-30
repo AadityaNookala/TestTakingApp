@@ -76,3 +76,10 @@ export const renderError = function (element, err) {
   `;
   element.innerHTML = markup;
 };
+
+export const renderErrorLogin = function (element, err) {
+  element.insertAdjacentHTML(
+    "beforeend",
+    `<p style="color:rgb(100, 10, 0)">${err}</p>`
+  );
+};

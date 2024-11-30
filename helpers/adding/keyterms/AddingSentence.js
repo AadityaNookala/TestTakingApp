@@ -3,7 +3,7 @@ import { baseUrl, arrOfPuncs } from "../../../config.js";
 import { uploadImage } from "../../../helpers/helpers.js";
 
 class AddingSentence {
-  constructor(input) {
+  constructor(input, sentence, answers) {
     const inputSentenceTest = input.value.trim().split(" ");
     for (let i = 0; i < inputSentenceTest.length - 1; i += 2) {
       inputSentenceTest.splice(i + 1, 0, " ");
@@ -31,9 +31,13 @@ class AddingSentence {
         s = arr.join("");
       }
       punc = punc.split("").reverse().join("");
-      sentenceHtml += `${punc2}<span class="span-for-sentence-in-modal" data-index="${count}">${
-        s === " " ? "&nbsp" : s
-      }</span>${punc}`;
+      sentenceHtml += `${punc2}<span class="span-for-sentence-in-modal ${
+        sentence === input.value &&
+        typeof answers[0] === "number" &&
+        answers.includes(i)
+          ? "highlight"
+          : ""
+      }" data-index="${count}">${s === " " ? "&nbsp" : s}</span>${punc}`;
       count++;
     });
     sentenceHtml += `</p>`;
@@ -72,7 +76,6 @@ class AddingSentence {
 
       data.sentences = { sentence: data.sentences };
       if (imageUrl) data.sentences.imageUrl = imageUrl;
-
 
       const common = new CommonKTSP();
       await common.sendForKeyTermsAndSpellings(

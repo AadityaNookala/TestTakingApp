@@ -4,7 +4,7 @@ import { arrOfPuncs } from "../../config.js";
 import { default as CommonKTSP } from "./commonktsp.js";
 
 class Adding {
-  showingModal(input) {
+  showingModal(input, sentence, answers) {
     document.querySelector(".modal-body").textContent = "";
     const inputSentenceTest = input.value;
     const inputSentenceTestSplit = inputSentenceTest.split(" ");
@@ -31,7 +31,13 @@ class Adding {
         .querySelector(".modal-body")
         .insertAdjacentHTML(
           "beforeend",
-          `${punc2}<span class="span-for-sentence-in-modal" data-index="${count}">${s}</span>${punc}&nbsp;`
+          `${punc2}<span class="span-for-sentence-in-modal ${
+            sentence === input.value &&
+            typeof answers[0] === "number" &&
+            answers.includes(i)
+              ? "highlight"
+              : ""
+          }" data-index="${count}">${s}</span>${punc}&nbsp;`
         );
       count++;
     });

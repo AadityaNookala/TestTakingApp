@@ -1,7 +1,7 @@
 "use strict";
 
 import { baseUrl } from "../../config.js";
-import { renderError, sendAPI } from "./helpers/helpers.js";
+import { renderErrorLogin, sendAPI } from "./helpers/helpers.js";
 
 class App {
   constructor() {
@@ -10,11 +10,19 @@ class App {
     this.loginForm = document.getElementById("loginForm");
     this.spinnerOverlay = document.querySelector(".spinner-overlay");
 
+    this.togglePasswordButton = document.getElementById("togglePassword");
+    this.togglePasswordIcon = document.getElementById("togglePasswordIcon");
+
     this.handleGoHover = this.handleGoHover.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleTogglePassword = this.handleTogglePassword.bind(this);
 
     this.goButton.addEventListener("mouseenter", this.handleGoHover);
     this.loginForm.addEventListener("submit", this.handleLogin);
+    this.togglePasswordButton.addEventListener(
+      "click",
+      this.handleTogglePassword
+    );
   }
 
   handleGoHover() {
@@ -38,7 +46,10 @@ class App {
       this.spinnerOverlay.classList.add("hidden");
 
       if (response.status === "fail") {
-        renderError(document.body, response.message);
+        renderErrorLogin(
+          document.querySelector("#loginForm"),
+          response.message
+        );
       } else if (response.isAdmin) {
         window.location.href = `/admin/index.html?accessLevel=${userName}`;
       } else {
@@ -46,9 +57,24 @@ class App {
       }
     } catch (error) {
       this.spinnerOverlay.classList.add("hidden");
-      renderError(document.body, error.message);
+      renderErrorLogin(document.querySelector("#loginForm"), error.message);
+    }
+  }
+
+  handleTogglePassword() {
+    const passwordField = document.getElementById("passwordField");
+    const type =
+      passwordField.getAttribute("type") === "password" ? "text" : "password";
+    passwordField.setAttribute("type", type);
+
+    if (type === "password") {
+      this.togglePasswordIcon.classList.remove("bi-eye-slash");
+      this.togglePasswordIcon.classList.add("bi-eye");
+    } else {
+      this.togglePasswordIcon.classList.remove("bi-eye");
+      this.togglePasswordIcon.classList.add("bi-eye-slash");
     }
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => new App());
+new App();

@@ -6,30 +6,15 @@ class Common {
   }
   async getRandomTest() {
     const heading = document.querySelector(".heading");
-    const length = this.url.size;
-    if (length === 1) {
-      this.randomTest = (
-        await sendAPI("GET", `${baseUrl}/random/${this.url.get("accessLevel")}`)
-      ).test;
-      heading.textContent = `Random test`;
-    } else {
-      if (length === 2) {
-        this.randomTest = (
-          await sendAPI(
-            "GET",
-            `${baseUrl}/random/${this.url.get(
-              "accessLevel"
-            )}?categoryName=${this.url.get("testCategory")}`
-          )
-        ).test;
-        heading.textContent = `Random test for ${this.url.get("testCategory")}`;
-      } else {
-        this.randomTest = (
-          await sendAPI("GET", `${baseUrl}/test/${this.url.get("testName")}`)
-        ).data.test;
-        heading.textContent = `${this.url.get("testName")} test`;
-      }
-    }
+    this.randomTest = (
+      await sendAPI(
+        "GET",
+        `${baseUrl}/test/${this.url.get("testName")}/${new URLSearchParams(
+          window.location.search
+        ).get("testCategory")}`
+      )
+    ).data.test;
+    heading.textContent = `${this.url.get("testName")} test`;
   }
   async sendAPIToScoresAndScheduler(
     enteredAnswers,
@@ -60,7 +45,7 @@ class Common {
     const nextTask =
       allTestsInCategory[allTestsInCategory.indexOf(testName) + 1];
     score = `${score}/${noOfWords}`;
-    
+
     await sendAPI("POST", `${baseUrlScheduler}/integrate-spellings-app`, {
       score,
       testName,
