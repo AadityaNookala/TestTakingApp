@@ -5,12 +5,41 @@ exports.getTest = async (req, res) => {
     let test = await testData.findOne({
       testName: { $in: [req.params.testName] },
     });
+    const category = await categoriesData.findOne({
+      categoryName: req.params.testCategory,
+    });
+
     test = test.toObject();
     test.testName = req.params.testName;
+    let sum = 0;
+    const type = category.type;
+    if (type === "spellings") {
+      test.answers.forEach((el) => (sum += el.length));
+    } else {
+      test.answers.forEach((answer, i) => {
+        const oldSentence = test.sentences[i].sentence;
+        if (oldSentence) {
+          const sentence = oldSentence.split(" ");
+          for (let j = 0; j < sentence.length - 1; j += 2)
+            sentence.splice(j + 1, 0, " ");
+          const storedAnswer = [];
+          let word = "";
+          for (let j = 0; j < answer.length; j++) {
+            word += sentence[answer[j]];
+            if (answer[j] !== answer[j + 1] - 1) {
+              storedAnswer.push(word);
+              word = "";
+            }
+          }
+          sum += storedAnswer.length;
+        }
+      });
+    }
     res.status(200).json({
       status: "success",
       data: {
         test,
+        count: sum,
       },
     });
   } catch (err) {
