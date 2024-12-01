@@ -1,6 +1,5 @@
 const categoriesData = require("../models/categoryModel.js");
 const testData = require("../models/testModel.js");
-
 exports.getTest = async (req, res) => {
   try {
     let test = await testData.findOne({
