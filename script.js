@@ -47,7 +47,7 @@ class App {
 
       if (response.status === "fail") {
         renderErrorLogin(
-          document.querySelector("#loginForm"),
+          document.querySelector(".error-box"),
           response.message
         );
       } else if (response.isAdmin) {
@@ -57,7 +57,7 @@ class App {
       }
     } catch (error) {
       this.spinnerOverlay.classList.add("hidden");
-      renderErrorLogin(document.querySelector("#loginForm"), error.message);
+      renderErrorLogin(document.querySelector(".error-box"), error.message);
     }
   }
 
