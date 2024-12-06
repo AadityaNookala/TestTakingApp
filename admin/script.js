@@ -142,7 +142,6 @@ class App {
           sort: true,
           preventOnFilter: false,
           onMove: (e) => {
-            console.log(e);
             if (
               e.related.classList.contains("heading-row") ||
               e.dragged.classList.contains("heading-row")
@@ -152,7 +151,6 @@ class App {
           },
           onEnd: async (e) => {
             const allTestsNodes = e.from.querySelectorAll(".test:not(.header)");
-            console.log(allTestsNodes);
             const allTests = [];
             allTestsNodes.forEach((el) => allTests.push(el.textContent.trim()));
             const category = (
