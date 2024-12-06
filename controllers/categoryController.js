@@ -107,3 +107,22 @@ exports.addNewTest = async (req, res) => {
     });
   }
 };
+
+exports.updateOrderOfTests = async (req, res) => {
+  try {
+    const newCategory = await categoriesData.findOneAndUpdate(
+      { categoryName: req.params.categoryName },
+      { $set: { tests: req.body.allTests } },
+      { new: true }
+    );
+    res.status(200).json({
+      status: "success",
+      newCategory,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};

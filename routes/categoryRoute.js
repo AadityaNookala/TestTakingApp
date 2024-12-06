@@ -7,6 +7,10 @@ const authController = require("../controllers/authController");
 router.route("/clone/:categoryName").get(categoryController.whetherIsClone);
 
 router
+  .route("/updateTests/:categoryName")
+  .patch(categoryController.updateOrderOfTests);
+
+router
   .route("/getCategory/:categoryName")
   .get(categoryController.getOneCategory);
 router
