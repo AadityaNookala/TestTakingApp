@@ -47,7 +47,7 @@ class Common {
       ` <div class="row active-adding" data-index="${this.#numberOfWords++}">
   <div class="col-1">${this.#numberOfWords}
   </div>
-  <div class="col-7">
+  <div class="col-9">
   <textarea class="input-sentence" id="editing" type="text" name="sentences"></textarea>
   </div>
   <div class="col-1">
@@ -132,7 +132,7 @@ class Common {
         "beforeend",
         `<div class="row" data-index="${this.#numberOfWords++}">
     <div class="col-1">${i + 1}</div>
-    <div class="col-7">
+    <div class="col-9">
     ${html}
     </div>
     ${
@@ -151,9 +151,9 @@ class Common {
       );
     });
     document.querySelector(".spinner-border").style.display = "none";
-    document.querySelector(
-      ".top-right-corner"
-    ).innerHTML = `Number of highlights: ${this.#dataEverything.count}`;
+    document.querySelector(".top-right-corner").innerHTML = `NoH: ${
+      this.#dataEverything.count
+    }`;
   }
 
   #addWord() {
@@ -169,7 +169,7 @@ class Common {
     if (!edit) return;
     const row = edit.closest(".row");
     row.classList.add("active-adding");
-    const sentenceRow = row.querySelector(".col-7");
+    const sentenceRow = row.querySelector(".col-9");
     const textCont = sentenceRow.querySelector(".sentence").textContent.trim();
     let html = ``;
     textCont.split("\n").forEach((el, i) => {

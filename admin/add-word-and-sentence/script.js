@@ -12,7 +12,6 @@ class App {
   }
   #setHeading() {
     const urlParams = new URLSearchParams(window.location.search);
-    const dataType = urlParams.get("dataType");
     this.#heading.textContent = decodeURIComponent(urlParams.get("testName"));
     new Common();
   }
