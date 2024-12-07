@@ -1,4 +1,4 @@
-import { baseUrl } from "../../config.js";
+import { arrOfPuncs, baseUrl } from "../../config.js";
 import { sendAPI } from "../../helpers/helpers.js";
 import { default as AddingSpellings } from "./spellings.js";
 import { default as AddingSentenceCombining } from "./sentence-combining.js";
@@ -83,44 +83,49 @@ class Common {
 
     for (let i = 0; i < sentences.length; i++) {
       let html = `<p class="sentence">`;
-      const newSentence = sentences[i].sentence || "";
-
-      newSentence.split("\n").forEach((el) => {
-        html += `<span>${el}</span><br>`;
+      const newSentence = sentences[i].sentence
+        ? sentences[i].sentence
+        : typeof sentences[i] === "string"
+        ? sentences[i]
+        : "";
+      newSentence.split("\n").forEach((el, j) => {
+        if (this.#dataType === "spellings" || this.#dataType === "key-terms") {
+          const inputSentenceTest = el.trim().split(" ");
+          if (this.#dataType === "key-terms") {
+            for (let i = 0; i < inputSentenceTest.length - 1; i += 2) {
+              inputSentenceTest.splice(i + 1, 0, " ");
+            }
+          }
+          inputSentenceTest.forEach((word, k) => {
+            let punc = "";
+            let puncOfBeginning = "";
+            const arr = word.split("");
+            for (; arrOfPuncs.includes(arr[arr.length - 1]); ) {
+              punc += arr.pop();
+            }
+            for (; arrOfPuncs.includes(arr[0]); ) {
+              puncOfBeginning += arr.shift();
+            }
+            punc = punc.split("").reverse().join("");
+            html += `${puncOfBeginning}<span class="${
+              this.#data.answers[i].includes(k) ? "highlight" : ""
+            }">${word
+              .replace(punc, "")
+              .replace(puncOfBeginning, "")}</span>${punc}${
+              this.#dataType === "spellings" ? " " : ""
+            }`;
+          });
+        } else html += el;
+        if (newSentence.split("\n").length - 1 !== j) {
+          html += "<br>";
+        }
       });
       html += `</p>\n`;
-
-      if (sentences[i].imageUrl && !sentences[i].sentence) {
-        const maskedAreas = this.#data.answers[i] || [];
-        const img = new Image();
-        img.src = sentences[i].imageUrl;
-
-        const imageWidth = img.naturalWidth;
-        const imageHeight = img.naturalHeight;
-
-        const canvasId = `mask-${Math.random().toString(36).substring(2, 9)}`;
-
-        html += `
-          <div class="image-container" >
-            <img class="image" src="${sentences[i].imageUrl}" alt="Masked Image" style="display: block; width: 100%; height: auto;" />
-            <canvas id="${canvasId}" width="${imageWidth}" height="${imageHeight}" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
-          </div>
-        `;
-
-        setTimeout(() => {
-          const canvas = document.getElementById(canvasId);
-          if (canvas.getContext) {
-            const ctx = canvas.getContext("2d");
-            ctx.fillStyle = "rgba(128, 128, 128, 0.5)";
-
-            maskedAreas.forEach((area) => {
-              ctx.fillRect(area.x, area.y, area.width, area.height);
-            });
-          } else {
-            console.error("Canvas not supported in this browser.");
-          }
-        }, 0);
-      }
+      if (this.#dataType === "key-terms")
+        html += await this.#addingObject.maskShowingImage(
+          sentences[i],
+          this.#data.answers[i]
+        );
 
       this.#form.insertAdjacentHTML(
         "beforeend",
