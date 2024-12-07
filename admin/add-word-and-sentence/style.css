@@ -95,6 +95,45 @@ body {
   margin-top: 2rem;
 }
 
+#canvas-container {
+  position: relative;
+}
+
+.mask {
+  position: absolute;
+  background-color: rgba(128, 128, 128, 0.5);
+  border: 2px dashed #555;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.mask:hover {
+  border-color: #000;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.image-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.w-6 {
+  width: 100rem;
+  height: 10rem;
+}
+
 .add-word,
 .edit-word {
   width: 20%;
