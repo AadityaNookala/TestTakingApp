@@ -32,6 +32,8 @@ exports.getTest = async (req, res) => {
             }
           }
           sum += storedAnswer.length;
+        } else {
+          sum += answer.length;
         }
       });
     }
