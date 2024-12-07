@@ -8,7 +8,6 @@ class Displaying extends Common {
   #fixed;
   #sentencesContainer;
   #answers = [];
-  #defaultDroppingSpanValue;
   #check;
 
   constructor() {

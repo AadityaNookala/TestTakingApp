@@ -14,32 +14,60 @@ class Adding {
     let html = "";
     if (sentence.imageUrl) {
       html += `
-        <div class="image-container">
-          <img class="image" src="${sentence.imageUrl}" />
-      `;
+    <div class="image-container" style="position: relative;">
+      <img class="image" src="${sentence.imageUrl}" crossOrigin="anonymous" />
+  `;
       if (!sentence.sentence) {
         const maskedAreas = answer || [];
         const img = new Image();
         img.src = sentence.imageUrl;
+        img.crossOrigin = "anonymous"; // Ensure cross-origin access
 
         await img.decode();
 
         const imageWidth = img.naturalWidth;
         const imageHeight = img.naturalHeight;
-        const canvasId = `mask-${Math.random().toString(36).substring(2, 9)}`;
+        console.log("Image Dimensions:", imageWidth, imageHeight);
+
+        if (!imageWidth || !imageHeight) {
+          console.error("Image dimensions could not be determined.");
+          return html;
+        }
+
+        const canvasId = `canvas-${Math.random().toString(36).substring(2, 9)}`;
         html += `<canvas id="${canvasId}" width="${imageWidth}" height="${imageHeight}" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>`;
 
         setTimeout(() => {
           const canvas = document.getElementById(canvasId);
-          if (canvas.getContext) {
+          if (canvas) {
             const ctx = canvas.getContext("2d");
-            ctx.fillStyle = "rgba(128, 128, 128, 0.5)";
 
-            maskedAreas.forEach((area) => {
-              ctx.fillRect(area.x, area.y, area.width, area.height);
+            // Ensure canvas matches image dimensions
+            canvas.width = imageWidth;
+            canvas.height = imageHeight;
+
+            // Draw the image on the canvas
+            ctx.drawImage(img, 0, 0, imageWidth, imageHeight);
+
+            // Apply gray overlay to masked areas
+            ctx.fillStyle = "rgba(128, 128, 128, 0.5)";
+            maskedAreas.forEach((mask) => {
+              if (
+                typeof mask.x === "number" &&
+                typeof mask.y === "number" &&
+                typeof mask.width === "number" &&
+                typeof mask.height === "number"
+              ) {
+                console.log(
+                  `Drawing rect at (${mask.x}, ${mask.y}) with size (${mask.width}x${mask.height})`
+                );
+                ctx.fillRect(mask.x, mask.y, mask.width, mask.height);
+              } else {
+                console.warn("Invalid mask area:", mask);
+              }
             });
           } else {
-            console.error("Canvas not supported in this browser.");
+            console.error(`Canvas with ID ${canvasId} not found.`);
           }
         }, 0);
       }
