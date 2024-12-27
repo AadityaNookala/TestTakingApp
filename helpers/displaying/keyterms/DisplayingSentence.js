@@ -24,7 +24,7 @@ class DisplayingSentence {
               draggable="true" 
               data-id="${i}"
               data-type="text">
-              ${text.replace(/[^\w\s-]|_/g, "")}
+              ${text}
             </span>
           `;
   }
@@ -93,7 +93,6 @@ class DisplayingSentence {
       }
     }
     ranges.push([start, end]);
-
     const newTokens = [];
     let i = 0;
     let rangeIndex = 0;
