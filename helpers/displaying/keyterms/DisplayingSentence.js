@@ -18,6 +18,7 @@ class DisplayingSentence {
   }
 
   renderAnswers(i, text) {
+    text = text.replace(/^[^\w\s]+|[^\w\s]+$/g, "");
     return `
             <span 
               class="word draggable" 
