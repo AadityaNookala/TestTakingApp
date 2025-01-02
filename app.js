@@ -15,7 +15,7 @@ const { protect } = require("./controllers/authController.js");
 
 const nonProtectedRoutes = ["/user/login"];
 
-const DB = process.env.DATABASE.replace(
+const DB = process.env.DATABASE_TEST_TAKING.replace(
   "<USERNAME>",
   process.env.DB_USERNAME
 ).replace("<PASSWORD>", process.env.PASSWORD);
