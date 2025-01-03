@@ -11,4 +11,5 @@ router
   .get(userController.getUser)
   .patch(authController.restrictTo("admin"), userController.updateUser);
 router.route("/login").post(authController.login);
+router.route("/logout").post(authController.logout);
 module.exports = router;
