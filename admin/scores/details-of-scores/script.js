@@ -15,7 +15,7 @@ class App {
           .split("+")
           [this.url.split("?")[1].split("+").length - 2].trim()
       );
-
+      this.logout = document.querySelector(".logout-button");
       this.testName = decodeURIComponent(
         this.url
           .split("?")[1]
@@ -28,6 +28,7 @@ class App {
       document
         .querySelector(".mistake-details")
         .addEventListener("click", this.handleClick.bind(this));
+      this.logout.addEventListener("click", this.#logoutToHome.bind(this));
     })();
   }
   addSpinner() {
@@ -38,6 +39,11 @@ class App {
   <span class="visually-hidden">Loading...</span>
 </div>`
     );
+  }
+
+  #logoutToHome() {
+    sendAPI("POST", `${baseUrl}/user/logout`);
+    window.location.href = window.location.href.split("/admin")[0];
   }
   async renderData() {
     this.containerHeader.insertAdjacentHTML(

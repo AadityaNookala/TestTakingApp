@@ -8,14 +8,22 @@ class App {
       this.container = document.querySelector(".container");
       this.heading = document.querySelector(".heading");
       this.url = window.location.href;
+      this.logout = document.querySelector(".logout-button");
       await this.renderData();
       document.addEventListener("click", this.showButton.bind(this));
+      document.addEventListener("click", this.#logoutToHome.bind(this));
       this.container.addEventListener(
         "click",
         this.handleClickOnTest.bind(this)
       );
     })();
   }
+
+  async #logoutToHome() {
+    await sendAPI("POST", `${baseUrl}/user/logout`);
+    window.location.href = window.location.href.split("/student")[0];
+  }
+
   async renderData() {
     const urlParams = new URLSearchParams(window.location.search);
     const userName = urlParams.get("accessLevel");

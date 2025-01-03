@@ -8,10 +8,12 @@ class App {
       this.url = window.location.href;
       this.containerHeader = document.querySelector(".container-header");
       this.container = document.querySelector(".container");
+      this.logout = document.querySelector(".logout-button");
       this.addSpinner();
       this.renderData();
       this.removeSpinner();
       this.container.addEventListener("click", this.handleClick.bind(this));
+      this.logout.addEventListener("click", this.#logoutToHome.bind(this));
     })();
   }
   addSpinner() {
@@ -22,6 +24,10 @@ class App {
     <span class="visually-hidden">Loading...</span>
     </div>`
     );
+  }
+  async #logoutToHome() {
+    await sendAPI("POST", `${baseUrl}/user/logout`);
+    window.location.href = window.location.href.split("/admin")[0];
   }
   async renderData() {
     const userName = this.url

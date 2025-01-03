@@ -19,6 +19,8 @@ class App {
       this.url = window.location.href;
       this.containerHeader = document.querySelector(".container-header");
       this.container = document.querySelector(".container");
+      this.logoutButton = document.querySelector(".logout-button");
+      this.logoutButton.addEventListener("click", this.logout);
       this.userName = decodeURIComponent(
         this.url
           .split("?")[1]
@@ -46,6 +48,10 @@ class App {
   <span class="visually-hidden">Loading...</span>
 </div>`
     );
+  }
+  logout() {
+    sendAPI("POST", `${baseUrl}/user/logout`);
+    window.location.href = window.location.href.split("/admin")[0];
   }
   async renderData() {
     const eveything = await sendAPI(
