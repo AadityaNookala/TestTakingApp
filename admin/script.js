@@ -101,6 +101,7 @@ class App {
     );
   }
   async logoutUser() {
+    document.cookie = `token=jwt; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     await sendAPI("POST", `${baseUrl}/user/logout`);
     window.location.href = window.location.href.split("/admin")[0];
   }
