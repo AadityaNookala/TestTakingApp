@@ -11,7 +11,7 @@ class App {
       this.logout = document.querySelector(".logout-button");
       await this.renderData();
       document.addEventListener("click", this.showButton.bind(this));
-      document.addEventListener("click", this.#logoutToHome.bind(this));
+      this.logout.addEventListener("click", this.#logoutToHome.bind(this));
       this.container.addEventListener(
         "click",
         this.handleClickOnTest.bind(this)
