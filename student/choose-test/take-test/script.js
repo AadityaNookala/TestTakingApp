@@ -21,6 +21,8 @@ class App {
           return false;
         }
       });
+      this.logout = document.querySelector(".logout-button");
+      this.logout.addEventListener("click", this.#logoutToHome.bind(this));
       if (testType === "spellings") {
         new DisplayingSpellings();
       } else if (testType === "sentence-combining") {
@@ -29,6 +31,10 @@ class App {
         new DisplayingKeyTerms();
       }
     })();
+  }
+  #logoutToHome() {
+    sendAPI("POST", `${baseUrl}/user/logout`);
+    window.location.href = window.location.href.split("/student")[0];
   }
 }
 
