@@ -27,7 +27,7 @@ class App {
       this.keyTermsCategoriesContainer = document.querySelector(
         ".key-terms-categories-container"
       );
-      this.logout = document.querySelector(".logout");
+      this.logout = document.querySelector(".logout-button");
       this.addNewUsers = document.querySelector(".add-new-user");
       this.usersContainer = document.querySelector(".users-container");
       this.scores = document.querySelector(".scores");
