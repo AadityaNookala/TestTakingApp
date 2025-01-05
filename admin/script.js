@@ -27,6 +27,7 @@ class App {
       this.keyTermsCategoriesContainer = document.querySelector(
         ".key-terms-categories-container"
       );
+      this.logout = document.querySelector(".logout");
       this.addNewUsers = document.querySelector(".add-new-user");
       this.usersContainer = document.querySelector(".users-container");
       this.scores = document.querySelector(".scores");
@@ -45,6 +46,7 @@ class App {
           "click",
           this.handleClickOnCategoriesContainer.bind(this)
         );
+      this.logout.addEventListener("click", this.logoutUser.bind(this));
       this.addNewTestsCategory.addEventListener.onClick =
         this.handleClickOnCategoriesContainer.bind(this);
       this.scores.addEventListener("click", this.handleClickOnScore.bind(this));
@@ -97,6 +99,10 @@ class App {
     <span class="visually-hidden">Loading...</span>
     </div>`
     );
+  }
+  async logoutUser() {
+    await sendAPI("POST", `${baseUrl}/user/logout`);
+    window.location.href = window.location.href.split("/admin")[0];
   }
   createSortable() {
     Sortable.create(this.spellingsCategoriesContainer, {
