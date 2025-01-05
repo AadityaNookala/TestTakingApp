@@ -1,12 +1,17 @@
 "use strict";
 
+import { baseUrl } from "../../config.js";
+import { sendAPI } from "../../helpers/helpers.js";
 import { default as Common } from "../../logics/adding/common.js";
 
 class App {
   #heading;
+  #logout;
   constructor() {
     (async () => {
       this.#heading = document.querySelector(".heading");
+      this.#logout = document.querySelector(".logout-button");
+      this.#logout.addEventListener("click", this.#logoutToHome.bind(this));
       this.#setHeading();
     })();
   }
@@ -14,6 +19,11 @@ class App {
     const urlParams = new URLSearchParams(window.location.search);
     this.#heading.textContent = decodeURIComponent(urlParams.get("testName"));
     new Common();
+  }
+
+  async #logoutToHome() {
+    await sendAPI("POST", `${baseUrl}/user/logout`);
+    window.location.href = window.location.href.split("/admin")[0];
   }
 }
 

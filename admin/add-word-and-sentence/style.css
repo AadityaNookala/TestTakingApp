@@ -223,6 +223,12 @@ textarea {
   margin-left: 2rem;
 }
 
+.logout-button {
+  position: sticky;
+  top: 0;
+  margin-right: 140rem;
+}
+
 .img {
   width: 70%;
   height: 70%;
