@@ -1,7 +1,7 @@
 "use strict";
 
 import { baseUrl } from "../../../../config.js";
-import { sendAPI } from "../../../../helpers/helpers.js";
+import { logoutUser, sendAPI } from "../../../../helpers/helpers.js";
 document.querySelector(".body").classList.add("hidden");
 document.querySelector(".spinner").insertAdjacentHTML(
   "beforeend",
@@ -20,7 +20,7 @@ class App {
       this.containerHeader = document.querySelector(".container-header");
       this.container = document.querySelector(".container");
       this.logoutButton = document.querySelector(".logout-button");
-      this.logoutButton.addEventListener("click", this.logout);
+      this.logoutButton.addEventListener("click", logoutUser.bind(this));
       this.userName = decodeURIComponent(
         this.url
           .split("?")[1]
@@ -49,11 +49,7 @@ class App {
 </div>`
     );
   }
-  async logout() {
-    document.cookie = `token=jwt; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    await sendAPI("POST", `${baseUrl}/user/logout`);
-    window.location.href = window.location.href.split("/admin")[0];
-  }
+
   async renderData() {
     const eveything = await sendAPI(
       "GET",

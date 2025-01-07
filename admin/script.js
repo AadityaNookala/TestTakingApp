@@ -1,7 +1,7 @@
 "use strict";
 
 import { baseUrl } from "../config.js";
-import { sendAPI } from "../helpers/helpers.js";
+import { logoutUser, sendAPI } from "../helpers/helpers.js";
 import Sortable from "../sortablejs/modular/sortable.core.esm.js";
 class App {
   constructor() {
@@ -46,7 +46,7 @@ class App {
           "click",
           this.handleClickOnCategoriesContainer.bind(this)
         );
-      this.logout.addEventListener("click", this.logoutUser.bind(this));
+      this.logout.addEventListener("click", logoutUser.bind(this));
       this.addNewTestsCategory.addEventListener.onClick =
         this.handleClickOnCategoriesContainer.bind(this);
       this.scores.addEventListener("click", this.handleClickOnScore.bind(this));
@@ -100,11 +100,7 @@ class App {
     </div>`
     );
   }
-  async logoutUser() {
-    document.cookie = `token=jwt; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    await sendAPI("POST", `${baseUrl}/user/logout`);
-    window.location.href = window.location.href.split("/admin")[0];
-  }
+
   createSortable() {
     Sortable.create(this.spellingsCategoriesContainer, {
       group: {

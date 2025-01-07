@@ -1,7 +1,7 @@
 "use strict";
 
 import { baseUrl } from "../../config.js";
-import { sendAPI } from "../../helpers/helpers.js";
+import { logoutUser, sendAPI } from "../../helpers/helpers.js";
 class App {
   constructor() {
     (async () => {
@@ -11,19 +11,12 @@ class App {
       this.logout = document.querySelector(".logout-button");
       await this.renderData();
       document.addEventListener("click", this.showButton.bind(this));
-      this.logout.addEventListener("click", this.#logoutToHome.bind(this));
+      this.logout.addEventListener("click", logoutUser.bind(this));
       this.container.addEventListener(
         "click",
         this.handleClickOnTest.bind(this)
       );
     })();
-  }
-
-  async #logoutToHome() {
-    document.cookie = `token=jwt; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    console.log(document.cookie);
-    await sendAPI("POST", `${baseUrl}/user/logout`);
-    window.location.href = window.location.href.split("/student")[0];
   }
 
   async renderData() {

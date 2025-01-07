@@ -1,7 +1,7 @@
 "use strict";
 
 import { baseUrl } from "../../../config.js";
-import { sendAPI } from "../../../helpers/helpers.js";
+import { logoutUser, sendAPI } from "../../../helpers/helpers.js";
 
 class App {
   constructor() {
@@ -28,7 +28,7 @@ class App {
       document
         .querySelector(".mistake-details")
         .addEventListener("click", this.handleClick.bind(this));
-      this.logout.addEventListener("click", this.#logoutToHome.bind(this));
+      this.logout.addEventListener("click", logoutUser.bind(this));
     })();
   }
   addSpinner() {
@@ -41,11 +41,6 @@ class App {
     );
   }
 
-  async #logoutToHome() {
-    document.cookie = `token=jwt; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    await sendAPI("POST", `${baseUrl}/user/logout`);
-    window.location.href = window.location.href.split("/admin")[0];
-  }
   async renderData() {
     this.containerHeader.insertAdjacentHTML(
       "beforeend",

@@ -1,5 +1,7 @@
 "use strict";
 
+import { baseUrl } from "../config.js";
+
 export async function sendAPI(typeOfRequest, URL, data = undefined) {
   try {
     let returnedData;
@@ -80,3 +82,9 @@ export const renderError = function (element, err) {
 export const renderErrorLogin = function (element, err) {
   element.innerHTML = `<p style="color:rgb(100, 10, 0)">${err}</p>`;
 };
+
+export async function logoutUser() {
+  document.cookie = `token=jwt; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  await sendAPI("POST", `${baseUrl}/user/logout`);
+  window.location.href = window.location.origin;
+}
