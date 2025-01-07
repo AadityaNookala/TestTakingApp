@@ -1,6 +1,7 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const usersData = require("../models/userModel.js");
+const { path } = require("wordnet-db");
 
 exports.login = async (req, res) => {
   try {
@@ -18,9 +19,10 @@ exports.login = async (req, res) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
     res.cookie("jwt", token, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      path: "/",
     });
     res.status(200).json({
       status: "success",
@@ -73,7 +75,12 @@ exports.restrictTo = (...roles) => {
 
 exports.logout = async (req, res) => {
   try {
-    res.clearCookie("jwt", { path: "/" });
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      path: "/",
+    });
     res.status(200).json({
       status: "success",
       message: "Successfully logged out",
