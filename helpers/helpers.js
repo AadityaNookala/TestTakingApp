@@ -84,9 +84,6 @@ export const renderErrorLogin = function (element, err) {
 };
 
 export async function logoutUser() {
-  console.log(document.cookie);
-  document.cookie = `token=jwt; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-  console.log(document.cookie);
-  // await sendAPI("POST", `${baseUrl}/user/logout`);
-  // window.location.href = window.location.origin;
+  await sendAPI("POST", `${baseUrl}/user/logout`);
+  window.location.href = window.location.origin;
 }
