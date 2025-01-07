@@ -5,6 +5,7 @@ import { renderErrorLogin, sendAPI } from "./helpers/helpers.js";
 
 class App {
   constructor() {
+    this.#checkIfUserIsLoggedIn();
     this.flipCard = document.getElementById("flipCard");
     this.goButton = document.querySelector(".go-button");
     this.loginForm = document.getElementById("loginForm");
@@ -23,6 +24,18 @@ class App {
       "click",
       this.handleTogglePassword
     );
+  }
+
+  async #checkIfUserIsLoggedIn() {
+    const response = await sendAPI("POST", `${baseUrl}/user/isLoggedIn`, {});
+    if (response.status === "success") {
+      const user = response.data.user;
+      if (user.role === "admin") {
+        window.location.href = `/admin/index.html?accessLevel=${user.userName}`;
+      } else {
+        window.location.href = `/student/choose-test/index.html?accessLevel=${user.userName}`;
+      }
+    }
   }
 
   handleGoHover() {
