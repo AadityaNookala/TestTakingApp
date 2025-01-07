@@ -75,13 +75,7 @@ exports.restrictTo = (...roles) => {
 
 exports.logout = async (req, res) => {
   try {
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      path: "/",
-    });
-    req.cookies.jwt = null;
+    res.clearCookie("jwt", { path: "/" });
     res.status(200).json({
       status: "success",
       message: "Successfully logged out",
