@@ -18,7 +18,7 @@ exports.login = async (req, res) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
     res.cookie("jwt", token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     });

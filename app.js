@@ -40,7 +40,7 @@ app.use((req, res, next) => {
   }
 });
 
-const port = 8000;
+const port = 7000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
