@@ -81,6 +81,7 @@ exports.logout = async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       path: "/",
     });
+    req.cookies.jwt = null;
     res.status(200).json({
       status: "success",
       message: "Successfully logged out",
