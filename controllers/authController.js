@@ -19,8 +19,8 @@ exports.login = async (req, res) => {
     });
     res.cookie("jwt", token, {
       httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      secure: false,
+      sameSite: "Lax",
     });
     res.status(200).json({
       status: "success",
