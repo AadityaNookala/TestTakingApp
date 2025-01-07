@@ -12,4 +12,5 @@ router
   .patch(authController.restrictTo("admin"), userController.updateUser);
 router.route("/login").post(authController.login);
 router.route("/logout").post(authController.logout);
+router.route("/isLoggedIn").post(authController.isLoggedIn);
 module.exports = router;

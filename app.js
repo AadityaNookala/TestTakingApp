@@ -13,7 +13,7 @@ const userRouter = require("./routes/userRoute.js");
 const versionRouter = require("./routes/versionRoute.js");
 const { protect } = require("./controllers/authController.js");
 
-const nonProtectedRoutes = ["/user/login"];
+const nonProtectedRoutes = ["/user/login", "/user/isLoggedIn"];
 
 const DB = process.env.DATABASE_TEST_TAKING.replace(
   "<USERNAME>",

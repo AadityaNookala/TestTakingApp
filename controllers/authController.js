@@ -92,3 +92,32 @@ exports.logout = async (req, res) => {
     });
   }
 };
+
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    if (req.cookies.jwt) {
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET_FOR_TESTS
+      );
+      const currentUser = await usersData.findById(decoded.id);
+      if (!currentUser) {
+        throw new Error(
+          "The user belonging to this token does no longer exist."
+        );
+      }
+      req.user = currentUser;
+    }
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: req.user,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
