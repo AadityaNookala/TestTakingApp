@@ -140,7 +140,7 @@ class AddingImage {
       .querySelector("button")
       .dataset.typeOfChange.trim();
     const activeIndex = +input.closest(".row").dataset.index;
-    const imageUrl = await uploadImage(baseUrl);
+    const { imageUrl } = (await uploadImage(baseUrl))[0];
     const data = {};
     data.answers = this.#masks;
 

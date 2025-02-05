@@ -85,8 +85,10 @@ body {
 }
 
 .add-word,
+.add-choice,
 .edit-word,
-.close {
+.close,
+.save-choice {
   background-color: #2c3531;
   border: none;
   color: #d9b08c;
@@ -136,6 +138,7 @@ body {
 }
 
 .add-word,
+.add-choice,
 .edit-word {
   width: 20%;
   margin: 2rem auto;
@@ -279,4 +282,54 @@ textarea {
   position: absolute;
   background-color: rgba(0, 0, 0, 0.5);
   pointer-events: none;
+}
+
+.highlight-container {
+  position: relative;
+  display: inline-block;
+}
+
+.highlight-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(209, 232, 226, 0.7);
+  pointer-events: none;
+}
+
+.highlight {
+  background-color: #d1e8e2;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.save-choice-div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+textarea,
+.save-choice-div button {
+  margin: 0;
+  padding: 1rem;
+}
+
+.save-choice-div button {
+  align-self: center;
+}
+
+.solution-div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-div textarea {
+  resize: both;
+  min-width: 40rem;
+  flex: 1;
 }

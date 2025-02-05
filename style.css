@@ -168,6 +168,10 @@ body {
   cursor: pointer;
 }
 
+.toggle-password:hover {
+  color: #2c3531;
+}
+
 .toggle-password:focus {
   outline: none;
 }

@@ -68,7 +68,7 @@ class AddingSentence {
           arrOfIndexes.push(+el.dataset.index);
       });
 
-      const imageUrl = await uploadImage(baseUrl);
+      const { imageUrl } = (await uploadImage(baseUrl))[0];
       const data = Object.fromEntries([
         ...new FormData(document.querySelector("form")),
       ]);

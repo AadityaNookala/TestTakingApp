@@ -28,7 +28,7 @@ class App {
 
   async #checkIfUserIsLoggedIn() {
     const response = await sendAPI("POST", `${baseUrl}/user/isLoggedIn`, {});
-    if (response.status === "success") {
+    if (response.status === "success" && response.data.user) {
       const user = response.data.user;
       if (user.role === "admin") {
         window.location.href = `/admin/index.html?accessLevel=${user.userName}`;

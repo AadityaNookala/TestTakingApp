@@ -15,9 +15,6 @@ class App {
           ? -1
           : 0
       );
-      this.addNewTestsCategory = document.querySelector(
-        ".add-new-test-category"
-      );
       this.spellingsCategoriesContainer = document.querySelector(
         ".categories-container"
       );
@@ -26,6 +23,9 @@ class App {
       );
       this.keyTermsCategoriesContainer = document.querySelector(
         ".key-terms-categories-container"
+      );
+      this.choiceForgeCategoriesContainer = document.querySelector(
+        ".choice-forge-categories-container"
       );
       this.logout = document.querySelector(".logout-button");
       this.addNewUsers = document.querySelector(".add-new-user");
@@ -47,8 +47,6 @@ class App {
           this.handleClickOnCategoriesContainer.bind(this)
         );
       this.logout.addEventListener("click", logoutUser.bind(this));
-      this.addNewTestsCategory.addEventListener.onClick =
-        this.handleClickOnCategoriesContainer.bind(this);
       this.scores.addEventListener("click", this.handleClickOnScore.bind(this));
       this.spellingsCategoriesContainer.addEventListener(
         "click",
@@ -59,6 +57,10 @@ class App {
         this.editTestName.bind(this)
       );
       this.keyTermsCategoriesContainer.addEventListener(
+        "click",
+        this.editTestName.bind(this)
+      );
+      this.choiceForgeCategoriesContainer.addEventListener(
         "click",
         this.editTestName.bind(this)
       );
@@ -74,6 +76,10 @@ class App {
         "click",
         this.copyCategoryName.bind(this)
       );
+      this.choiceForgeCategoriesContainer.addEventListener(
+        "click",
+        this.copyCategoryName.bind(this)
+      );
       this.sentenceCombiningCategoriesContainer.addEventListener(
         "click",
         this.copyTestName.bind(this)
@@ -83,6 +89,10 @@ class App {
         this.copyCategoryName.bind(this)
       );
       this.keyTermsCategoriesContainer.addEventListener(
+        "click",
+        this.copyTestName.bind(this)
+      );
+      this.choiceForgeCategoriesContainer.addEventListener(
         "click",
         this.copyTestName.bind(this)
       );
@@ -121,6 +131,15 @@ class App {
       sort: false,
     });
     Sortable.create(this.keyTermsCategoriesContainer, {
+      group: {
+        name: "shared",
+        pull: "clone",
+        put: false,
+      },
+      animation: 500,
+      sort: false,
+    });
+    Sortable.create(this.choiceForgeCategoriesContainer, {
       group: {
         name: "shared",
         pull: "clone",
@@ -501,9 +520,26 @@ class App {
       <button class="button-add">Add Category</button>`
         );
         type = "key-terms";
+      } else if (
+        e.target.closest(".category").dataset.type === "choice-forge"
+      ) {
+        this.choiceForgeCategoriesContainer.classList.remove("hidden");
+        this.choiceForgeCategoriesContainer.previousElementSibling.querySelector(
+          ".show-button"
+        ).textContent = "-";
+        this.choiceForgeCategoriesContainer.insertAdjacentHTML(
+          "beforeend",
+          `<div class="categories-showing mt-4">
+        <a class="show-button">+</a>
+        <h2 class="test-categories"><input type="text" class="input"></h2>
+      </div>
+      <button class="button-add">Add Category</button>`
+        );
+        type = "choice-forge";
       }
       const buttonAdd = document.querySelector(".button-add");
       buttonAdd.addEventListener("click", async () => {
+        console.log("HELLO");
         const inputValue = document.querySelector(".input").value;
         const object = {
           categoryName: inputValue,
@@ -528,10 +564,12 @@ class App {
         ? -1
         : 0
     );
+    console.log(this.testCategories);
 
     this.spellingsCategoriesContainer.innerHTML = "";
     this.sentenceCombiningCategoriesContainer.innerHTML = "";
     this.keyTermsCategoriesContainer.innerHTML = "";
+    this.choiceForgeCategoriesContainer.innerHTML = "";
     this.testCategories.forEach((element) => {
       let html = ``;
       html += `<div class="test-categories-showing mt-4" data-category-name="${
@@ -558,7 +596,8 @@ class App {
       ${
         element.isClone ||
         element.type === "sentence-combining" ||
-        element.type === "key-terms"
+        element.type === "key-terms" ||
+        element.type === "choice-forge"
           ? ""
           : `<button class="clone-button">Clone</button>`
       }
@@ -627,6 +666,11 @@ class App {
         );
       } else if (element.type === "key-terms") {
         this.keyTermsCategoriesContainer.insertAdjacentHTML("beforeend", html);
+      } else if (element.type === "choice-forge") {
+        this.choiceForgeCategoriesContainer.insertAdjacentHTML(
+          "beforeend",
+          html
+        );
       }
     });
   }

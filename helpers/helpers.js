@@ -35,24 +35,32 @@ export async function sendAPI(typeOfRequest, URL, data = undefined) {
 }
 
 export async function uploadImage(baseUrl) {
-  const fileInput = document.querySelector(".modal-form-control");
-  const file = fileInput.files[0];
-  if (!file) return null;
-  const data = await sendAPI(
-    "GET",
-    `${baseUrl}/get-signed-url?fileName=${file.name}`
+  const fileInputs = Array.from(
+    document.querySelectorAll(".modal-form-control")
   );
-  const uploadUrl = data.signedUrl;
+  const imageUrls = await Promise.all(
+    fileInputs.map(async (fileInput) => {
+      console.log(fileInput, fileInput.name);
+      const file = fileInput.files[0];
+      if (!file) return null;
+      const data = await sendAPI(
+        "GET",
+        `${baseUrl}/get-signed-url?fileName=${file.name}`
+      );
+      const uploadUrl = data.signedUrl;
 
-  await fetch(uploadUrl, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/octet-stream",
-    },
-    body: file,
-  });
-
-  return data.imageUrl;
+      await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/octet-stream",
+        },
+        body: file,
+      });
+      return { imageUrl: data.imageUrl, name: fileInput.name };
+    })
+  );
+  console.log(imageUrls);
+  return imageUrls;
 }
 
 export const renderError = function (element, err) {
