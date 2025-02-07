@@ -75,7 +75,7 @@ class AddingSentence {
       data.answers = arrOfIndexes;
 
       data.sentences = { sentence: data.sentences };
-      if (image) data.sentences.imageUrl = imageUrl;
+      if (image) data.sentences.imageUrl = image.imageUrl;
 
       const common = new CommonKTSP();
       await common.sendForKeyTermsAndSpellings(
