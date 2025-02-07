@@ -68,14 +68,14 @@ class AddingSentence {
           arrOfIndexes.push(+el.dataset.index);
       });
 
-      const { imageUrl } = (await uploadImage(baseUrl))[0];
+      const image = (await uploadImage(baseUrl))[0];
       const data = Object.fromEntries([
         ...new FormData(document.querySelector("form")),
       ]);
       data.answers = arrOfIndexes;
 
       data.sentences = { sentence: data.sentences };
-      if (imageUrl) data.sentences.imageUrl = imageUrl;
+      if (image.imageUrl) data.sentences.imageUrl = imageUrl;
 
       const common = new CommonKTSP();
       await common.sendForKeyTermsAndSpellings(
