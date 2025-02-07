@@ -11,7 +11,6 @@ class AddingChoiceForge {
   }
 
   showImageAndChoices(sentence, answer) {
-    console.log(sentence.choices);
     return `${
       sentence.imageUrl
         ? `<img src="${sentence.imageUrl}" alt="question" />`

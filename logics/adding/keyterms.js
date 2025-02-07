@@ -27,10 +27,8 @@ class Adding {
 
         const imageWidth = img.naturalWidth;
         const imageHeight = img.naturalHeight;
-        console.log("Image Dimensions:", imageWidth, imageHeight);
 
         if (!imageWidth || !imageHeight) {
-          console.error("Image dimensions could not be determined.");
           return html;
         }
 
@@ -58,16 +56,9 @@ class Adding {
                 typeof mask.width === "number" &&
                 typeof mask.height === "number"
               ) {
-                console.log(
-                  `Drawing rect at (${mask.x}, ${mask.y}) with size (${mask.width}x${mask.height})`
-                );
                 ctx.fillRect(mask.x, mask.y, mask.width, mask.height);
-              } else {
-                console.warn("Invalid mask area:", mask);
               }
             });
-          } else {
-            console.error(`Canvas with ID ${canvasId} not found.`);
           }
         }, 0);
       }

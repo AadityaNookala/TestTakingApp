@@ -40,7 +40,6 @@ export async function uploadImage(baseUrl) {
   );
   const imageUrls = await Promise.all(
     fileInputs.map(async (fileInput) => {
-      console.log(fileInput, fileInput.name);
       const file = fileInput.files[0];
       if (!file) return null;
       const data = await sendAPI(
@@ -59,7 +58,6 @@ export async function uploadImage(baseUrl) {
       return { imageUrl: data.imageUrl, name: fileInput.name };
     })
   );
-  console.log(imageUrls);
   return imageUrls;
 }
 

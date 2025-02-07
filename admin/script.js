@@ -539,7 +539,6 @@ class App {
       }
       const buttonAdd = document.querySelector(".button-add");
       buttonAdd.addEventListener("click", async () => {
-        console.log("HELLO");
         const inputValue = document.querySelector(".input").value;
         const object = {
           categoryName: inputValue,
@@ -564,7 +563,6 @@ class App {
         ? -1
         : 0
     );
-    console.log(this.testCategories);
 
     this.spellingsCategoriesContainer.innerHTML = "";
     this.sentenceCombiningCategoriesContainer.innerHTML = "";
