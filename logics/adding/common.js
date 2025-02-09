@@ -14,7 +14,7 @@ class Common {
   #data;
   #dataType = new URLSearchParams(window.location.search).get("dataType");
   #dataEverything;
-
+  #goTopBtn;
   constructor() {
     (async () => {
       this.#add = document.querySelector(".add");
@@ -29,6 +29,8 @@ class Common {
           ).get("testCategory")}`
         )
       ).data;
+      this.#goTopBtn = document.querySelector(".go-to-top");
+
       this.#data = this.#dataEverything.test;
       if (this.#dataType === "spellings")
         this.#addingObject = new AddingSpellings();
@@ -44,7 +46,26 @@ class Common {
         this.#add.addEventListener("click", this.#addWord.bind(this));
       }
       document.addEventListener("click", this.#edit.bind(this));
+      window.addEventListener("scroll", this.#scrollFunction.bind(this));
+      this.#goTopBtn.addEventListener("click", this.#topFunction.bind(this));
     })();
+  }
+
+  #scrollFunction() {
+    console.log(this.#goTopBtn);
+    if (
+      document.body.scrollTop > 50 ||
+      document.documentElement.scrollTop > 50
+    ) {
+      this.#goTopBtn.style.display = "block";
+    } else {
+      this.#goTopBtn.style.display = "none";
+    }
+  }
+
+  #topFunction() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
   }
 
   #showing() {
